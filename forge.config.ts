@@ -79,7 +79,7 @@ const config: ForgeConfig = {
       config: {
         repository: {
           owner: 'peiyanlu',
-          name: 'svgoify-publish',
+          name: 'svgoify',
         },
         prerelease: true,
       },
