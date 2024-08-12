@@ -6,8 +6,6 @@ import { ElectronHost } from './ElectronHost'
 
 updateElectronApp()
 
-
-
 if (checkSquirrel()) {
   ElectronHost.shutdown()
 } else {
@@ -25,5 +23,4 @@ if (checkSquirrel()) {
         icon: join(__dirname, 'icons/icon.ico'),
       })
     })
-  
 }

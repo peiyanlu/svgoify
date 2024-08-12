@@ -32,9 +32,9 @@ const config: ForgeConfig = {
       //安装文件显示
       setupIcon: join(__dirname, iconDir, 'icon.ico'),
       //安装时的动画，就是这个
-      loadingGif: join(__dirname, iconDir, 'loading.gif'),
+      loadingGif: join(__dirname, iconDir, 'install-loading.gif'),
     }),
-    new MakerZIP({}, [ 'darwin', 'win32' ]),
+    new MakerZIP({}, [ 'darwin', 'win32', 'linux' ]),
     new MakerRpm({}),
     new MakerDeb({})
   ],
@@ -75,7 +75,7 @@ const config: ForgeConfig = {
   publishers: [
     {
       name: '@electron-forge/publisher-github',
-      platforms: ['win32'],
+      platforms: [ 'all' ],
       config: {
         repository: {
           owner: 'peiyanlu',
