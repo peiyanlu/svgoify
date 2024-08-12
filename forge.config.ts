@@ -71,7 +71,8 @@ const config: ForgeConfig = {
       [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
-  ], publishers: [
+  ],
+  publishers: [
     {
       name: '@electron-forge/publisher-github',
       config: {
@@ -79,8 +80,9 @@ const config: ForgeConfig = {
           owner: 'peiyanlu',
           name: 'svgoify',
         },
-        prerelease: false,
-        draft: true,
+        prerelease: true,
+        draft: false,
+        force: true
       },
     },
   ],
