@@ -1,6 +1,10 @@
 name: Build/release
 
-on: push
+
+on:
+  push:
+    branches:
+      - dev
 
 jobs:
   release:
@@ -14,18 +18,39 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
       
-      - name: Install Node.js, NPM and Yarn
+      - name: Install Node.js, NPM
         uses: actions/setup-node@v4
         with:
           node-version: 18
       
-      - name: Build/release Electron app
-        uses: juaneth/electron-forge-builder@v1
+      - name: Install Dependencies
+        run: npm install
+        
+      - name: Publish Electron App
+        run: npm run publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      
+#      - name: Cleanup Artifacts for Windows
+#        if: matrix.os == 'windows-latest'
+#        run: |
+#          npx rimraf "dist/!(*.exe)"
+#
+#      - name: Cleanup Artifacts for MacOS
+#        if: matrix.os == 'macos-latest'
+#        run: |
+#          npx rimraf "dist/!(*.dmg)"
+      
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3.0.0
         with:
-          # GitHub token, automatically provided to the action
-          # (No need to define this secret in the repo settings)
-          github_token: ${{ secrets.github_token }}
-          
-          # If the commit is tagged with a version (e.g. "v1.0.0"),
-          # release the app after building
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          name: ${{ matrix.os }}
+          path: out/make
+      
+#      - name: release
+#        uses: softprops/action-gh-release@v0.1.14
+#        if: startsWith(github.ref, 'refs/tags/')
+#        with:
+#          files: "dist/**"
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
