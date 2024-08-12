@@ -6,6 +6,8 @@ import { ElectronHost } from './ElectronHost'
 
 updateElectronApp()
 
+
+
 if (checkSquirrel()) {
   ElectronHost.shutdown()
 } else {
