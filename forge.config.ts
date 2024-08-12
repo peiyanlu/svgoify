@@ -75,14 +75,13 @@ const config: ForgeConfig = {
   publishers: [
     {
       name: '@electron-forge/publisher-github',
+      platforms: ['win32'],
       config: {
         repository: {
           owner: 'peiyanlu',
-          name: 'svgoify',
+          name: 'svgoify-publish',
         },
         prerelease: true,
-        draft: false,
-        force: true
       },
     },
   ],
