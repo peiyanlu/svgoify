@@ -17,6 +17,8 @@ const iconDir: string = `.vite/renderer/${ RENDERER_DIR_NAME }/icons`
 
 const config: ForgeConfig = {
   packagerConfig: {
+    name: 'SVGoify',
+    executableName: 'svgoify',
     asar: true,
     overwrite: true,
     // 任务栏 & 快捷方式 不带后缀
@@ -25,7 +27,6 @@ const config: ForgeConfig = {
       /(\.idea|\.vscode|\.npmrc|\.gitignore|public|src|svg-icons)/,
       /\w*\.(ts|json)$/,
     ],
-    executableName: 'svgoify',
     win32metadata: {
       CompanyName: 'Electron Community',
       OriginalFilename: pkg.productName,
@@ -43,26 +44,15 @@ const config: ForgeConfig = {
       loadingGif: join(__dirname, iconDir, 'install-loading.gif'),
     }),
     // 全平台都可用
-    new MakerZIP({}, [ 'win32', 'linux' ]),
+    new MakerZIP({}, [ 'darwin', 'win32', 'linux' ]),
     // Mac 标准格式
     new MakerDMG({
       format: 'ULFO', // (OS X 10.11+ only)
-      icon: join(__dirname, iconDir, 'icon.icns')
     }),
     // Linux redhat，centos，Fedora
-    new MakerRpm({
-      options: {
-        name: 'svgoify',
-        icon: join(__dirname, iconDir, 'icon.png')
-      }
-    }),
+    new MakerRpm(),
     // Linux debian，ubuntu
-    new MakerDeb({
-      options: {
-        name: 'svgoify',
-        icon: join(__dirname, iconDir, 'icon.png')
-      }
-    })
+    new MakerDeb()
   ],
   plugins: [
     new VitePlugin({
