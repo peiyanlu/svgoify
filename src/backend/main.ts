@@ -1,10 +1,7 @@
 import { join } from 'path'
-import { updateElectronApp } from 'update-electron-app'
 import { checkSquirrel } from './CheckSquirrel'
 import { ElectronHost } from './ElectronHost'
 
-
-updateElectronApp()
 
 if (checkSquirrel()) {
   ElectronHost.shutdown()

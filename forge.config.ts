@@ -10,7 +10,6 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { join } from 'path'
 import pkg from './package.json'
 
-
 const RENDERER_DIR_NAME: string = 'main_window'
 
 const iconDir: string = `.vite/renderer/${ RENDERER_DIR_NAME }/icons`
@@ -18,18 +17,19 @@ const iconDir: string = `.vite/renderer/${ RENDERER_DIR_NAME }/icons`
 const config: ForgeConfig = {
   packagerConfig: {
     name: 'SVGoify',
-    executableName: 'svgoify',
+    // Linux 只能小写
+    executableName: process.platform === "linux" ? pkg.name : undefined,
     asar: true,
     overwrite: true,
     // 任务栏 & 快捷方式 不带后缀
     icon: join(__dirname, iconDir, 'icon'),
     ignore: [
-      /(\.idea|\.vscode|\.npmrc|\.gitignore|public|src|svg-icons)/,
+      /(\.idea|\.vscode|\.github|\.npmrc|\.gitignore|public|src|svg-icons)/,
       /\w*\.(ts|json)$/,
     ],
     win32metadata: {
-      CompanyName: 'Electron Community',
-      OriginalFilename: pkg.productName,
+      // ProductName: 应用安装之后显示的名称
+      FileDescription: pkg.description
     },
   },
   rebuildConfig: {},

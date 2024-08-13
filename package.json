@@ -1,6 +1,6 @@
 {
   "name": "svgoify",
-  "productName": "svgoify",
+  "productName": "SVGoify",
   "version": "1.0.0",
   "description": "SVG optimize and modify application.",
   "main": ".vite/build/main.js",
@@ -42,6 +42,15 @@
   ],
   "author": {
     "name": "YanluPei",
+    "email": "peiyanlu@vip.qq.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:peiyanlu/svgoify.git"
+  },
+  "homepage": "",
+  "bugs": {
+    "url": "https://github.com/peiyanlu/svgoify/issues",
     "email": "peiyanlu@vip.qq.com"
   },
   "license": "MIT",
