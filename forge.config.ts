@@ -43,7 +43,7 @@ const config: ForgeConfig = {
       loadingGif: join(__dirname, iconDir, 'install-loading.gif'),
     }),
     // 全平台都可用
-    new MakerZIP({}, [ 'darwin', 'win32', 'linux' ]),
+    new MakerZIP({}, [ 'win32', 'linux' ]),
     // Mac 标准格式
     new MakerDMG({
       format: 'ULFO', // (OS X 10.11+ only)
