@@ -52,12 +52,14 @@ const config: ForgeConfig = {
     // Linux redhat，centos，Fedora
     new MakerRpm({
       options: {
+        name: 'svgoify',
         icon: join(__dirname, iconDir, 'icon.png')
       }
     }),
     // Linux debian，ubuntu
     new MakerDeb({
       options: {
+        name: 'svgoify',
         icon: join(__dirname, iconDir, 'icon.png')
       }
     })
