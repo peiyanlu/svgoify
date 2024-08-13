@@ -21,9 +21,9 @@ jobs:
           python-version: 3.12
       
       - name: setup appdmg
+        if: matrix.os == 'macos-latest'
         run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          brew install python-setuptools
+          python3 -m pip install setuptools
           npm install -g appdmg@0.6.6
       
       - name: Check out Git repository
