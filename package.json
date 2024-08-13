@@ -1,6 +1,6 @@
 {
   "name": "svgoify",
-  "productName": "SVGoify",
+  "productName": "svgoify",
   "version": "1.0.0",
   "description": "SVG optimize and modify application.",
   "main": ".vite/build/main.js",
