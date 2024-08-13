@@ -3,10 +3,12 @@ import { MakerSquirrel } from '@electron-forge/maker-squirrel';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerRpm } from '@electron-forge/maker-rpm';
+import { MakerDMG } from '@electron-forge/maker-dmg'
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { join } from 'path'
+import pkg from './package.json'
 
 
 const RENDERER_DIR_NAME: string = 'main_window'
@@ -23,9 +25,15 @@ const config: ForgeConfig = {
       /(\.idea|\.vscode|\.npmrc|\.gitignore|public|src|svg-icons)/,
       /\w*\.(ts|json)$/,
     ],
+    executableName: process.platform === "linux" ? pkg.productName.toUpperCase() : pkg.productName,
+    win32metadata: {
+      CompanyName: 'Electron Community',
+      OriginalFilename: pkg.productName,
+    },
   },
   rebuildConfig: {},
   makers: [
+    // Windows
     new MakerSquirrel({
       //用于控制面板->应用程序中显示
       iconUrl: join(__dirname, iconDir, 'icon.ico'),
@@ -34,9 +42,25 @@ const config: ForgeConfig = {
       //安装时的动画，就是这个
       loadingGif: join(__dirname, iconDir, 'install-loading.gif'),
     }),
+    // 全平台都可用
     new MakerZIP({}, [ 'darwin', 'win32', 'linux' ]),
-    new MakerRpm({}),
-    new MakerDeb({})
+    // Mac 标准格式
+    new MakerDMG({
+      format: 'ULFO', // (OS X 10.11+ only)
+      icon: join(__dirname, iconDir, 'icon.icns')
+    }),
+    // Linux redhat，centos，Fedora
+    new MakerRpm({
+      options: {
+        icon: join(__dirname, iconDir, 'icon.png')
+      }
+    }),
+    // Linux debian，ubuntu
+    new MakerDeb({
+      options: {
+        icon: join(__dirname, iconDir, 'icon.png')
+      }
+    })
   ],
   plugins: [
     new VitePlugin({
