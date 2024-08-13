@@ -25,7 +25,7 @@ const config: ForgeConfig = {
       /(\.idea|\.vscode|\.npmrc|\.gitignore|public|src|svg-icons)/,
       /\w*\.(ts|json)$/,
     ],
-    executableName: 'SVGoify',
+    executableName: 'svgoify',
     win32metadata: {
       CompanyName: 'Electron Community',
       OriginalFilename: pkg.productName,
@@ -52,14 +52,14 @@ const config: ForgeConfig = {
     // Linux redhat，centos，Fedora
     new MakerRpm({
       options: {
-        name: 'SVGoify',
+        name: 'svgoify',
         icon: join(__dirname, iconDir, 'icon.png')
       }
     }),
     // Linux debian，ubuntu
     new MakerDeb({
       options: {
-        name: 'SVGoify',
+        name: 'svgoify',
         icon: join(__dirname, iconDir, 'icon.png')
       }
     })
