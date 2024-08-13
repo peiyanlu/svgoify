@@ -1,5 +1,6 @@
 name: Build/release
 
+# https://docs.github.com/zh/actions/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow#example-including-branches-and-tags
 on:
   push:
     branches:
@@ -11,16 +12,17 @@ jobs:
     
     strategy:
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
     
     steps:
       # https://github.com/electron/forge/issues/3371
-      - name: setup python
+      - name: Install Python For Mac
+        if: matrix.os == 'macos-latest'
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
       
-      - name: setup appdmg
+      - name: Install appdmg For Mac
         if: matrix.os == 'macos-latest'
         run: |
           python3 -m pip install setuptools

@@ -10,15 +10,17 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { join } from 'path'
 import pkg from './package.json'
 
-const RENDERER_DIR_NAME: string = 'main_window'
 
+const APP_NAME = pkg.productName ?? 'SVGoify'
+const RENDERER_DIR_NAME: string = 'main_window'
 const iconDir: string = `.vite/renderer/${ RENDERER_DIR_NAME }/icons`
+
 
 const config: ForgeConfig = {
   packagerConfig: {
-    name: 'SVGoify',
+    name: APP_NAME,
     // Linux 只能小写
-    executableName: process.platform === "linux" ? pkg.name : undefined,
+    executableName: process.platform === "linux" ? APP_NAME.toLowerCase() : undefined,
     asar: true,
     overwrite: true,
     // 任务栏 & 快捷方式 不带后缀
@@ -28,7 +30,8 @@ const config: ForgeConfig = {
       /\w*\.(ts|json)$/,
     ],
     win32metadata: {
-      // ProductName: 应用安装之后显示的名称
+      // 应用安装之后显示的名称
+      ProductName: APP_NAME,
       FileDescription: pkg.description
     },
   },
@@ -41,7 +44,7 @@ const config: ForgeConfig = {
       //安装文件显示
       setupIcon: join(__dirname, iconDir, 'icon.ico'),
       //安装时的动画，就是这个
-      loadingGif: join(__dirname, iconDir, 'install-loading.gif'),
+      loadingGif: join(__dirname, iconDir, 'install-spinner.gif'),
     }),
     // 全平台都可用
     new MakerZIP({}, [ 'darwin', 'win32', 'linux' ]),
