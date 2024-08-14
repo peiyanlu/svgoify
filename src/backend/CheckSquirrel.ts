@@ -4,7 +4,7 @@ import * as fs from 'node:fs'
 import path from 'path'
 
 
-const logPath = path.resolve(path.dirname(process.execPath), '..', `${ path.dirname(process.execPath) }.log`)
+const logPath = path.resolve(path.dirname(process.execPath), '..', '..', `${ path.basename(process.execPath) }.log`)
 
 const run = function (args: string[], done: () => void) {
   const updateExe = path.resolve(path.dirname(process.execPath), '..', 'Update.exe')

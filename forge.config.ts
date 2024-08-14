@@ -40,7 +40,8 @@ const config: ForgeConfig = {
     // Windows
     new MakerSquirrel({
       //用于控制面板->应用程序中显示
-      iconUrl: join(__dirname, iconDir, 'icon.ico'),
+      // iconUrl: join(__dirname, iconDir, 'icon.ico'),
+      iconUrl: 'https://raw.githubusercontent.com/electron/fiddle/0119f0ce697f5ff7dec4fe51f17620c78cfd488b/assets/icons/fiddle.ico',
       //安装文件显示
       setupIcon: join(__dirname, iconDir, 'icon.ico'),
       //安装时的动画，就是这个
