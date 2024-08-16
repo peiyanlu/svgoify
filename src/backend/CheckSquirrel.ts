@@ -19,19 +19,19 @@ export const checkSquirrel = () => {
     const target = path.basename(process.execPath)
     
     if ([ '--squirrel-install', '--squirrel-updated' ].includes(cmd)) {
-      fs.appendFileSync(logPath, cmd + '\n')
+      fs.appendFileSync(logPath, `${ new Date().toLocaleString() } ${ cmd } \n`)
       run([ `--createShortcut=${ target }` ], app.quit)
       return true
     }
     
     if (cmd === '--squirrel-uninstall') {
-      fs.appendFileSync(logPath, cmd + '\n')
+      fs.appendFileSync(logPath, `${ new Date().toLocaleString() } ${ cmd } \n`)
       run([ `--removeShortcut=${ target }` ], app.quit)
       return true
     }
     
     if (cmd === '--squirrel-obsolete') {
-      fs.appendFileSync(logPath, cmd + '\n')
+      fs.appendFileSync(logPath, `${ new Date().toLocaleString() } ${ cmd } \n`)
       app.quit()
       return true
     }

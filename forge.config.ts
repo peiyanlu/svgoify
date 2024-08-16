@@ -39,12 +39,11 @@ const config: ForgeConfig = {
   makers: [
     // Windows
     new MakerSquirrel({
-      //用于控制面板->应用程序中显示
-      // iconUrl: join(__dirname, iconDir, 'icon.ico'),
-      iconUrl: 'https://raw.githubusercontent.com/electron/fiddle/0119f0ce697f5ff7dec4fe51f17620c78cfd488b/assets/icons/fiddle.ico',
+      // 用于控制面板->应用程序中显示
+      iconUrl: 'https://krseoul.imgtbl.com/i/2024/08/16/66bee9aacb3b9.ico',
       //安装文件显示
       setupIcon: join(__dirname, iconDir, 'icon.ico'),
-      //安装时的动画，就是这个
+      // 安装时的动画，就是这个
       loadingGif: join(__dirname, iconDir, 'install-spinner.gif'),
     }),
     // 全平台都可用
@@ -54,9 +53,21 @@ const config: ForgeConfig = {
       format: 'ULFO', // (OS X 10.11+ only)
     }),
     // Linux redhat，centos，Fedora
-    new MakerRpm(),
+    new MakerRpm(
+      {
+        options: {
+          icon: join(__dirname, iconDir, 'icon.png')
+        }
+      }
+    ),
     // Linux debian，ubuntu
-    new MakerDeb()
+    new MakerDeb(
+      {
+        options: {
+          icon: join(__dirname, iconDir, 'icon.png')
+        }
+      }
+    )
   ],
   plugins: [
     new VitePlugin({
