@@ -40,3 +40,9 @@ npm run make
 ```shell
 npm run publish
 ```
+
+### changelog
+
+```shell
+git log --format=%B%n-hash-%n%H%n-gitTags-%n%d%n-committerDate-%n%ci%n-authorName-%n%an%n-authorEmail-%n%ae%n v1.0.0 --no-merges    
+```

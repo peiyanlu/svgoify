@@ -21,6 +21,8 @@ const config: ForgeConfig = {
     name: APP_NAME,
     // Linux 只能小写
     executableName: process.platform === "linux" ? APP_NAME.toLowerCase() : undefined,
+    // 全平台 全架构
+    all: true,
     asar: true,
     overwrite: true,
     // 任务栏 & 快捷方式 不带后缀
