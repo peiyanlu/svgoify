@@ -41,6 +41,16 @@ npm run make
 npm run publish
 ```
 
+### Version
+
+```text
+patch: 1.0.0 -> 1.0.1
+
+minor: 1.0.0 -> 1.1.0
+
+major: 1.0.0 -> 2.0.0
+```
+
 ### changelog
 
 ```shell
