@@ -4,21 +4,22 @@
   font-weight: 400;
   
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: rgba(var(--primary-color), 1);
+  background-color: rgba(var(--primary-background-color), 1);
   
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  
   --scrollbar-width: 8px;
 }
 
 * {
   margin: 0;
   padding: 0;
-  box-sizing: inherit;
+  box-sizing: border-box;
   
   &::-webkit-scrollbar {
     width: var(--scrollbar-width);
@@ -33,7 +34,7 @@
   
   &::-webkit-scrollbar-thumb {
     border-radius: var(--scrollbar-width);
-    background-color: #555555;
+    background-color: var(--scrollbar-thumb-color);
   }
 }
 
@@ -47,11 +48,16 @@ html, body, #app {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #FFFFFF;
+    --primary-color: 33, 53, 71;
+    --primary-background-color: 248, 248, 248;
+    --scrollbar-thumb-color: rgba(221, 222, 222, 1);
   }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: #DDDEDE;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: 231, 225, 234;
+    --primary-background-color: 36, 36, 36;
+    --scrollbar-thumb-color: rgba(85, 85, 85, 1);
   }
 }

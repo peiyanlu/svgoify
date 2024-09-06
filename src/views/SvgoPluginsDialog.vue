@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { StyleProvider, Themes } from '@varlet/ui'
 import { reactive, ref, watch } from 'vue'
 import { SvgoPlugins } from './SvgoPlugins'
 
@@ -30,14 +29,6 @@ const handleConfirm = () => {
     emits('getPlugins', res.split(','))
   }
 }
-
-const rootStyleVars = {
-  '--tooltip-default-text-color': 'var(--color-on-surface-variant)',
-}
-StyleProvider({
-  ...Themes.md3Dark,
-  ...rootStyleVars,
-})
 </script>
 
 <template>

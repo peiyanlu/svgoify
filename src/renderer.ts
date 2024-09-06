@@ -26,8 +26,6 @@
  * ```
  */
 
-import { StyleProvider, Themes } from '@varlet/ui'
-
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
@@ -37,10 +35,8 @@ import router from './router'
 import 'virtual:svg-icons-register'
 
 import '@varlet/touch-emulator'
-import '@varlet/ui/es/style'
+import './theme/index'
 
-
-StyleProvider(Themes.md3Dark)
 
 createApp(App)
   .use(router)

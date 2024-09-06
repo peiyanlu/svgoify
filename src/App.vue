@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ProcessDetector } from './frontend/ProcessDetector'
 import { ref } from 'vue'
+import { ProcessDetector } from './frontend/ProcessDetector'
 
 
 const isElectron = ProcessDetector.isElectronAppFrontend

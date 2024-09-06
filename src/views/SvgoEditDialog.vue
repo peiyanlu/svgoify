@@ -323,7 +323,7 @@ const handleReset = () => {
               >
                 <path
                   :d="`M ${gridSize} 0 H0 M0 0 V0 ${gridSize} z`"
-                  stroke="rgba(255,255,255,0.3)"
+                  stroke="rgba(var(--primary-color), .4)"
                   stroke-width="1"
                 />
               </pattern>
@@ -533,9 +533,9 @@ const handleReset = () => {
         width: 24px;
         height: 24px;
         margin: 0 -12px;
-        color: #000000;
+        color: var(--button-info-text-color);
         border-radius: 50%;
-        background-color: var(--slider-track-fill-background);
+        background-color: var(--button-info-color);
       }
       
       .flex-row {
