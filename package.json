@@ -68,5 +68,14 @@
     "svgpath": "^2.6.0",
     "vue": "^3.4.37",
     "vue-router": "^4.4.3"
-  }
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "current"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
 }

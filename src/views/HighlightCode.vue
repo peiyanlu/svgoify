@@ -150,6 +150,7 @@ const handleCopy = (str: string) => {
       cursor: pointer;
       pointer-events: auto;
       border-radius: 4px;
+      color: rgba(255, 255, 255, 0.87);
       
       &:hover {
         color: #53D592;
@@ -175,6 +176,7 @@ const handleCopy = (str: string) => {
       height: 100%;
       white-space: pre-line;
       --scrollbar-width: 4px;
+      --scrollbar-thumb-color: rgba(85, 85, 85, 1);
     }
   }
   

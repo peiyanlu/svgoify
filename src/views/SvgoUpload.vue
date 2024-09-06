@@ -117,11 +117,11 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
     <div ref="dropZoneRef" :class="{light: isOverDropZone}" class="dropZone">
       <div class="tips-icon">
         <div class="action">
-          <var-button text-color="#ffffffa1" @click="handleOpenFile">
+          <var-button text-color="rgba(var(--primary-color), 1)" @click="handleOpenFile">
             <svg-icon name="svg" size="24px" />
             <span style="margin-left: 4px">文件</span>
           </var-button>
-          <var-button text-color="#ffffffa1" @click="handleOpenDir">
+          <var-button text-color="rgba(var(--primary-color), 1)" @click="handleOpenDir">
             <svg-icon name="folder-svg" size="24px" />
             <span style="margin-left: 4px">文件夹</span>
           </var-button>
@@ -177,7 +177,7 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
     justify-content: center;
     width: 100%;
     height: 100%;
-    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border: 2px dashed rgba(var(--primary-color), 0.3);
     border-radius: 12px;
     gap: 16px;
     
@@ -185,7 +185,7 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      color: rgba(255, 255, 255, 0.3);
+      color: rgba(var(--primary-color), 0.5);
       gap: 24px;
       
       .action {
@@ -205,7 +205,7 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
       flex-flow: row wrap;
       justify-content: center;
       user-select: none;
-      opacity: 0.6;
+      opacity: 0.8;
       gap: 8px;
     }
     
