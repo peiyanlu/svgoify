@@ -35,6 +35,7 @@ import router from './router'
 import 'virtual:svg-icons-register'
 
 import '@varlet/touch-emulator'
+import '@varlet/ui/es/style'
 import './theme/index'
 
 

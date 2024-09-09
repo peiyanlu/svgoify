@@ -1,19 +1,25 @@
 <script lang="ts" setup>
+import { SvgoOptimizeResult } from '@/common/ElectronIpcInterface'
 import SvgIcon from '@/components/SvgIcon.vue'
-import StatisticInfo from '@/views/StatisticInfo.vue'
 import { Svg2ClipPath } from '@/utils/Svg2ClipPath'
 import { Svg2CSSVar } from '@/utils/Svg2CSSVar'
 import { Svg2Symbol } from '@/utils/Svg2Symbol'
+import StatisticInfo from '@/views/StatisticInfo.vue'
 import SvgoEditDialog from '@/views/SvgoEditDialog.vue'
 import SvgoResultItem from '@/views/SvgoResultItem.vue'
 import SvgScriptsPreview from '@/views/SvgoSpritesPreview.vue'
-import { SvgoOptimizeResult } from '@/common/ElectronIpcInterface'
+import HighlightJs from '@/views/HighlightCode.vue'
 import { computed, ref } from 'vue'
 
 
 const value = ref([ '1' ])
 
 let result = defineModel<SvgoOptimizeResult[]>('result', {default: []})
+const editRef = ref<HTMLHtmlElement | null>(null)
+
+const handleEdit = (index: number) => {
+  editRef.value[index].handleShowDialog()
+}
 
 const handleDownload = (str: string, name: string) => {
   const a = document.createElement('a')
@@ -67,21 +73,20 @@ const cssVarVal = computed(() => {
               v-for="item of ['预览', 'SVG压缩代码', 'base64代码','转义代码', '未转义代码', '操作']"
               :key="item"
             >
-              {{
-                item
-              }}
+              {{ item }}
             </div>
           </div>
           <div v-for="(item, index) of result" class="grid result-list">
             <div class="preview">
-              <SvgoEditDialog :code="item.output" :name="item.parse.base" />
+              <SvgoEditDialog ref="editRef" :code="item.output" :name="item.parse.base" />
               <StatisticInfo :end="item.outputSize" :start="item.inputSize" />
             </div>
-            <SvgoResultItem :code="item.output" :download-name="item.parse.base" download />
-            <SvgoResultItem :code="item.base64" />
-            <SvgoResultItem :code="item.enc" />
-            <SvgoResultItem :code="item.unenc" />
+            <HighlightJs :code="item.output" :download-name="item.parse.base" download />
+            <HighlightJs :code="item.base64" />
+            <HighlightJs :code="item.enc" />
+            <HighlightJs :code="item.unenc" />
             <div class="action">
+              <svg-icon name="ResEdit" size="28px" @click="handleEdit(index)" />
               <svg-icon name="download" size="28px" @click="handleDownload(item.output, item.parse.base)" />
               <svg-icon name="delete" size="28px" @click="handleDelete(index)" />
             </div>
@@ -179,7 +184,7 @@ const cssVarVal = computed(() => {
     display: grid;
     width: 100%;
     padding: 8px;
-    grid-template-columns: 60px 1fr 1fr 1fr 1fr 40px;
+    grid-template-columns: 60px 1fr 1fr 1fr 1fr 28px;
     grid-template-rows: 100%;
     gap: calc(2% / 4);
   }
@@ -211,7 +216,7 @@ const cssVarVal = computed(() => {
       align-items: center;
       flex-flow: column nowrap;
       justify-content: center;
-      gap: 16px;
+      gap: 12px;
       
       .svg-icon {
         padding: 3px;
@@ -222,11 +227,11 @@ const cssVarVal = computed(() => {
           background: rgba(255, 255, 255, 0.1);
         }
         
-        &:first-child {
+        &:nth-child(2) {
           color: #53D592;
         }
         
-        &:last-child {
+        &:nth-child(3) {
           color: #D14748;
         }
       }
