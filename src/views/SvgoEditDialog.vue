@@ -61,8 +61,8 @@ const getTargetList = () => {
 }
 
 
-const handleConfirm = () => {
-
+const handleShowDialog = () => {
+  showDialog.value = true
 }
 
 
@@ -285,12 +285,50 @@ const handleReset = () => {
     selectedSvgPath.value = []
   }
 }
+
+
+const fadeText = (x: number, y: number, text: string, color?: string) => {
+  const span = document.createElement('span')
+  span.innerHTML = text
+  span.style.zIndex = '9999'
+  span.style.userSelect = 'none'
+  span.style.pointerEvents = 'none'
+  span.style.animation = 'fade-out .2s'
+  span.style.opacity = '0'
+  span.style.fontSize = '14px'
+  span.style.color = color ?? 'white'
+  document.body.appendChild(span)
+  
+  const { width, height } = span.getBoundingClientRect()
+  const top = y - height
+  span.style.position = 'absolute'
+  span.style.top = `${ top }px`
+  span.style.left = `${ x - width / 2 }px`
+  
+  let i = 0
+  const timer = setInterval(()=> {
+    if (i < 40) {
+      i++
+      span.style.top = `${ top - i }px`
+      span.style.opacity = 1 - i / 40
+    } else {
+      span.remove()
+      clearInterval(timer)
+    }
+  }, 50 / 3)
+}
+
+
+defineExpose({
+  handleShowDialog,
+})
+
 </script>
 
 <template>
   <div class="params-container" tabindex="0">
-    <div class="dialog-trigger" @click="showDialog = true">
-      <svg-icon :name="code" html size="52px" />
+    <div class="dialog-trigger" @click="handleShowDialog">
+      <svg-icon :name="code" html size="60px" />
     </div>
     
     <!---->
@@ -302,7 +340,6 @@ const handleReset = () => {
       }"
       dialog-class="edit-dialog"
       :confirmButton="false"
-      @confirm="handleConfirm"
       cancel-button-text="关闭"
     >
       <template #title>
