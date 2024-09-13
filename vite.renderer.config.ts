@@ -1,12 +1,12 @@
-import path, { resolve, normalize } from 'path'
-import type { ConfigEnv, UserConfig } from 'vite';
-import { defineConfig } from 'vite';
-import { createSvgIconsPlugin } from './vite.plugin.icon'
-import { pluginExposeRenderer } from './vite.base.config';
-import vue from '@vitejs/plugin-vue'
-import autoImport from 'unplugin-auto-import/vite'
 import { VarletImportResolver } from '@varlet/import-resolver'
+import vue from '@vitejs/plugin-vue'
+import { join, resolve } from 'path'
+import autoImport from 'unplugin-auto-import/vite'
 import components from 'unplugin-vue-components/vite'
+import type { ConfigEnv, UserConfig } from 'vite'
+import { defineConfig } from 'vite'
+import { pluginExposeRenderer } from './vite.base.config'
+import { createSvgIconsPlugin } from './vite.plugin.icon'
 
 
 // https://vitejs.dev/config
@@ -48,7 +48,7 @@ export default defineConfig((env) => {
         resolvers: [ VarletImportResolver({ autoImport: true }) ]
       }),
       createSvgIconsPlugin({
-        iconDirs: path.join(process.cwd(), 'svg-icons'),
+        iconDirs: [ join(process.cwd(), 'svg-icons') ],
         symbolId: 'symbol-[dir]-[name]',
         domId: 'svg-icons-dom'
       })

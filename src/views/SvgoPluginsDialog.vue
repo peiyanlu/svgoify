@@ -62,10 +62,12 @@ const handleConfirm = () => {
         <div>{{ item.name }}</div>
         <var-tooltip
           v-if="item.description"
-          :content="item.description"
-          color="#242424"
           trigger="click"
+          color="rgba(var(--primary-background-color), 1)"
         >
+          <template #content>
+            <div style="color: rgba(var(--primary-color), 1);">{{ item.description }} </div>
+          </template>
           <var-icon
             name="information-outline"
             style="opacity: 0.75;cursor: pointer;display: flex;"

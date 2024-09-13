@@ -21,7 +21,7 @@ const fileSize = (size: number) => {
 </script>
 
 <template>
-  <var-tooltip color="#3a3a3a" placement="bottom-end">
+  <var-tooltip color="rgba(var(--primary-background-color), 1)" placement="bottom-end">
     <div :style="{color: isRise ? '#D14748' : '#53D592', fontSize: '12px', cursor: 'pointer'}">
       {{ ratio.toFixed(2) + (isRise ? '% ↑' : '% ↓') }}
     </div>
@@ -47,7 +47,7 @@ const fileSize = (size: number) => {
   display: flex;
   align-items: center;
   flex-flow: row nowrap;
-  color: #FFFFFF;
+  color: rgba(var(--primary-color), 1);
   gap: 4px;
   
   & > div {
