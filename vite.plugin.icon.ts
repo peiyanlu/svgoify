@@ -1,54 +1,58 @@
 import fg from 'fast-glob'
 import fs from 'node:fs'
-import path, { join } from 'path'
+import { parse } from 'path'
 import { optimize } from 'svgo'
 import { normalizePath, Plugin } from 'vite'
 
-const createSymbolCode = (iconDirs: string, symbolId?:string, domId?: string) => {
-  const textArr = fg
-    .sync(
-      fg.convertPathToPattern(join(iconDirs, `/**/*.svg`)),
-      {
-        onlyFiles: true,
-        objectMode: true,
-        ignore: [],
-        dot: true,
-      },
-    )
-    .map(e => {
-      const { name, dir } = path.parse(e.path)
-      
-      const dirName = path.normalize(dir) === path.normalize(iconDirs) ? '' : path.dirname(dir)
-      
-      const id = (symbolId ?? 'symbol-[dir]-[name]')
-        .replace(/\[dir]/g, dirName)
-        .replace('--', '-')
-        .replace(/\[name]/g, name)
-      
-      const input = fs.readFileSync(e.path).toString()
-      const { data: code } = optimize(input)
-      return { code, id }
-    })
-    .map(e => {
-      const { code, id } = e
-      return code
-        .replace(/(\r)|(\n)/g, '')
-        .replace(/(width|height)="([^>+].*?)"/g, '')
-        .replace(/<svg([^>+].*?)>/, ($1, $2: string) => {
-          const formatId = (id: string) => {
-            return id
-              .replace(/\s|'|‘|’/g, '')
-              .replace(/[(){}（）【】\[\]]/g, '_')
-          }
-          
-          return `<symbol id="${ formatId(id) }" ${ $2.match(/(viewBox="[^>+].*?")/g)?.at(0) }>`
+
+const createSymbolCode = (iconDirs: string[], symbolId?: string, domId?: string) => {
+  const ids = new Set()
+  const textArr = iconDirs
+    .map(d => normalizePath(d))
+    .flatMap(cwd => {
+      return fg.sync('**/*.svg', {
+          cwd,
+          onlyFiles: true,
+          objectMode: true,
+          absolute: true,
         })
-        .replace('</svg>', '</symbol>')
+        .map(({ path }) => {
+          const { dir, name: fileName } = parse(path)
+          const dirName = dir.replace(cwd, '').replaceAll('/', '-')
+          
+          const id = (symbolId ?? 'symbol-[dir]-[name]')
+            .replace(/\[dir]/g, dirName)
+            .replace(/-{2,}/g, '-')
+            .replace(/\[name]/g, fileName)
+          
+          const input = fs.readFileSync(path).toString()
+          const { data: code } = optimize(input)
+          return { code, id }
+        })
+        .map(({ code, id }) => {
+          ids.add(id)
+          
+          return code
+            .replace(/<svg([^>+].*?)>/, ($1, $2: string) => {
+              const formatId = (id: string) => id
+                .replace(/\s|'|‘|’/g, '')
+                .replace(/[(){}（）【】\[\]]/g, '_')
+              
+              const attrsVal = <T = string>(str: string, attr: string, def: T): T | string => str
+                .match(new RegExp(`(?<=${attr}=")([^>+].*?)(?=")`, 'g'))?.[0] ?? def
+              
+              const width = attrsVal($2, 'width', '1024')
+              const height = attrsVal($2, 'height', '1024')
+              const viewBox = attrsVal($2, 'viewBox', `0, 0, ${ width }, ${ height }`)
+              
+              return `<symbol id="${ formatId(id) }" viewBox="${ viewBox }">`
+            })
+            .replace('</svg>', '</symbol>')
+        })
     })
   
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">${ textArr.join('') }</svg>`
-  
-  return `
+  const code = `
     if (typeof window !== 'undefined') {
       function loadSvg() {
         const body = document.body;
@@ -68,12 +72,16 @@ const createSymbolCode = (iconDirs: string, symbolId?:string, domId?: string) =>
         loadSvg()
       }
     }
+    export default {}
   `
+  const idSet = `export default ${ JSON.stringify([ ...ids ]) }`
+  
+  return { code, idSet }
 }
 
 
 interface ViteSvgIconsPlugin {
-  iconDirs: string;
+  iconDirs: string[];
   domId: string;
   symbolId: string;
 }
@@ -82,8 +90,10 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
   const { iconDirs, symbolId, domId } = opt
   
   const SVG_ICONS_REGISTER_NAME = 'virtual:svg-icons-register'
+  const SVG_ICONS_CLIENT = 'virtual:svg-icons-names'
+  
   let isBuild = false
-  let code = createSymbolCode(iconDirs,symbolId, domId)
+  let { code, idSet } = createSymbolCode(iconDirs, symbolId, domId)
   
   return {
     name: 'SvgIconsPlugin',
@@ -91,7 +101,7 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
       isBuild = command === 'build'
     },
     resolveId(id) {
-      if ([ SVG_ICONS_REGISTER_NAME ].includes(id)) {
+      if ([ SVG_ICONS_REGISTER_NAME, SVG_ICONS_CLIENT ].includes(id)) {
         return id
       }
       return null
@@ -99,13 +109,18 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
     async load(id, ssr) {
       if (!isBuild && !ssr) return null
       const isRegister = id.endsWith(SVG_ICONS_REGISTER_NAME)
+      const isClient = id.endsWith(SVG_ICONS_CLIENT)
       
-      if (ssr && !isBuild && isRegister) {
+      if (ssr && !isBuild && (isRegister || isClient)) {
         return `export default {}`
       }
       
       if (isRegister) {
         return code
+      }
+      
+      if (isClient) {
+        return idSet
       }
     },
     configureServer: ({ middlewares }) => {
@@ -113,16 +128,17 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
         const url = normalizePath(req.url!)
         
         const registerId = `/@id/${ SVG_ICONS_REGISTER_NAME }`
+        const clientId = `/@id/${ SVG_ICONS_CLIENT }`
         
-        if ([ registerId ].some((item) => url.endsWith(item))) {
+        if ([ registerId, clientId ].some((item) => url.endsWith(item))) {
           res.setHeader('Access-Control-Allow-Origin', '*')
           res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE')
           res.setHeader('Content-Type', 'application/javascript')
           res.setHeader('Cache-Control', 'no-cache')
           
-          // res.setHeader('Etag', `W/ ${ code }`)
+          // res.setHeader('Etag', getEtag(content, { weak: true }))
           res.statusCode = 200
-          res.end(code)
+          res.end(url.endsWith(registerId) ? code : idSet)
         } else {
           next()
         }

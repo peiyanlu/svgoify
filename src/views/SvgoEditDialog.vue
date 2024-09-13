@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import SvgIcon from '@/components/SvgIcon.vue'
+import { HoldExecutor } from '@/utils/HoldExecutor'
 import { Snackbar } from '@varlet/ui'
 import svgpath from 'svgpath'
 import { computed, ref } from 'vue'
@@ -224,6 +225,33 @@ const handleRight = () => {
   })
 }
 
+const handleWheel = (e: WheelEvent) => {
+  e.deltaY > 0 ? handleMinus() : handlePlus()
+}
+const handleKeyup = (e: KeyboardEvent) => {
+  switch (e.code) {
+    case 'ArrowUp':
+    case 'KeyW':
+      handleTop()
+      break
+    case 'ArrowDown':
+    case 'KeyS':
+      handleBottom()
+      break
+    case 'ArrowLeft':
+    case 'KeyA':
+      handleLeft()
+      break
+    case 'ArrowRight':
+    case 'KeyD':
+      handleRight()
+      break
+  }
+}
+const executor = new HoldExecutor(handleKeyup, handleKeyup)
+executor.bindKeyboardEvents(document.body)
+
+
 /* 旋转 */
 const handleRoteLeft = () => {
   getTargetList().forEach(target => {
@@ -290,27 +318,28 @@ const handleReset = () => {
 const fadeText = (x: number, y: number, text: string, color?: string) => {
   const span = document.createElement('span')
   span.innerHTML = text
-  span.style.zIndex = '9999'
-  span.style.userSelect = 'none'
-  span.style.pointerEvents = 'none'
-  span.style.animation = 'fade-out .2s'
-  span.style.opacity = '0'
-  span.style.fontSize = '14px'
-  span.style.color = color ?? 'white'
+  const style: CSSStyleDeclaration = span.style
+  style.zIndex = '9999'
+  style.userSelect = 'none'
+  style.pointerEvents = 'none'
+  style.animation = 'fade-out .2s'
+  style.opacity = '0'
+  style.fontSize = '14px'
+  style.color = color ?? 'white'
   document.body.appendChild(span)
   
   const { width, height } = span.getBoundingClientRect()
   const top = y - height
-  span.style.position = 'absolute'
-  span.style.top = `${ top }px`
-  span.style.left = `${ x - width / 2 }px`
+  style.position = 'absolute'
+  style.top = `${ top }px`
+  style.left = `${ x - width / 2 }px`
   
   let i = 0
   const timer = setInterval(()=> {
     if (i < 40) {
       i++
-      span.style.top = `${ top - i }px`
-      span.style.opacity = 1 - i / 40
+      style.top = `${ top - i }px`
+      style.opacity = 1 - i / 40
     } else {
       span.remove()
       clearInterval(timer)
@@ -326,13 +355,14 @@ defineExpose({
 </script>
 
 <template>
-  <div class="params-container" tabindex="0">
+  <div class="params-container">
     <div class="dialog-trigger" @click="handleShowDialog">
       <svg-icon :name="code" html size="60px" />
     </div>
     
     <!---->
     <var-dialog
+      lock-scroll
       v-model:show="showDialog"
       :dialog-style="{
         height: `${CANVAS_SIZE + 40 + 45 + 60}px`,
@@ -341,6 +371,7 @@ defineExpose({
       dialog-class="edit-dialog"
       :confirmButton="false"
       cancel-button-text="关闭"
+      :close-on-click-overlay="false"
     >
       <template #title>
         <svg-icon name="ResEdit" size="20px" />
@@ -379,6 +410,7 @@ defineExpose({
           class="content"
           @click="handleClick"
           v-html="code"
+          @wheel="handleWheel($event)"
         />
       </div>
       
@@ -461,8 +493,13 @@ defineExpose({
 
 <style scoped>
 .params-container {
+  &:focus {
+    outline: none;
+  }
   
   .dialog-trigger {
+    width: 60px;
+    height: 60px;
     font-size: 12px;
     display: flex;
     align-items: center;
@@ -477,6 +514,7 @@ defineExpose({
 <style>
 .edit-dialog {
   width: 840px;
+  user-select: none;
   --sizeWithPx: 500px;
   
   .var-dialog__title {

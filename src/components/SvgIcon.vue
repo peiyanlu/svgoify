@@ -42,7 +42,7 @@ const symbolId = computed(() => `#symbol-${ props.name }`)
   width: 1em;
   height: 1em;
   
-  & > svg {
+  & > :deep(svg) {
     display: block;
     width: 100%;
     height: 100%;
