@@ -4,7 +4,7 @@ import { HoldExecutor } from '@/utils/HoldExecutor'
 import { MouseUtils } from '@/utils/MouseUtils'
 import { Snackbar } from '@varlet/ui'
 import svgpath from 'svgpath'
-import { computed, ref, watchEffect } from 'vue'
+import { ComponentPublicInstance, computed, onBeforeMount, onMounted, Ref, ref, watchEffect } from 'vue'
 
 
 const props = defineProps<{ code: string, name: string }>()
@@ -22,6 +22,7 @@ const sliderVal = ref(16)
 const gridSize = computed(() => CANVAS_SIZE / sliderVal.value)
 const id = Math.random().toString(36).slice(2, 8)
 const useMouseKeyboard = ref(true)
+const color = ref('')
 
 const showDialog = ref<boolean>(false)
 const selectedSvgPath = ref<SVGPathElement[]>([])
@@ -219,68 +220,6 @@ const handleRight = () => {
   })
 }
 
-const handleWheel = (e: WheelEvent) => {
-  if (!showDialog.value || !useMouseKeyboard.value) {
-    return
-  }
-  
-  e.deltaY > 0 ? handleMinus() : handlePlus()
-}
-const handleKeyup = (e: KeyboardEvent) => {
-  if (!showDialog.value || !useMouseKeyboard.value) {
-    return
-  }
-  
-  switch (e.code) {
-    case 'ArrowUp':
-    case 'KeyW':
-      handleTop()
-      break
-    case 'ArrowDown':
-    case 'KeyS':
-      handleBottom()
-      break
-    case 'ArrowLeft':
-    case 'KeyA':
-      handleLeft()
-      break
-    case 'ArrowRight':
-    case 'KeyD':
-      handleRight()
-      break
-  }
-}
-watchEffect(() => {
-  if (svgRef.value) {
-    const executor = new HoldExecutor(handleKeyup)
-    executor.bindKeyboardEvents(document)
-    
-    MouseUtils.dragDelta(svgRef.value, (dx: number, dy: number) => {
-      if (!showDialog.value || !useMouseKeyboard.value) {
-        return
-      }
-      
-      getTargetList().forEach(target => {
-        target.classList.add('selected')
-        
-        const [ _a, _b, width, height ] = getViewBox(props.code)
-        const d = target.getAttribute('d')
-        
-        if (d) {
-          target.setAttribute(
-            'd',
-            svgpath(d)
-              .abs()
-              .translate(dx / CANVAS_SIZE * width, dy / CANVAS_SIZE * height)
-              .round(PRECISION)
-              .toString(),
-          )
-        }
-      })
-    })
-  }
-})
-
 /* 旋转 */
 const handleRoteLeft = () => {
   getTargetList().forEach(target => {
@@ -343,44 +282,140 @@ const handleReset = () => {
   }
 }
 
-
-const fadeText = (x: number, y: number, text: string, color?: string) => {
-  const span = document.createElement('span')
-  span.innerHTML = text
-  const style: CSSStyleDeclaration = span.style
-  style.zIndex = '9999'
-  style.userSelect = 'none'
-  style.pointerEvents = 'none'
-  style.animation = 'fade-out .2s'
-  style.opacity = '0'
-  style.fontSize = '14px'
-  style.color = color ?? 'white'
-  document.body.appendChild(span)
+/* 键鼠操作 */
+const handleWheel = (e: WheelEvent) => {
+  if (!useMouseKeyboard.value) {
+    return
+  }
   
-  const { width, height } = span.getBoundingClientRect()
-  const top = y - height
-  style.position = 'absolute'
-  style.top = `${ top }px`
-  style.left = `${ x - width / 2 }px`
-  
-  let i = 0
-  const timer = setInterval(()=> {
-    if (i < 40) {
-      i++
-      style.top = `${ top - i }px`
-      style.opacity = String(1 - i / 40)
-    } else {
-      span.remove()
-      clearInterval(timer)
-    }
-  }, 50 / 3)
+  e.deltaY > 0 ? handleMinus() : handlePlus()
 }
+const handleKeyup = (e: KeyboardEvent) => {
+  if (!useMouseKeyboard.value) {
+    return
+  }
+  
+  switch (e.code) {
+    case 'ArrowUp':
+    case 'KeyW':
+      handleTop()
+      break
+    case 'ArrowDown':
+    case 'KeyS':
+      handleBottom()
+      break
+    case 'ArrowLeft':
+    case 'KeyA':
+      handleLeft()
+      break
+    case 'ArrowRight':
+    case 'KeyD':
+      handleRight()
+      break
+    case 'KeyQ':
+      handleRoteLeft()
+      break
+    case 'KeyE':
+      handleRoteRight()
+      break
+  }
+}
+const handleDrag = (dx: number, dy: number) => {
+  if (!useMouseKeyboard.value) {
+    return
+  }
+  
+  getTargetList().forEach(target => {
+    target.classList.add('selected')
+    
+    const [ _a, _b, width, height ] = getViewBox(props.code)
+    const d = target.getAttribute('d')
+    
+    if (d) {
+      target.setAttribute(
+        'd',
+        svgpath(d)
+          .abs()
+          .translate(dx / CANVAS_SIZE * width, dy / CANVAS_SIZE * height)
+          .round(PRECISION)
+          .toString(),
+      )
+    }
+  })
+}
+const executor = new HoldExecutor(handleKeyup)
+watchEffect(() => {
+  if (svgRef.value) {
+    executor.unbindKeyboardEvents(svgRef.value)
+    executor.bindKeyboardEvents(svgRef.value)
+    MouseUtils.dragDelta(svgRef.value, handleDrag)
+  }
+})
+onBeforeMount(() => {
+  if (svgRef.value) {
+    executor.unbindKeyboardEvents(svgRef.value)
+  }
+})
+
+/* 颜色 */
+const handleColor = () => {
+  const isValidColor = (strColor: string) => {
+    const s = new Option().style
+    s.color = strColor
+    return !!s.color
+  }
+  
+  getTargetList().forEach(target => {
+    console.log(isValidColor(color.value))
+    if (isValidColor(color.value)) {
+      target.setAttribute('fill', color.value)
+    }
+  })
+}
+const handleColorClear = () => {
+  getTargetList().forEach(target => {
+    target.removeAttribute('fill')
+  })
+}
+
+
+const plusRef = ref<ComponentPublicInstance | null>(null)
+const minusRef = ref<ComponentPublicInstance | null>(null)
+const topRef = ref<ComponentPublicInstance | null>(null)
+const bottomRef = ref<ComponentPublicInstance | null>(null)
+const leftRef = ref<ComponentPublicInstance | null>(null)
+const rightRef = ref<ComponentPublicInstance | null>(null)
+const roteLeftRef = ref<ComponentPublicInstance | null>(null)
+const roteRightRef = ref<ComponentPublicInstance | null>(null)
+const plusExecutor = new HoldExecutor(handlePlus)
+const minusExecutor = new HoldExecutor(handleMinus)
+const topExecutor = new HoldExecutor(handleTop)
+const bottomExecutor = new HoldExecutor(handleBottom)
+const leftExecutor = new HoldExecutor(handleLeft)
+const rightExecutor = new HoldExecutor(handleRight)
+const roteLeftExecutor = new HoldExecutor(handleRoteLeft)
+const roteRightExecutor = new HoldExecutor(handleRoteRight)
+watchEffect(() => {
+  const extract = (xxRef: Ref<ComponentPublicInstance>, executor: HoldExecutor) => {
+    if (xxRef.value) {
+      executor.unbindMouseEvents(xxRef.value.$el)
+      executor.bindMouseEvents(xxRef.value.$el)
+    }
+  }
+  extract(plusRef, plusExecutor)
+  extract(minusRef, minusExecutor)
+  extract(topRef, topExecutor)
+  extract(bottomRef, bottomExecutor)
+  extract(leftRef, leftExecutor)
+  extract(rightRef, rightExecutor)
+  extract(roteLeftRef, roteLeftExecutor)
+  extract(roteRightRef, roteRightExecutor)
+})
 
 
 defineExpose({
   handleShowDialog,
 })
-
 </script>
 
 <template>
@@ -441,6 +476,9 @@ defineExpose({
           @click="handleClick"
           v-html="code"
           @wheel="handleWheel($event)"
+          tabindex="0"
+          @mouseenter="()=>svgRef.focus()"
+          @mouseleave="()=>svgRef.blur()"
         />
       </div>
       
@@ -463,10 +501,10 @@ defineExpose({
         <div class="flex-row">
           <div>大小</div>
           <div class="flex-row">
-            <var-button round type="info" @click="handlePlus">
+            <var-button ref="plusRef" round type="info">
               <svg-icon name="ResPlus" size="20px" />
             </var-button>
-            <var-button round type="info" @click="handleMinus">
+            <var-button ref="minusRef" round type="info">
               <svg-icon name="ResMinus" size="20px" />
             </var-button>
           </div>
@@ -475,16 +513,16 @@ defineExpose({
         <div class="flex-row">
           <div>移动</div>
           <div class="flex-row">
-            <var-button round type="info" @click="handleTop">
+            <var-button ref="topRef" round type="info">
               <svg-icon name="MoveTop" size="20px" />
             </var-button>
-            <var-button round type="info" @click="handleBottom">
+            <var-button ref="bottomRef" round type="info">
               <svg-icon name="MoveBottom" size="20px" />
             </var-button>
-            <var-button round type="info" @click="handleLeft">
+            <var-button ref="leftRef" round type="info">
               <svg-icon name="MoveLeft" size="20px" />
             </var-button>
-            <var-button round type="info" @click="handleRight">
+            <var-button ref="rightRef" round type="info">
               <svg-icon name="MoveRight" size="20px" />
             </var-button>
           </div>
@@ -493,10 +531,10 @@ defineExpose({
         <div class="flex-row">
           <div>旋转</div>
           <div class="flex-row">
-            <var-button round type="info" @click="handleRoteLeft">
+            <var-button ref="roteLeftRef" round type="info">
               <svg-icon name="RotateLeft" size="20px" />
             </var-button>
-            <var-button round type="info" @click="handleRoteRight">
+            <var-button ref="roteRightRef" round type="info">
               <svg-icon name="RotateRight" size="20px" />
             </var-button>
           </div>
@@ -521,6 +559,21 @@ defineExpose({
           <div>键鼠</div>
           <div class="flex-row">
             <var-switch v-model="useMouseKeyboard" />
+          </div>
+        </div>
+        
+        <div class="flex-row">
+          <div>颜色</div>
+          <div class="flex-row">
+            <var-input
+              v-model="color"
+              :hint="false"
+              type="text"
+              @blur="handleColor"
+              @keyup.enter="handleColor"
+              clearable
+              @clear="handleColorClear"
+            />
           </div>
         </div>
       </div>
@@ -635,7 +688,7 @@ defineExpose({
     .action-container {
       display: flex;
       flex-flow: column nowrap;
-      gap: 44px;
+      gap: 42px;
       
       .slider-example__block {
         font-size: 12px;
@@ -659,6 +712,16 @@ defineExpose({
         
         .title {
           flex-shrink: 0;
+        }
+        
+        .var-input__input {
+          font-size: 14px;
+          height: 21px;
+          text-align: center;
+          
+          &::placeholder {
+            font-size: 12px;
+          }
         }
       }
     }
