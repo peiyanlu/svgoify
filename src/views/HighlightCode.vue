@@ -79,7 +79,16 @@ const highlightedCode = computed((): string => {
   }
 })
 
-
+const highlightRef = ref<HTMLDivElement | null>(null)
+const isFullScreen = ref(false)
+const handleFullScreen = () => {
+  isFullScreen.value = !isFullScreen.value
+  if (isFullScreen.value) {
+    highlightRef.value?.requestFullscreen()
+  } else {
+    document.exitFullscreen()
+  }
+}
 const handleDownload = (str: string, fileName: string) => {
   const a = document.createElement('a')
   a.href = URL.createObjectURL(new Blob([ str ]))
@@ -97,26 +106,32 @@ const handleCopy = (str: string) => {
 </script>
 
 <template>
-  <div class="highlight">
-    <div v-if="download || copy" class="action">
+  <div class="highlight" ref="highlightRef" :class="isFullScreen ? 'full-screen' : ''">
+    <div class="action">
+      <svg-icon
+        class="icon"
+        :name="isFullScreen ? 'FullScreenExit' : 'FullScreen'"
+        size="22px"
+        @click="handleFullScreen"
+      />
       <svg-icon
         v-if="download"
         class="icon"
         name="download"
-        size="24px"
+        size="22px"
         @click="handleDownload(code, downloadName)"
       />
       <svg-icon
         v-if="copy"
         class="icon"
         name="copy"
-        size="24px"
+        size="22px"
         @click="handleCopy(code)"
       />
     </div>
     
     <!-- pre code 莫要换行 -->
-    <pre v-if="pretty" class="code"><code :class="className" class="code" v-html="highlightedCode" /></pre>
+    <pre v-if="pretty || isFullScreen" class="code"><code :class="className" class="code" v-html="highlightedCode" /></pre>
     <div v-else class="code" v-text="code" />
   </div>
 </template>
@@ -137,7 +152,7 @@ const handleCopy = (str: string) => {
     align-items: center;
     flex-flow: row nowrap;
     justify-content: flex-end;
-    padding: 4px 6px;
+    padding: 4px;
     transition: all 0.2s ease-in;
     pointer-events: none;
     opacity: 0;
@@ -150,7 +165,7 @@ const handleCopy = (str: string) => {
       cursor: pointer;
       pointer-events: auto;
       border-radius: 4px;
-      color: rgba(255, 255, 255, 0.87);
+      color: rgba(255, 255, 255, 0.8);
       
       &:hover {
         color: #53D592;
@@ -169,6 +184,10 @@ const handleCopy = (str: string) => {
     word-break: break-all;
     border-radius: var(--radius);
     
+    &.hljs {
+      padding: 0.5rem;
+    }
+    
     :deep(& > [class*=language-]) {
       display: block;
       overflow: auto;
@@ -184,6 +203,12 @@ const handleCopy = (str: string) => {
     .action {
       z-index: 1;
       opacity: 1;
+    }
+  }
+  
+  &.full-screen {
+    .code.hljs {
+      padding: 1.6rem 1.8rem;
     }
   }
 }

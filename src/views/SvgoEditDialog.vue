@@ -1,16 +1,17 @@
 <script lang="ts" setup>
 import SvgIcon from '@/components/SvgIcon.vue'
 import { HoldExecutor } from '@/utils/HoldExecutor'
+import { MouseUtils } from '@/utils/MouseUtils'
 import { Snackbar } from '@varlet/ui'
 import svgpath from 'svgpath'
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 
 
 const props = defineProps<{ code: string, name: string }>()
 
 const CANVAS_SIZE = 480
-const STROKE_DASHARRAY = 16
-const STROKE_WIDTH = 4
+const STROKE_DASHARRAY = 10
+const STROKE_WIDTH = 2
 const PRECISION = 4
 
 const strokeDasharray = ref(STROKE_DASHARRAY)
@@ -20,6 +21,7 @@ const sizeWithPx = CANVAS_SIZE + 'px'
 const sliderVal = ref(16)
 const gridSize = computed(() => CANVAS_SIZE / sliderVal.value)
 const id = Math.random().toString(36).slice(2, 8)
+const useMouseKeyboard = ref(true)
 
 const showDialog = ref<boolean>(false)
 const selectedSvgPath = ref<SVGPathElement[]>([])
@@ -61,11 +63,9 @@ const getTargetList = () => {
   return selectedSvgPath.value
 }
 
-
 const handleShowDialog = () => {
   showDialog.value = true
 }
-
 
 const handleClick = (evt: MouseEvent) => {
   const target = evt.target as SVGPathElement
@@ -97,7 +97,6 @@ const handlePlus = () => {
     target.classList.add('selected')
     
     const [ offsetX, offsetY ] = getOffset(props.code)
-    
     const d = target.getAttribute('d')
     const factor = 1 + 1 / sliderVal.value
     
@@ -120,7 +119,6 @@ const handleMinus = () => {
     target.classList.add('selected')
     
     const [ offsetX, offsetY ] = getOffset(props.code)
-    
     const d = target.getAttribute('d')
     const factor = 1 - 1 / sliderVal.value
     
@@ -145,9 +143,8 @@ const handleTop = () => {
     target.classList.add('selected')
     
     const [ _a, _b, _c, height ] = getViewBox(props.code)
-    
     const d = target.getAttribute('d')
-    const s = (height ?? 1024) / sliderVal.value / 3
+    const s = (height ?? 1024) / sliderVal.value
     
     if (d) {
       target.setAttribute(
@@ -166,9 +163,8 @@ const handleBottom = () => {
     target.classList.add('selected')
     
     const [ _a, _b, _c, height ] = getViewBox(props.code)
-    
     const d = target.getAttribute('d')
-    const s = (height ?? 1024) / sliderVal.value / 3
+    const s = (height ?? 1024) / sliderVal.value
     
     if (d) {
       target.setAttribute(
@@ -187,9 +183,8 @@ const handleLeft = () => {
     target.classList.add('selected')
     
     const [ _a, _b, width ] = getViewBox(props.code)
-    
     const d = target.getAttribute('d')
-    const s = (width ?? 1024) / sliderVal.value / 3
+    const s = (width ?? 1024) / sliderVal.value
     
     if (d) {
       target.setAttribute(
@@ -208,9 +203,8 @@ const handleRight = () => {
     target.classList.add('selected')
     
     const [ _a, _b, width ] = getViewBox(props.code)
-    
     const d = target.getAttribute('d')
-    const s = (width ?? 1024) / sliderVal.value / 3
+    const s = (width ?? 1024) / sliderVal.value
     
     if (d) {
       target.setAttribute(
@@ -226,9 +220,17 @@ const handleRight = () => {
 }
 
 const handleWheel = (e: WheelEvent) => {
+  if (!showDialog.value || !useMouseKeyboard.value) {
+    return
+  }
+  
   e.deltaY > 0 ? handleMinus() : handlePlus()
 }
 const handleKeyup = (e: KeyboardEvent) => {
+  if (!showDialog.value || !useMouseKeyboard.value) {
+    return
+  }
+  
   switch (e.code) {
     case 'ArrowUp':
     case 'KeyW':
@@ -248,9 +250,36 @@ const handleKeyup = (e: KeyboardEvent) => {
       break
   }
 }
-const executor = new HoldExecutor(handleKeyup, handleKeyup)
-executor.bindKeyboardEvents(document.body)
-
+watchEffect(() => {
+  if (svgRef.value) {
+    const executor = new HoldExecutor(handleKeyup)
+    executor.bindKeyboardEvents(document)
+    
+    MouseUtils.dragDelta(svgRef.value, (dx: number, dy: number) => {
+      if (!showDialog.value || !useMouseKeyboard.value) {
+        return
+      }
+      
+      getTargetList().forEach(target => {
+        target.classList.add('selected')
+        
+        const [ _a, _b, width, height ] = getViewBox(props.code)
+        const d = target.getAttribute('d')
+        
+        if (d) {
+          target.setAttribute(
+            'd',
+            svgpath(d)
+              .abs()
+              .translate(dx / CANVAS_SIZE * width, dy / CANVAS_SIZE * height)
+              .round(PRECISION)
+              .toString(),
+          )
+        }
+      })
+    })
+  }
+})
 
 /* 旋转 */
 const handleRoteLeft = () => {
@@ -339,7 +368,7 @@ const fadeText = (x: number, y: number, text: string, color?: string) => {
     if (i < 40) {
       i++
       style.top = `${ top - i }px`
-      style.opacity = 1 - i / 40
+      style.opacity = String(1 - i / 40)
     } else {
       span.remove()
       clearInterval(timer)
@@ -377,6 +406,7 @@ defineExpose({
         <svg-icon name="ResEdit" size="20px" />
         <span>{{ name }}</span>
       </template>
+      
       <div class="edit-container">
         <div :style="{width: sizeWithPx, height: sizeWithPx}" class="grid-background">
           <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
@@ -486,6 +516,13 @@ defineExpose({
             </var-button>
           </div>
         </div>
+        
+        <div class="flex-row">
+          <div>键鼠</div>
+          <div class="flex-row">
+            <var-switch v-model="useMouseKeyboard" />
+          </div>
+        </div>
       </div>
     </var-dialog>
   </div>
@@ -585,7 +622,7 @@ defineExpose({
             cursor: pointer;
             
             &.selected {
-              stroke: #E01313;
+              stroke: #FF001C;
               stroke-dasharray: var(--strokeDasharray);
               stroke-width: var(--strokeWidth);
               stroke-linecap: round;

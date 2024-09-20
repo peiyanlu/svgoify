@@ -1,31 +1,27 @@
 export class HoldExecutor {
   private intervalId: NodeJS.Timeout | null = null
   private timeoutId: NodeJS.Timeout | null = null
-  private readonly interval: number
-  private readonly delay: number
+  private readonly interval: number // 连续触发的时间间隔
+  private readonly longPressThreshold: number// 用于设置长按的触发时间
   private readonly clickTimeout: number // 用于检测单击的超时时间
-  private readonly longPressThreshold: number // 长按的触发时间
   private readonly callback: (event: MouseEvent | KeyboardEvent) => void
   private readonly clickCallback: (event: MouseEvent | KeyboardEvent) => void
-  private readonly keys: Set<string> | null // 用于存储多个键
+  private readonly keys: Set<string> | null // 用于存储多个键；若为 null，监听所有键
   private keyPressTime: number = 0 // 记录按键按下的时间
   private mousePressTime: number = 0 // 记录鼠标按下的时间
   
   constructor(
     callback: (event: MouseEvent | KeyboardEvent) => void,
-    clickCallback: (event: MouseEvent | KeyboardEvent) => void,
     interval: number = 100,
-    delay: number = 500,
-    clickTimeout: number = 200,
+    longPressThreshold: number = 200,
     keys: string[] | null = null,
   ) {
     this.callback = callback
-    this.clickCallback = clickCallback
+    this.clickCallback = callback
     this.interval = interval
-    this.delay = delay
-    this.clickTimeout = clickTimeout // 单击检测时间（默认为200ms）
-    this.longPressThreshold = delay // 长按的触发时间，默认为500ms
-    this.keys = keys ? new Set(keys) : null // 若传入多个键，将它们存入 Set 中；若为 null，监听所有键
+    this.longPressThreshold = longPressThreshold
+    this.clickTimeout = longPressThreshold
+    this.keys = keys ? new Set(keys) : null
   }
   
   // 绑定鼠标事件
@@ -47,6 +43,7 @@ export class HoldExecutor {
     // 监听 keydown 事件
     target.addEventListener('keydown', (event: KeyboardEvent) => {
       if ((this.keys === null || this.keys.has(event.key)) && this.timeoutId === null) {
+        console.log(event)
         this.handleKeyPress(event)
       }
     })
@@ -92,7 +89,7 @@ export class HoldExecutor {
       this.intervalId = setInterval(() => {
         this.callback(event)
       }, this.interval)
-    }, this.delay)
+    }, this.longPressThreshold)
   }
   
   // 停止长按执行
