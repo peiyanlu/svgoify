@@ -4,6 +4,7 @@ export namespace MouseUtils {
     let startX = 0
     let startY = 0
     const userSelect = element.style.userSelect
+    const cursor = element.style.cursor
     
     const mousemove = (event: MouseEvent) => {
       if (!isDragging) return
@@ -19,6 +20,7 @@ export namespace MouseUtils {
     const mouseup = () => {
       isDragging = false
       element.style.userSelect = userSelect
+      element.style.cursor = cursor
       
       element.removeEventListener('mousemove', mousemove)
       element.removeEventListener('mouseup', mouseup)
@@ -29,6 +31,7 @@ export namespace MouseUtils {
       startX = event.clientX
       startY = event.clientY
       element.style.userSelect = 'none'
+      element.style.cursor = 'grabbing'
       
       element.addEventListener('mousemove', mousemove)
       element.addEventListener('mouseup', mouseup)

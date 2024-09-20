@@ -43,7 +43,6 @@ export class HoldExecutor {
     // 监听 keydown 事件
     target.addEventListener('keydown', (event: KeyboardEvent) => {
       if ((this.keys === null || this.keys.has(event.key)) && this.timeoutId === null) {
-        console.log(event)
         this.handleKeyPress(event)
       }
     })
