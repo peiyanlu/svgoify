@@ -1,3 +1,4 @@
+import { IpcHost } from './IpcHost'
 import { PlatformDetector } from './PlatformDetector'
 import { join } from 'path'
 import { checkSquirrel } from './CheckSquirrel'
@@ -18,6 +19,16 @@ if (checkSquirrel()) {
         frontendURL: url ?? file,
         icon: join(__dirname, `icons/icon.${ PlatformDetector.isLinux ? 'png' : 'ico' }`),
       })
+      
+      
     })
+  
+  IpcHost.addListener('changeTheme', (e, data:any)=> {
+    console.log('changeTheme',data)
+    // ElectronHost.mainWindow.setTitleBarOverlay({
+    //   color: '#ff0',
+    //   symbolColor: '#f0f'
+    // })
+  })
 }
 

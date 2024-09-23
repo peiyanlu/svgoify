@@ -50,15 +50,15 @@ html, body, #app {
 @media (prefers-color-scheme: light) {
   :root {
     --primary-color: 33, 53, 71;
-    --primary-background-color: 248, 248, 248;
-    --scrollbar-thumb-color: rgba(221, 222, 222, 1);
+    --primary-background-color: 254, 247, 255;
+    --scrollbar-thumb-color: rgba(241, 241, 241, 1);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --primary-color: 231, 225, 234;
-    --primary-background-color: 36, 36, 36;
-    --scrollbar-thumb-color: rgba(85, 85, 85, 1);
+    --primary-background-color: 20, 18, 24;
+    --scrollbar-thumb-color: rgba(66, 66, 66, 1);
   }
 }

@@ -5,7 +5,7 @@ const rootStyleVars = {
   // '--tooltip-default-text-color': 'var(--color-on-surface-variant)',
 }
 
-export const changeTheme = (e, style?: Record<string, string>) => {
+export const changeTheme = (e: MediaQueryList | MediaQueryListEvent, style?: Record<string, string>) => {
   StyleProvider({ ...(e.matches ? Themes.md3Light : Themes.md3Dark), ...style })
 }
 
