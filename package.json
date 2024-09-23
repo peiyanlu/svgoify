@@ -72,7 +72,7 @@
   "os": [
     "win32",
     "darwin",
-    "current"
+    "linux"
   ],
   "cpu": [
     "x64",
