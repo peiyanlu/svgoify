@@ -1,0 +1,48 @@
+name: Build/release
+
+# https://docs.github.com/zh/actions/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow#example-including-branches-and-tags
+on:
+  push:
+    branches:
+      - pre-release
+      - draft
+    tags:
+      - v*.*.*
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+    
+    steps:
+      # https://github.com/electron/forge/issues/3371
+      - name: Install Python For Mac
+        if: matrix.os == 'macos-latest'
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      
+      - name: Install appdmg For Mac
+        if: matrix.os == 'macos-latest'
+        run: |
+          python3 -m pip install setuptools
+          npm install -g appdmg@0.6.6
+      
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+      
+      - name: Install Node.js, NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      
+      - name: Install Dependencies
+        run: npm install
+        
+      - name: Publish Electron App
+        run: npm run publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}

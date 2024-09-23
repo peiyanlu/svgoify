@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="font-src 'self' data:; img-src 'self' data:; default-src 'self' 'unsafe-inline';"
+    >
+    <title>SVGoify</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>💖 Hello SVGoify!</h1>
+      <p>Welcome to your SVG optimize application.</p>
+      <p>
+        We are using Node.js <span id="node-version"></span>,
+        Chromium <span id="chrome-version"></span>,
+        and Electron <span id="electron-version"></span>.
+      </p>
+    </div>
+    <script type="module" src="/src/renderer.ts"></script>
+  </body>
+</html>
