@@ -28,7 +28,7 @@
     "@types/node": "^22.2.0",
     "@varlet/import-resolver": "^3.3.13",
     "@varlet/touch-emulator": "^3.3.13",
-    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitejs/plugin-vue": "^6.0.0",
     "electron": "^36.3.2",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
