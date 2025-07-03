@@ -1,6 +1,35 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
+    "config:base",
     "config:recommended"
+  ],
+  "automergeType": "pr",
+  "timezone": "Asia/Shanghai",
+  "ignorePaths": [],
+  "packageRules": [
+    {
+      "matchDepTypes": [
+        "dependencies",
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "groupName": "allDependencies",
+      "automerge": true
+    },
+    {
+      "matchDepTypes": [
+        "dependencies",
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "allDependencies",
+      "automerge": false
+    }
   ]
 }
