@@ -6,7 +6,6 @@
   ],
   "automergeType": "pr",
   "timezone": "Asia/Shanghai",
-  "ignorePaths": [],
   "packageRules": [
     {
       "matchDepTypes": [
@@ -31,5 +30,12 @@
       "groupName": "allDependencies",
       "automerge": false
     }
+  ],
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "ignorePaths": [
+    "**/*-lock.yaml",
+    "**/*-lock.json"
   ]
 }
