@@ -125,7 +125,7 @@ export const SvgoPlugins: SvgoPluginsDataList[] = [
     id: 'removeViewBox',
     name: '移除 viewBox',
     active: true,
-    isDefault: true,
+    isDefault: false,
     description: '仅当 <svg> 标签存在 width 和 height 属性, 并且 viewBox="[0 0 width height]" 时, 才会移除 viewBox 属性',
   },
   {
@@ -244,7 +244,7 @@ export const SvgoPlugins: SvgoPluginsDataList[] = [
     id: 'removeTitle',
     name: '移除<title>',
     active: true,
-    isDefault: true,
+    isDefault: false,
     description: '移除 <title> 标签, 移除之后可以在鼠标 hover 时不显示信息',
   },
   {
@@ -270,7 +270,7 @@ export const SvgoPlugins: SvgoPluginsDataList[] = [
     description: '移除所有 <style> 元素',
   },
   {
-    id: 'removeScriptElement',
+    id: 'removeScripts',
     name: '移除<script>',
     active: false,
     isDefault: false,
