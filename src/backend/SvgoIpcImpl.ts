@@ -166,7 +166,7 @@ export class SvgoIpcImpl implements SvgoIpcInterface {
   
   private static optimize(input: string, config?: OverrideConfig): Omit<SvgoOptimizeResult, 'parse'> {
     const { plugins: temp, ...others } = config ?? {}
-    const plugins = temp?.map((plugin) => customPlugin[plugin as string] ?? plugin)
+    const plugins = temp?.map((plugin) => customPlugin[plugin as string] ?? plugin) as PluginConfig[]
     
     plugins?.push(convertStrokeToFill)
     
