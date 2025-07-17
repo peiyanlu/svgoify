@@ -2,45 +2,38 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
-    "config:recommended"
+    "schedule:weekly",
+    "group:allNonMajor"
   ],
-  "automergeType": "pr",
-  "timezone": "Asia/Shanghai",
-  "packageRules": [
-    {
-      "matchDepTypes": [
-        "dependencies",
-        "devDependencies"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
-      "groupName": "allDependencies",
-      "automerge": true
-    },
-    {
-      "matchDepTypes": [
-        "dependencies",
-        "devDependencies"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "groupName": "allDependencies",
-      "automerge": false
-    }
+  "labels": [
+    "dependencies"
   ],
-  "lockFileMaintenance": {
-    "enabled": false,
-    "schedule": [
-      "before 5am on saturday"
-    ]
-  },
-  "prConcurrentLimit": 10,
-  "prHourlyLimit": 5,
   "ignorePaths": [
+    "**/__tests__/**",
     "**/*-lock.yaml",
     "**/*-lock.json"
-  ]
+  ],
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "depTypeList": [
+        "peerDependencies"
+      ],
+      "enabled": false
+    }
+  ],
+  "ignoreDeps": [
+    "@electron-forge/cli",
+    "@electron-forge/maker-deb",
+    "@electron-forge/maker-dmg",
+    "@electron-forge/maker-rpm",
+    "@electron-forge/maker-squirrel",
+    "@electron-forge/maker-zip",
+    "@electron-forge/plugin-auto-unpack-natives",
+    "@electron-forge/plugin-fuses",
+    "@electron-forge/plugin-vite",
+    "@electron-forge/publisher-github"
+  ],
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 5
 }
