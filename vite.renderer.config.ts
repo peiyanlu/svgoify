@@ -60,5 +60,5 @@ export default defineConfig((env) => {
       preserveSymlinks: true,
     },
     clearScreen: false,
-  } as UserConfig;
+  } satisfies UserConfig;
 });

@@ -1,23 +1,31 @@
-import fg from 'fast-glob'
-import fs from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { parse } from 'path'
 import { optimize } from 'svgo'
+import { globSync } from 'tinyglobby'
 import { normalizePath, Plugin } from 'vite'
 
+
+interface ViteSvgIconsPlugin {
+  iconDirs: string[];
+  domId: string;
+  symbolId: string;
+}
 
 const createSymbolCode = (iconDirs: string[], symbolId?: string, domId?: string) => {
   const ids = new Set()
   const textArr = iconDirs
     .map(d => normalizePath(d))
-    .flatMap(cwd => {
-      return fg.sync('**/*.svg', {
+    .flatMap(
+      cwd => globSync(
+        [ '**/*.svg' ],
+        {
           cwd,
           onlyFiles: true,
-          objectMode: true,
           absolute: true,
-        })
-        .map(({ path }) => {
-          const { dir, name: fileName } = parse(path)
+        },
+      )
+        .map(fullPath => {
+          const { dir, name: fileName } = parse(fullPath)
           const dirName = dir.replace(cwd, '').replaceAll('/', '-')
           
           const id = (symbolId ?? 'symbol-[dir]-[name]')
@@ -25,7 +33,7 @@ const createSymbolCode = (iconDirs: string[], symbolId?: string, domId?: string)
             .replace(/-{2,}/g, '-')
             .replace(/\[name]/g, fileName)
           
-          const input = fs.readFileSync(path).toString()
+          const input = readFileSync(fullPath).toString()
           const { data: code } = optimize(input)
           return { code, id }
         })
@@ -33,13 +41,13 @@ const createSymbolCode = (iconDirs: string[], symbolId?: string, domId?: string)
           ids.add(id)
           
           return code
-            .replace(/<svg([^>+].*?)>/, ($1, $2: string) => {
+            .replace(/<svg([^>+].*?)>/, (_$1, $2: string) => {
               const formatId = (id: string) => id
                 .replace(/\s|'|‘|’/g, '')
                 .replace(/[(){}（）【】\[\]]/g, '_')
               
               const attrsVal = <T = string>(str: string, attr: string, def: T): T | string => str
-                .match(new RegExp(`(?<=${attr}=")([^>+].*?)(?=")`, 'g'))?.[0] ?? def
+                .match(new RegExp(`(?<=${ attr }=")([^>+].*?)(?=")`, 'g'))?.[0] ?? def
               
               const width = attrsVal($2, 'width', '1024')
               const height = attrsVal($2, 'height', '1024')
@@ -48,8 +56,8 @@ const createSymbolCode = (iconDirs: string[], symbolId?: string, domId?: string)
               return `<symbol id="${ formatId(id) }" viewBox="${ viewBox }">`
             })
             .replace('</svg>', '</symbol>')
-        })
-    })
+        }),
+    )
   
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">${ textArr.join('') }</svg>`
   const code = `
@@ -77,13 +85,6 @@ const createSymbolCode = (iconDirs: string[], symbolId?: string, domId?: string)
   const idSet = `export default ${ JSON.stringify([ ...ids ]) }`
   
   return { code, idSet }
-}
-
-
-interface ViteSvgIconsPlugin {
-  iconDirs: string[];
-  domId: string;
-  symbolId: string;
 }
 
 export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
@@ -136,7 +137,6 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
           res.setHeader('Content-Type', 'application/javascript')
           res.setHeader('Cache-Control', 'no-cache')
           
-          // res.setHeader('Etag', getEtag(content, { weak: true }))
           res.statusCode = 200
           res.end(url.endsWith(registerId) ? code : idSet)
         } else {

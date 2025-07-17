@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import SvgoResult from '@/views/SvgoResult.vue'
 import SvgoUpload from '@/views/SvgoUpload.vue'
-import { SvgoOptimizeResult } from '@/common/ElectronIpcInterface'
+import { SvgoOptimizeResult } from '@/electron/common'
 import { ref } from 'vue'
 
 

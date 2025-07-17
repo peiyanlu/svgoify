@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ProcessDetector } from './frontend/ProcessDetector'
 
 
-const isElectron = ProcessDetector.isElectronAppFrontend
+function isBrowserProcess() {
+  return typeof window === 'object' && typeof window.navigator === 'object'
+}
+
+function isElectronAppFrontend() {
+  return typeof navigator === 'object' && navigator.userAgent.toLowerCase().indexOf('electron') >= 0
+}
+
+const isElectron = isElectronAppFrontend()
 
 
 const title = ref('')
-if (ProcessDetector.isBrowserProcess) {
+if (isBrowserProcess()) {
   title.value = window.document.title
 }
 </script>

@@ -1,9 +1,10 @@
-import { OverrideConfig, SvgoIpcInterface, SvgoOptimizeResult } from '../common/ElectronIpcInterface'
-import fg from 'fast-glob'
-import * as fs from 'node:fs'
-import path from 'path'
+import { normalizePath } from '@peiyanlu/electron-ipc/backend'
+import { readFileSync } from 'node:fs'
+import { parse } from 'path'
 import { CustomPlugin, optimize, PluginConfig } from 'svgo'
 import svgpath from 'svgpath'
+import { globSync } from 'tinyglobby'
+import { OverrideConfig, SvgoIpcInterface, SvgoOptimizeResult } from './IpcInterface'
 
 
 export const cleanupFill: CustomPlugin = {
@@ -11,7 +12,7 @@ export const cleanupFill: CustomPlugin = {
   fn: () => {
     return {
       element: {
-        enter: (node, parentNode) => {
+        enter: (node, _parentNode) => {
           if (node.name === 'svg') {
             node.attributes.fill = 'currentColor'
           } else {
@@ -28,7 +29,7 @@ export const cleanupStroke: CustomPlugin = {
   fn: () => {
     return {
       element: {
-        enter: (node, parentNode) => {
+        enter: (node, _parentNode) => {
           if (node.attributes.stroke) {
             node.attributes.stroke = 'currentColor'
           }
@@ -64,7 +65,7 @@ export const resetViewBox: CustomPlugin = {
     
     return {
       element: {
-        enter: (node, parentNode) => {
+        enter: (node, _parentNode) => {
           if (node.name === 'svg' && node.attributes.viewBox && !viewBox) {
             viewBox = node.attributes.viewBox
           }
@@ -72,7 +73,7 @@ export const resetViewBox: CustomPlugin = {
           if (node.name === 'path') {
             hasPath = true
             
-            const [ x, y, width, height ] = (viewBox ?? target).split(' ').map(Number)
+            const [ _x, _y, width, height ] = (viewBox ?? target).split(' ').map(Number)
             const { tranX, tranY, percent } = getTranslate(width, height)
             
             if (percent !== 1) {
@@ -92,7 +93,7 @@ export const resetViewBox: CustomPlugin = {
             }
           }
         },
-        exit: (node, parentNode) => {
+        exit: (node, _parentNode) => {
           if (hasPath && node.name === 'svg') {
             node.attributes.viewBox = target
           }
@@ -102,57 +103,13 @@ export const resetViewBox: CustomPlugin = {
   },
 }
 
-export const convertStrokeToFill: CustomPlugin = {
-  name: 'convertStrokeToFill',
-  fn: () => {
-    return {
-      element: {
-        enter: (node, parentNode) => {
-          if (node.name === 'path') {
-            const d = node.attributes.d
-            
-            Object
-              .keys(node.attributes)
-              .forEach((key) => {
-                if (/^stroke(?=.*)/g.test(key)) {
-                  const strokeWidth = node.attributes.strokeWidth
-                  
-                  if (strokeWidth) {
-                    const outerPathData = svgpath(d)
-                      .translate(Number(strokeWidth) / 2)
-                      .toString()
-                    
-                    const innerPathData = svgpath(d)
-                      .translate(-Number(strokeWidth) / 2)
-                      .toString()
-                    
-                    const combinedPathData = outerPathData + ' ' + innerPathData
-                    node.attributes.d = combinedPathData
-                    
-                    
-                    // if (Object.keys(node.attributes).length !== 0) {
-                    //   return
-                    // }
-                    
-                    // parentNode.children = parentNode.children.filter(
-                    //   (child) => child !== node,
-                    // )
-                  }
-                }
-              })
-          }
-        },
-      },
-    }
-  },
-}
 
 const customPlugin: Record<string, PluginConfig> = {
   convertShapeToPath: {
     name: 'convertShapeToPath',
     params: {
-      convertArcs: true
-    }
+      convertArcs: true,
+    },
   },
   // 自定义插件
   cleanupFill,
@@ -168,8 +125,6 @@ export class SvgoIpcImpl implements SvgoIpcInterface {
     const { plugins: temp, ...others } = config ?? {}
     const plugins = temp?.map((plugin) => customPlugin[plugin as string] ?? plugin) as PluginConfig[]
     
-    plugins?.push(convertStrokeToFill)
-    
     const inputSize = Buffer.byteLength(input, 'utf8')
     
     const { data: output } = optimize(input, { plugins, ...others, multipass: true })
@@ -184,8 +139,8 @@ export class SvgoIpcImpl implements SvgoIpcInterface {
   
   public async compressPaths(paths: string[], config?: OverrideConfig): Promise<SvgoOptimizeResult[]> {
     return paths.map(k => {
-      const input = fs.readFileSync(k).toString()
-      return { ...SvgoIpcImpl.optimize(input, config), parse: path.parse(k) }
+      const input = readFileSync(k).toString()
+      return { ...SvgoIpcImpl.optimize(input, config), parse: parse(k) }
     })
   }
   
@@ -201,18 +156,18 @@ export class SvgoIpcImpl implements SvgoIpcInterface {
   }
   
   public async compressDir(dir: string, config?: OverrideConfig): Promise<SvgoOptimizeResult[]> {
-    return fg.sync(
-        [ 'svg', 'svgz' ].map(ext => fg.convertPathToPattern(path.join(dir, `/**/*.${ ext }`))),
-        {
-          onlyFiles: true,
-          objectMode: true,
-          ignore: [],
-          dot: true,
-        },
-      )
-      .map(e => {
-        const input = fs.readFileSync(e.path).toString()
-        return { ...SvgoIpcImpl.optimize(input, config), parse: path.parse(e.path) }
-      })
+    return globSync(
+      [ 'svg', 'svgz' ].map(ext => `**/*.${ ext }`),
+      {
+        cwd: normalizePath(dir),
+        onlyFiles: true,
+        ignore: [],
+        dot: true,
+        absolute: true,
+      },
+    ).map(fullPath => {
+      const input = readFileSync(fullPath).toString()
+      return { ...SvgoIpcImpl.optimize(input, config), parse: parse(fullPath) }
+    })
   }
 }
