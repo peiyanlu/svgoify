@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import SvgIcon from '@/components/SvgIcon.vue'
+import { svgoChannel, SvgoIpcInterface, SvgoOptimizeResult } from '@/electron/IpcInterface'
 import { SvgoPlugins } from '@/views/SvgoPlugins'
 import SvgoPluginsDialog from '@/views/SvgoPluginsDialog.vue'
-import { SvgoOptimizeResult } from '@/common/ElectronIpcInterface'
-import { ElectronApp } from '@/frontend/ElectronApp'
 import { useDropZone, useEventListener } from '@vueuse/core'
+import { ElectronApp, IpcApp } from '@peiyanlu/electron-ipc/frontend'
 import JSZip from 'jszip'
-import { ref, watch } from 'vue'
+import { ref, useTemplateRef, watch } from 'vue'
 
 
 ElectronApp.startup()
+const svgoIpc = IpcApp.makeIpcFunctionProxy<SvgoIpcInterface>(svgoChannel, 'callMethod')
+
+IpcApp.send('changeTheme', 'light')
 
 const loading = defineModel('loading', { default: false })
 const formats = defineModel<SvgoOptimizeResult[]>('formats', { default: [] })
@@ -33,7 +35,7 @@ const handleOpenFile = async () => {
   if (!filePaths.length) return
   
   await loadingHelper(async () => {
-    const res = await ElectronApp.svgoIpc.compressPaths(filePaths, { plugins: [ ...plugins.value ] })
+    const res = await svgoIpc.compressPaths(filePaths, { plugins: [ ...plugins.value ] })
     formats.value = formats.value.concat(res)
   })
 }
@@ -48,32 +50,45 @@ const handleOpenDir = async () => {
   if (!dir) return
   
   await loadingHelper(async () => {
-    const res = await ElectronApp.svgoIpc.compressDir(dir, { plugins: [ ...plugins.value ] })
+    const res = await svgoIpc.compressDir(dir, { plugins: [ ...plugins.value ] })
     formats.value = formats.value.concat(res)
   })
 }
 
 // 拖拽上传
-const dropZoneRef = ref<HTMLDivElement>()
+const dropZoneRef = useTemplateRef<HTMLElement>('dropZoneRef')
 const { isOverDropZone } = useDropZone(dropZoneRef, {
   onDrop: async (files: File[] | null) => {
     if (!files) return
     
     await loadingHelper(async () => {
-      const filePaths = files.map((file) => file.path)
-      const res = await ElectronApp.svgoIpc.compressPaths(filePaths, { plugins: [ ...plugins.value ] })
+      const readContent = (file: File) => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader()
+          reader.onloadend = (evt) => resolve(evt.target.result as string)
+          reader.readAsText(file)
+        })
+      }
+      
+      const codes = await Promise.all(files.map(file => readContent(file)))
+      const res = await Promise.all(codes.map(code => {
+        return svgoIpc.compressStr(code, { plugins: [ ...plugins.value ] })
+      }))
       formats.value = formats.value.concat(res)
     })
   },
   dataTypes: [ 'image/svg+xml' ],
+  multiple: true,
+  preventDefaultForUnhandled: false,
 })
+
 
 // 粘贴上传
 useEventListener('paste', async (evt: ClipboardEvent) => {
   let code = evt.clipboardData?.getData('text') ?? ''
   code = code.replace(/[^\x20-\xFF]/gi, '')
   if (/<svg[\w\W]*?>[\w\W]+<\/svg>/gi.test(code)) {
-    const res = [ await ElectronApp.svgoIpc.compressStr(code, { plugins: [ ...plugins.value ] }) ]
+    const res = [ await svgoIpc.compressStr(code, { plugins: [ ...plugins.value ] }) ]
     formats.value = formats.value.concat(res)
   } else {
     console.log('粘贴文本并未包含 SVG 信息')
@@ -85,7 +100,7 @@ watch(plugins, async (val) => {
   await loadingHelper(async () => {
     formats.value = await Promise.all(formats.value.map(async item => {
       const { input, parse } = item
-      const { parse: _a, ...others } = await ElectronApp.svgoIpc.compressStr(
+      const { parse: _a, ...others } = await svgoIpc.compressStr(
         input,
         { plugins: [ ...val ] },
       )
@@ -114,7 +129,11 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
 
 <template>
   <div class="svgo-upload">
-    <div ref="dropZoneRef" :class="{light: isOverDropZone}" class="dropZone">
+    <div
+      ref="dropZoneRef"
+      :class="{light: isOverDropZone}"
+      class="dropZone"
+    >
       <div class="tips-icon">
         <div class="action">
           <var-button text-color="rgba(var(--primary-color), 1)" @click="handleOpenFile">
@@ -128,6 +147,7 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
         </div>
         <svg-icon name="drag-upload" size="72px" />
       </div>
+      
       <div class="tips-text">
         <span>拖拽 SVG 文件到此处</span>
         <span>or</span>

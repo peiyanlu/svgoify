@@ -1,10 +1,7 @@
+import type { AsyncMethodsOf } from 'electron-ipc'
 import path from 'path'
-import type { DataUri, StringifyOptions } from 'svgo/lib/types'
-import type { AsyncMethodsOf } from '../frontend/UtilityTypes'
+import type { DataUri, StringifyOptions } from 'svgo'
 
-
-export const dialogChannel = 'electron-dialog'
-export type DialogModuleMethod = AsyncMethodsOf<Electron.Dialog>;
 
 export const svgoChannel = 'electron-svgo'
 

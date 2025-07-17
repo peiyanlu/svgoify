@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { SvgoOptimizeResult } from '@/common/ElectronIpcInterface'
+import { SvgoOptimizeResult } from '@/electron/common'
 import SvgIcon from '@/components/SvgIcon.vue'
 import { Svg2ClipPath } from '@/utils/Svg2ClipPath'
 import { Svg2CSSVar } from '@/utils/Svg2CSSVar'
