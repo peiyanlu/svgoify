@@ -16,7 +16,7 @@
   "rangeStrategy": "bump",
   "packageRules": [
     {
-      "depTypeList": [
+      "matchDepTypes": [
         "peerDependencies"
       ],
       "enabled": false
