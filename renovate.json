@@ -5,35 +5,34 @@
     "schedule:weekly",
     "group:allNonMajor"
   ],
-  "labels": [
-    "dependencies"
-  ],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "rebase",
+  "timezone": "Asia/Shanghai",
+  "labels": ["dependencies"],
   "ignorePaths": [
-    "**/__tests__/**",
+    "**/test/**",
     "**/*-lock.yaml",
     "**/*-lock.json"
   ],
   "rangeStrategy": "bump",
   "packageRules": [
     {
-      "depTypeList": [
-        "peerDependencies"
-      ],
+      "matchDepTypes": ["devDependencies"],
+      "labels": ["devDeps"]
+    },
+    {
+      "matchDepTypes": ["peerDependencies"],
+      "labels": ["peerDeps"],
       "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["major"],
+      "automerge": false
     }
   ],
   "ignoreDeps": [
-    "@electron-forge/cli",
-    "@electron-forge/maker-deb",
-    "@electron-forge/maker-dmg",
-    "@electron-forge/maker-rpm",
-    "@electron-forge/maker-squirrel",
-    "@electron-forge/maker-zip",
-    "@electron-forge/plugin-auto-unpack-natives",
-    "@electron-forge/plugin-fuses",
-    "@electron-forge/plugin-vite",
-    "@electron-forge/publisher-github"
-  ],
-  "prConcurrentLimit": 10,
-  "prHourlyLimit": 5
+    "@electron-forge/plugin-vite"
+  ]
 }
