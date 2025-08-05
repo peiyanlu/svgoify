@@ -33,15 +33,6 @@
     }
   ],
   "ignoreDeps": [
-    "@electron-forge/cli",
-    "@electron-forge/maker-deb",
-    "@electron-forge/maker-dmg",
-    "@electron-forge/maker-rpm",
-    "@electron-forge/maker-squirrel",
-    "@electron-forge/maker-zip",
-    "@electron-forge/plugin-auto-unpack-natives",
-    "@electron-forge/plugin-fuses",
-    "@electron-forge/plugin-vite",
-    "@electron-forge/publisher-github"
+    "@electron-forge/plugin-vite"
   ]
 }
