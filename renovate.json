@@ -5,21 +5,31 @@
     "schedule:weekly",
     "group:allNonMajor"
   ],
-  "labels": [
-    "dependencies"
-  ],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "rebase",
+  "timezone": "Asia/Shanghai",
+  "labels": ["dependencies"],
   "ignorePaths": [
-    "**/__tests__/**",
+    "**/test/**",
     "**/*-lock.yaml",
     "**/*-lock.json"
   ],
   "rangeStrategy": "bump",
   "packageRules": [
     {
-      "matchDepTypes": [
-        "peerDependencies"
-      ],
+      "matchDepTypes": ["devDependencies"],
+      "labels": ["devDeps"]
+    },
+    {
+      "matchDepTypes": ["peerDependencies"],
+      "labels": ["peerDeps"],
       "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["major"],
+      "automerge": false
     }
   ],
   "ignoreDeps": [
@@ -33,7 +43,5 @@
     "@electron-forge/plugin-fuses",
     "@electron-forge/plugin-vite",
     "@electron-forge/publisher-github"
-  ],
-  "prConcurrentLimit": 10,
-  "prHourlyLimit": 5
+  ]
 }
