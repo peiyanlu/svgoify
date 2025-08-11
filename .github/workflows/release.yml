@@ -32,7 +32,7 @@ jobs:
           npm install -g appdmg@0.6.6
       
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       
       - name: Install Node.js, NPM
         uses: actions/setup-node@v4
