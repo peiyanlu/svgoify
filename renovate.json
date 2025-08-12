@@ -33,6 +33,18 @@
     {
       "matchDepNames": ["@electron-forge/plugin-vite"],
       "enabled": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "github-actions-minor-patch",
+      "labels": ["github-actions", "minor-patch"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "github-actions-major",
+      "labels": ["github-actions", "major"]
     }
   ],
   "ignoreDeps": []
