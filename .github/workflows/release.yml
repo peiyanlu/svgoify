@@ -21,7 +21,7 @@ jobs:
       # https://github.com/electron/forge/issues/3371
       - name: Install Python For Mac
         if: matrix.os == 'macos-latest'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.14.0
       
@@ -32,12 +32,12 @@ jobs:
           npm install -g appdmg@0.6.6
       
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       
       - name: Install Node.js, NPM
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22.21.1
+          node-version: 24.11.1
       
       - name: Install Dependencies
         run: npm install
