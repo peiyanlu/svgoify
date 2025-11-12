@@ -1,4 +1,4 @@
-import type { AsyncMethodsOf } from 'electron-ipc'
+import type { AsyncMethodsOf } from '@peiyanlu/electron-ipc'
 import path from 'path'
 import type { DataUri, StringifyOptions } from 'svgo'
 

@@ -14,7 +14,7 @@ export class ElectronSvgHandler extends IpcHandler {
     
     const func = (cmd as any)[method] as Function
     if (typeof func === 'function') {
-      return func.call(this, ...args)
+      return func.call(cmd, ...args)
     } else {
       throw new Error(`illegal electron svg method`)
     }
