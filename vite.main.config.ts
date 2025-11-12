@@ -11,6 +11,7 @@ const external = [ ...builtins, ...deps ]
 
 export default defineConfig({
   build: {
+    copyPublicDir: true,
     rollupOptions: {
       external,
     },
