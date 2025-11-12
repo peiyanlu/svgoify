@@ -1,5 +1,5 @@
 import { contextBridge } from 'electron'
-import { frontendApiKey, getFrontendApi } from '@peiyanlu/electron-ipc'
+import { frontendApiKey, getFrontendApi } from '@peiyanlu/electron-ipc/preload'
 
 
 contextBridge.exposeInMainWorld(frontendApiKey, getFrontendApi())
