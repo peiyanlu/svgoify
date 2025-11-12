@@ -1,5 +1,6 @@
 import { isPlatform } from '@peiyanlu/electron-ipc'
 import { checkSquirrel, ElectronHost, IpcHost } from '@peiyanlu/electron-ipc/backend'
+import { app } from 'electron'
 import { join } from 'path'
 import { ElectronSvgHandler } from './electron/IpcHandler'
 
@@ -13,12 +14,14 @@ if (checkSquirrel()) {
   ElectronHost.shutdown()
 }
 
-console.log(join(__dirname, `icons/icon.${ isPlatform('linux') ? 'png' : 'ico' }`))
+
 ElectronHost
   .startup({
     ipcHandlers: [ ElectronSvgHandler ],
   })
   .then(async _ => {
+    app.commandLine.appendSwitch('log-level', '3')
+    
     await ElectronHost.openMainWindow({
       webPreferences: {
         preload: require.resolve('./preload.js'),

@@ -1,5 +1,6 @@
 import { MakerDeb } from '@electron-forge/maker-deb'
 import { MakerDMG } from '@electron-forge/maker-dmg'
+import MakerMSIX from '@electron-forge/maker-msix'
 import { MakerRpm } from '@electron-forge/maker-rpm'
 import { MakerSquirrel } from '@electron-forge/maker-squirrel'
 import { MakerZIP } from '@electron-forge/maker-zip'
@@ -26,9 +27,6 @@ const config: ForgeConfig = {
     overwrite: true,
     // 任务栏 & 快捷方式 不带后缀
     icon: join(__dirname, iconDir, 'icon'),
-    ignore: (file) => {
-      return !file.startsWith('/.vite')
-    },
     win32metadata: {
       // 应用安装之后显示的名称
       ProductName: APP_NAME,
@@ -46,36 +44,28 @@ const config: ForgeConfig = {
       // 安装时的动画，就是这个
       loadingGif: join(__dirname, iconDir, 'install-spinner.gif'),
     }),
+    // new MakerMSIX({}),
     // 全平台都可用
-    new MakerZIP({}, [ 'darwin', 'win32', 'linux' ]),
+    new MakerZIP({}),
     // Mac 标准格式
-    new MakerDMG({
-      format: 'ULFO', // (OS X 10.11+ only)
-    }),
+    new MakerDMG({}),
     // Linux redhat，centos，Fedora
-    new MakerRpm(
-      {
-        options: {
-          icon: join(__dirname, iconDir, 'icon.png'),
-        },
+    new MakerRpm({
+      options: {
+        icon: join(__dirname, iconDir, 'icon.png'),
       },
-    ),
+    }),
     // Linux debian，ubuntu
-    new MakerDeb(
-      {
-        options: {
-          icon: join(__dirname, iconDir, 'icon.png'),
-        },
+    new MakerDeb({
+      options: {
+        icon: join(__dirname, iconDir, 'icon.png'),
       },
-    ),
+    }),
   ],
   plugins: [
     new VitePlugin({
-      // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
-      // If you are familiar with Vite configuration, it will look really familiar.
       build: [
         {
-          // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
           entry: 'src/main.ts',
           config: 'vite.main.config.ts',
           target: 'main',
@@ -93,8 +83,6 @@ const config: ForgeConfig = {
         },
       ],
     }),
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
     new FusesPlugin({
       version: FuseVersion.V1,
       [FuseV1Options.RunAsNode]: false,
