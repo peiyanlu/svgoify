@@ -185,7 +185,7 @@ const handleCopy = (str: string) => {
     border-radius: var(--radius);
     
     &.hljs {
-      padding: 0.5rem;
+      padding: .5rem;
     }
     
     :deep(& > [class*=language-]) {
@@ -208,7 +208,7 @@ const handleCopy = (str: string) => {
   
   &.full-screen {
     .code.hljs {
-      padding: 1.6rem 1.8rem;
+      padding: 2.2rem;
     }
   }
 }

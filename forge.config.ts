@@ -7,6 +7,7 @@ import { FusesPlugin } from '@electron-forge/plugin-fuses'
 import { VitePlugin } from '@electron-forge/plugin-vite'
 import type { ForgeConfig } from '@electron-forge/shared-types'
 import { FuseV1Options, FuseVersion } from '@electron/fuses'
+import { isPlatform } from '@peiyanlu/electron-ipc'
 import { join } from 'path'
 import pkg from './package.json'
 
@@ -20,19 +21,18 @@ const config: ForgeConfig = {
   packagerConfig: {
     name: APP_NAME,
     // Linux 只能小写
-    executableName: process.platform === "linux" ? APP_NAME.toLowerCase() : undefined,
+    executableName: isPlatform('linux') ? APP_NAME.toLowerCase() : undefined,
     asar: true,
     overwrite: true,
     // 任务栏 & 快捷方式 不带后缀
     icon: join(__dirname, iconDir, 'icon'),
-    ignore: [
-      /(\.idea|\.vscode|\.github|\.npmrc|\.gitignore|public|src|svg-icons)/,
-      /\w*\.(ts|json)$/,
-    ],
+    ignore: (file) => {
+      return !file.startsWith('/.vite')
+    },
     win32metadata: {
       // 应用安装之后显示的名称
       ProductName: APP_NAME,
-      FileDescription: pkg.description
+      FileDescription: pkg.description,
     },
   },
   rebuildConfig: {},
@@ -56,18 +56,18 @@ const config: ForgeConfig = {
     new MakerRpm(
       {
         options: {
-          icon: join(__dirname, iconDir, 'icon.png')
-        }
-      }
+          icon: join(__dirname, iconDir, 'icon.png'),
+        },
+      },
     ),
     // Linux debian，ubuntu
     new MakerDeb(
       {
         options: {
-          icon: join(__dirname, iconDir, 'icon.png')
-        }
-      }
-    )
+          icon: join(__dirname, iconDir, 'icon.png'),
+        },
+      },
+    ),
   ],
   plugins: [
     new VitePlugin({
@@ -78,10 +78,12 @@ const config: ForgeConfig = {
           // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
           entry: 'src/main.ts',
           config: 'vite.main.config.ts',
+          target: 'main',
         },
         {
           entry: 'src/preload.ts',
           config: 'vite.preload.config.ts',
+          target: 'preload',
         },
       ],
       renderer: [
@@ -118,6 +120,6 @@ const config: ForgeConfig = {
       },
     },
   ],
-};
+}
 
-export default config;
+export default config

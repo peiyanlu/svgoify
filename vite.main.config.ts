@@ -1,30 +1,18 @@
-import type { ConfigEnv, UserConfig } from 'vite';
-import { defineConfig, mergeConfig } from 'vite';
-import { getBuildConfig, getBuildDefine, external, pluginHotRestart } from './vite.base.config';
+import { builtinModules } from 'node:module'
+import { defineConfig } from 'vite'
 
-// https://vitejs.dev/config
-export default defineConfig((env) => {
-  const forgeEnv = env as ConfigEnv<'build'>;
-  const { forgeConfigSelf } = forgeEnv;
-  const define = getBuildDefine(forgeEnv);
-  const config: UserConfig = {
-    build: {
-      lib: {
-        entry: forgeConfigSelf.entry!,
-        fileName: () => '[name].js',
-        formats: [ 'cjs' ],
-      },
-      rollupOptions: {
-        external,
-      },
+
+import pkg from './package.json'
+
+
+const builtins = [ 'electron', ...builtinModules.map((m) => [ m, `node:${ m }` ]).flat() ]
+const deps = Object.keys('dependencies' in pkg ? (pkg.dependencies as Record<string, string>) : {})
+const external = [ ...builtins, ...deps ]
+
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      external,
     },
-    plugins: [ pluginHotRestart('restart') ],
-    define,
-    resolve: {
-      // Load the Node.js entry.
-      mainFields: [ 'module', 'jsnext:main', 'jsnext' ],
-    },
-  };
-  
-  return mergeConfig(getBuildConfig(forgeEnv), config);
-});
+  },
+})

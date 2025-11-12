@@ -191,9 +191,10 @@ const cssVarVal = computed(() => {
   
   .table-header {
     white-space: nowrap;
+    line-height: 20px;
     
-    :nth-child(2) {
-      min-width: 200px;
+    div:not(:first-child):not(:last-child) {
+      padding: 0 .5rem;
     }
   }
   
