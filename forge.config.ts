@@ -1,6 +1,5 @@
 import { MakerDeb } from '@electron-forge/maker-deb'
 import { MakerDMG } from '@electron-forge/maker-dmg'
-import MakerMSIX from '@electron-forge/maker-msix'
 import { MakerRpm } from '@electron-forge/maker-rpm'
 import { MakerSquirrel } from '@electron-forge/maker-squirrel'
 import { MakerZIP } from '@electron-forge/maker-zip'
@@ -32,6 +31,10 @@ const config: ForgeConfig = {
       ProductName: APP_NAME,
       FileDescription: pkg.description,
     },
+    ignore: (file: string) => {
+      if (!file) return false
+      return ![ '/.vite', '/node_modules' ].some(prefix => file.startsWith(prefix))
+    },
   },
   rebuildConfig: {},
   makers: [
@@ -39,10 +42,6 @@ const config: ForgeConfig = {
     new MakerSquirrel({
       // 用于控制面板->应用程序中显示
       iconUrl: 'https://krseoul.imgtbl.com/i/2024/08/16/66bee9aacb3b9.ico',
-      //安装文件显示
-      setupIcon: join(__dirname, iconDir, 'icon.ico'),
-      // 安装时的动画，就是这个
-      loadingGif: join(__dirname, iconDir, 'install-spinner.gif'),
     }),
     // new MakerMSIX({}),
     // 全平台都可用
@@ -50,17 +49,9 @@ const config: ForgeConfig = {
     // Mac 标准格式
     new MakerDMG({}),
     // Linux redhat，centos，Fedora
-    new MakerRpm({
-      options: {
-        icon: join(__dirname, iconDir, 'icon.png'),
-      },
-    }),
+    new MakerRpm({}),
     // Linux debian，ubuntu
-    new MakerDeb({
-      options: {
-        icon: join(__dirname, iconDir, 'icon.png'),
-      },
-    }),
+    new MakerDeb({}),
   ],
   plugins: [
     new VitePlugin({
