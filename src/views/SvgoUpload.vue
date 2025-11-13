@@ -28,7 +28,7 @@ const loadingHelper = async (fn: () => Promise<void>) => {
 const handleOpenFile = async () => {
   const { filePaths } = await ElectronApp.dialogIpc.showOpenDialog({
     properties: [ 'openFile', 'multiSelections' ],
-    title: '选择文件',
+    title: '选择 SVG 文件',
     filters: [ { name: 'SVG', extensions: [ 'svgz', 'svg' ] } ],
   })
   
@@ -44,7 +44,7 @@ const handleOpenFile = async () => {
 const handleOpenDir = async () => {
   const { filePaths: [ dir ] } = await ElectronApp.dialogIpc.showOpenDialog({
     properties: [ 'openDirectory' ],
-    title: '选择文件夹',
+    title: '选择 SVG 文件夹',
   })
   
   if (!dir) return

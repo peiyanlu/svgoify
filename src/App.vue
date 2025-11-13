@@ -1,14 +1,7 @@
 <script setup lang="ts">
+import { isBrowserProcess, isElectronAppFrontend } from '@peiyanlu/electron-ipc'
 import { ref } from 'vue'
 
-
-function isBrowserProcess() {
-  return typeof window === 'object' && typeof window.navigator === 'object'
-}
-
-function isElectronAppFrontend() {
-  return typeof navigator === 'object' && navigator.userAgent.toLowerCase().indexOf('electron') >= 0
-}
 
 const isElectron = isElectronAppFrontend()
 

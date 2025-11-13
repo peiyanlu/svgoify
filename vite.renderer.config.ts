@@ -14,6 +14,9 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
+  build: {
+    license: true,
+  },
   plugins: [
     vue(),
     components({
