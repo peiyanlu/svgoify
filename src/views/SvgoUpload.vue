@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { svgoChannel, SvgoIpcInterface, SvgoOptimizeResult } from '@/electron/IpcInterface'
-import { SvgoPlugins } from '@/views/SvgoPlugins'
+import { svgoPlugins } from '@/views/SvgoPlugins'
 import SvgoPluginsDialog from '@/views/SvgoPluginsDialog.vue'
 import { useDropZone, useEventListener } from '@vueuse/core'
 import { ElectronApp, IpcApp } from '@peiyanlu/electron-ipc/frontend'
@@ -16,7 +16,7 @@ IpcApp.send('changeTheme', 'light')
 const loading = defineModel('loading', { default: false })
 const formats = defineModel<SvgoOptimizeResult[]>('formats', { default: [] })
 
-const plugins = ref(SvgoPlugins.slice().filter(k => k.active).map(s => s.id))
+const plugins = ref(svgoPlugins.slice().filter(k => k.active).map(s => s.id))
 
 const loadingHelper = async (fn: () => Promise<void>) => {
   loading.value = true
