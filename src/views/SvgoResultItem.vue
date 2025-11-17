@@ -6,7 +6,7 @@ import { useAttrs, useSlots } from 'vue'
 const slots = useSlots()
 const attrs = useAttrs()
 
-defineProps<{code:string}>()
+defineProps<{ code: string }>()
 </script>
 
 <template>

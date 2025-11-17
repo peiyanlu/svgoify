@@ -1,6 +1,6 @@
 import { isPlatform } from '@peiyanlu/electron-ipc'
-import { checkSquirrel, ElectronHost, IpcHost } from '@peiyanlu/electron-ipc/backend'
-import { app } from 'electron'
+import { checkSquirrel, ElectronHost, IpcHost, onChildWindowOpenUrl } from '@peiyanlu/electron-ipc/backend'
+import { app, BrowserWindow, globalShortcut } from 'electron'
 import { join } from 'path'
 import { ElectronSvgHandler } from './electron/IpcHandler'
 
@@ -21,17 +21,24 @@ ElectronHost
   })
   .then(async _ => {
     app.commandLine.appendSwitch('log-level', '3')
+    app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal')
+    
+    onChildWindowOpenUrl()
     
     await ElectronHost.openMainWindow({
       webPreferences: {
         preload: require.resolve('./preload.js'),
         sandbox: false,
       },
-      width: 980,
-      height: 740,
-      show: false,
-      frontendURL,
+      width: 950,
+      height: 750,
       icon: join(__dirname, `icons/icon.${ isPlatform('linux') ? 'png' : 'ico' }`),
+      frontendURL,
+      hideAppMenu: true,
+    })
+    
+    globalShortcut.register('CmdOrCtrl+Shift+I', () => {
+      BrowserWindow.getFocusedWindow()?.webContents.openDevTools()
     })
   })
 

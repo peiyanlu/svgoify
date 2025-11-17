@@ -4,7 +4,9 @@ import { join, resolve } from 'path'
 import autoImport from 'unplugin-auto-import/vite'
 import components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
-import { createSvgIconsPlugin } from './vite.plugin.icon'
+import { createHtmlPlugin } from 'vite-plugin-html'
+import pkg from './package.json'
+import { createSvgIconsPlugin } from './vite.plugin.icon.mjs'
 
 
 // https://vitejs.dev/config
@@ -29,6 +31,13 @@ export default defineConfig({
       iconDirs: [ join(process.cwd(), 'svg-icons') ],
       symbolId: 'symbol-[dir]-[name]',
       domId: 'svg-icons-dom',
+    }),
+    createHtmlPlugin({
+      inject: {
+        data: {
+          version: `v${ pkg.version }`,
+        },
+      },
     }),
   ],
 })

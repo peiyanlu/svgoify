@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { parse } from 'path'
 import { optimize } from 'svgo'
@@ -46,7 +47,7 @@ const createSymbolCode = (iconDirs: string[], symbolId?: string, domId?: string)
                 .replace(/\s|'|‘|’/g, '')
                 .replace(/[(){}（）【】\[\]]/g, '_')
               
-              const attrsVal = <T = string>(str: string, attr: string, def: T): T | string => str
+              const attrsVal = <T extends string = string>(str: string, attr: string, def: T): T | string => str
                 .match(new RegExp(`(?<=${ attr }=")([^>+].*?)(?=")`, 'g'))?.[0] ?? def
               
               const width = attrsVal($2, 'width', '1024')
@@ -86,6 +87,13 @@ const createSymbolCode = (iconDirs: string[], symbolId?: string, domId?: string)
   
   return { code, idSet }
 }
+
+
+const simpleEtag = (body: string, weak = true) => {
+  const hash = createHash('sha1').update(body).digest('base64')
+  return `${ weak ? 'W/' : '' }"${ hash }"`
+}
+
 
 export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
   const { iconDirs, symbolId, domId } = opt
@@ -132,13 +140,23 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
         const clientId = `/@id/${ SVG_ICONS_CLIENT }`
         
         if ([ registerId, clientId ].some((item) => url.endsWith(item))) {
+          const content = url.endsWith(registerId) ? code : idSet
+          const tag = simpleEtag(content, true)
+          
+          // ETag 命中，直接 304
+          if (req.headers['if-none-match'] === tag) {
+            res.statusCode = 304
+            return res.end()
+          }
+          
           res.setHeader('Access-Control-Allow-Origin', '*')
           res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE')
           res.setHeader('Content-Type', 'application/javascript')
           res.setHeader('Cache-Control', 'no-cache')
+          res.setHeader('Etag', tag)
           
           res.statusCode = 200
-          res.end(url.endsWith(registerId) ? code : idSet)
+          res.end(content)
         } else {
           next()
         }

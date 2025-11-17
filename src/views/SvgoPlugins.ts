@@ -1,4 +1,4 @@
-interface SvgoPluginsDataList {
+export interface SvgoPluginsDataList {
   id: string
   name: string
   active: boolean
@@ -8,10 +8,10 @@ interface SvgoPluginsDataList {
 }
 
 
-export const SvgoPlugins: SvgoPluginsDataList[] = [
+export const svgoPlugins: SvgoPluginsDataList[] =  [
   {
     id: 'removeDoctype',
-    name: '移除DOCTYPE',
+    name: '移除 DOCTYPE',
     active: true,
     isDefault: true,
     description: '删除 <!DOCTYPE html PUBLIC "...">',
@@ -299,7 +299,7 @@ export const SvgoPlugins: SvgoPluginsDataList[] = [
   },
   {
     id: 'removeXMLNS',
-    name: '移除xmlns',
+    name: '移除 xmlns',
     active: false,
     isDefault: false,
     description: '移除 <svg> 标签上的 xmlns 属性',
@@ -309,28 +309,35 @@ export const SvgoPlugins: SvgoPluginsDataList[] = [
     name: '移除XLink命名空间前缀',
     active: false,
     isDefault: false,
-    description: '删除 XLink 的所有应用, 并将部分 Xlink 引用转换为 SVG 原生属性, 例如: xlink:href -> href',
+    description: '移除 XLink 命名空间前缀，转换为 SVG2 原生属性，例如: xlink:href -> href',
   },
   // 自定义
   {
     id: 'cleanupFill',
-    name: '清理fill',
+    name: '清理 fill',
     active: true,
     isCustom: true,
     description: '移除已有 fill 属性, 并且为 <svg> 标签添加 fill="currentColor"',
   },
   {
     id: 'cleanupStroke',
-    name: '清理stroke',
+    name: '清理 stroke',
     active: true,
     isCustom: true,
     description: '重置 stroke 属性为 stroke="currentColor"',
   },
   {
     id: 'resetViewBox',
-    name: '重置viewBox',
+    name: '重置 viewBox',
     active: false,
     isCustom: true,
-    description: '重置 viewBox 属性为 [0 0 1024 1024], 仅当存在 <path> 时生效, 且 stroke 会导致结果异常',
+    description: '重置 viewBox 属性为 [0 0 1024 1024], 仅当存在 <path> 时生效且 stroke 会导致结果异常；影响压缩体积',
+  },
+  {
+    id: 'removeGroup',
+    name: '移除<g>',
+    active: true,
+    isCustom: true,
+    description: '移除 <g> 元素',
   },
 ]

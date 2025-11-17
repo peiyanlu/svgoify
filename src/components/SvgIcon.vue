@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 
 
 const props = defineProps<{
@@ -9,6 +9,16 @@ const props = defineProps<{
 }>()
 
 const symbolId = computed(() => `#symbol-${ props.name }`)
+
+const viewBox = ref('0 0 24 24')
+watchEffect(() => {
+  if (!props.html) {
+    const symbol = document.querySelector<SVGSymbolElement>(`#symbol-${ props.name }`)
+    if (symbol && symbol.getAttribute('viewBox')) {
+      viewBox.value = symbol.getAttribute('viewBox')
+    }
+  }
+})
 </script>
 
 <template>
@@ -30,7 +40,7 @@ const symbolId = computed(() => `#symbol-${ props.name }`)
     }"
     class="svg-icon"
   >
-    <svg>
+    <svg :viewBox="viewBox">
       <use :href="symbolId" />
     </svg>
   </div>
@@ -38,7 +48,9 @@ const symbolId = computed(() => `#symbol-${ props.name }`)
 
 <style scoped>
 .svg-icon {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 1em;
   height: 1em;
   
