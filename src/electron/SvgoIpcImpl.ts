@@ -7,7 +7,7 @@ import { globSync } from 'tinyglobby'
 import { OverrideConfig, SvgoIpcInterface, SvgoOptimizeResult } from './IpcInterface'
 
 
-export const cleanupFill: CustomPlugin = {
+const cleanupFill: CustomPlugin = {
   name: 'cleanupFill',
   fn: () => {
     return {
@@ -24,7 +24,7 @@ export const cleanupFill: CustomPlugin = {
   },
 }
 
-export const cleanupStroke: CustomPlugin = {
+const cleanupStroke: CustomPlugin = {
   name: 'cleanupStroke',
   fn: () => {
     return {
@@ -39,7 +39,7 @@ export const cleanupStroke: CustomPlugin = {
   },
 }
 
-export const resetViewBox: CustomPlugin = {
+const resetViewBox: CustomPlugin = {
   name: 'resetViewBox',
   fn: () => {
     const size = 1024
@@ -103,6 +103,41 @@ export const resetViewBox: CustomPlugin = {
   },
 }
 
+const removeGroup: CustomPlugin = {
+  name: 'removeGroup',
+  fn: () => {
+    const mergeAttrs = (parentAttrs: Record<string, string>, childAttrs: Record<string, string>) => {
+      const result = { ...parentAttrs }
+      for (const key in childAttrs) {
+        if (key === 'transform' && parentAttrs.transform) {
+          result.transform = parentAttrs.transform + ' ' + childAttrs.transform
+        } else if (key === 'style' && parentAttrs.style) {
+          result.style = parentAttrs.style + ';' + childAttrs.style
+        } else {
+          result[key] = childAttrs[key]
+        }
+      }
+      return result
+    }
+    
+    return {
+      element: {
+        exit: (node, parentNode) => {
+          if (node.name === 'g' && parentNode && parentNode.children) {
+            const index = parentNode.children.indexOf(node)
+            console.log(node)
+            node.children.forEach(child => {
+              if (child.type === 'element') {
+                child.attributes = mergeAttrs(node.attributes || {}, child.attributes || {})
+              }
+            })
+            parentNode.children.splice(index, 1, ...node.children)
+          }
+        },
+      },
+    }
+  },
+}
 
 const customPlugin: Record<string, PluginConfig> = {
   convertShapeToPath: {
@@ -115,6 +150,7 @@ const customPlugin: Record<string, PluginConfig> = {
   cleanupFill,
   cleanupStroke,
   resetViewBox,
+  removeGroup,
 }
 
 
@@ -123,15 +159,16 @@ export class SvgoIpcImpl implements SvgoIpcInterface {
   
   private static optimize(input: string, config?: OverrideConfig): Omit<SvgoOptimizeResult, 'parse'> {
     const { plugins: temp, ...others } = config ?? {}
-    const plugins = temp?.map((plugin) => customPlugin[plugin as string] ?? plugin) as PluginConfig[]
-    
-    const inputSize = Buffer.byteLength(input, 'utf8')
+    const defaults: PluginConfig[] = []
+    const plugins = ([ ...temp, ...defaults ])
+      .map((plugin) => (customPlugin[plugin as string] ?? plugin) as PluginConfig)
     
     const { data: output } = optimize(input, { plugins, ...others, multipass: true })
     const { data: base64 } = optimize(output, { plugins, ...others, datauri: 'base64' })
     const { data: enc } = optimize(output, { plugins, ...others, datauri: 'enc' })
     const { data: unenc } = optimize(output, { plugins, ...others, datauri: 'unenc' })
     
+    const inputSize = Buffer.byteLength(input, 'utf8')
     const outputSize = Buffer.byteLength(output, 'utf8')
     
     return { input, output, base64, enc, unenc, inputSize, outputSize }
