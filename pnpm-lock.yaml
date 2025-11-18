@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@peiyanlu/electron-ipc':
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: ^1.0.3
+        version: 1.0.3(electron@39.2.1)
       '@varlet/ui':
         specifier: ^3.12.1
         version: 3.12.1(vue@3.5.24(typescript@5.9.3))
@@ -612,8 +612,10 @@ packages:
   '@octokit/types@6.41.0':
     resolution: {integrity: sha512-eJ2jbzjdijiL3B4PrSQaSjuF2sPEQPVCPzBvTHJD9Nz+9dw2SGH4K4xeQJ77YfTq5bRQ+bD8wT11JbeDPmxmGg==}
 
-  '@peiyanlu/electron-ipc@1.0.2':
-    resolution: {integrity: sha512-1rxhOs/GbVAZZ/Pbx44oHXUjEDlShOjaN/2zneiCwgxVR8mo55SngsXIwnbkTh4AXfkUUgEaaWt5jwUqNnjikg==}
+  '@peiyanlu/electron-ipc@1.0.3':
+    resolution: {integrity: sha512-Jd681gYIXqb67VwQPIpG28gyFLqigQXOmlrAN2XRjbFX7KmKQuwFNPy1zGZhoCv0wj3eow8hGv0ag8BExKGCzA==}
+    peerDependencies:
+      electron: ^39
 
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
@@ -3727,7 +3729,9 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 12.11.0
 
-  '@peiyanlu/electron-ipc@1.0.2': {}
+  '@peiyanlu/electron-ipc@1.0.3(electron@39.2.1)':
+    dependencies:
+      electron: 39.2.1
 
   '@popperjs/core@2.11.8': {}
 

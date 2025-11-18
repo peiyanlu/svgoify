@@ -15,27 +15,29 @@ if (checkSquirrel()) {
 }
 
 
-ElectronHost
-  .startup({
-    ipcHandlers: [ ElectronSvgHandler ],
+ElectronHost.startup({
+  ipcHandlers: [ ElectronSvgHandler ],
+})
+
+ElectronHost.openMainWindow({
+    webPreferences: {
+      preload: require.resolve('./preload.js'),
+      sandbox: false,
+    },
+    width: 1200,
+    height: 750,
+    icon: join(__dirname, `icons/icon.${ isPlatform('linux') ? 'png' : 'ico' }`),
+    frontendURL,
+    hideAppMenu: true,
+    singleInstance: true,
+    beforeReady: () => {
+      app.commandLine.appendSwitch('log-level', '3')
+      app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal')
+      
+      onChildWindowOpenUrl()
+    },
   })
-  .then(async _ => {
-    app.commandLine.appendSwitch('log-level', '3')
-    app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal')
-    
-    onChildWindowOpenUrl()
-    
-    await ElectronHost.openMainWindow({
-      webPreferences: {
-        preload: require.resolve('./preload.js'),
-        sandbox: false,
-      },
-      width: 950,
-      height: 750,
-      icon: join(__dirname, `icons/icon.${ isPlatform('linux') ? 'png' : 'ico' }`),
-      frontendURL,
-      hideAppMenu: true,
-    })
+  .then(_ => {
     
     globalShortcut.register('CmdOrCtrl+Shift+I', () => {
       BrowserWindow.getFocusedWindow()?.webContents.openDevTools()
