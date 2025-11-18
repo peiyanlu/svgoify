@@ -38,7 +38,7 @@
     "vite-plugin-html": "^3.2.2"
   },
   "dependencies": {
-    "@peiyanlu/electron-ipc": "^1.0.2",
+    "@peiyanlu/electron-ipc": "^1.0.3",
     "@varlet/ui": "^3.12.3",
     "@vueuse/components": "^14.0.0",
     "@vueuse/core": "^14.0.0",

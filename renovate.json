@@ -2,6 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
+    "schedule:weekly",
     "group:allNonMajor"
   ],
   "automerge": true,
@@ -31,7 +32,7 @@
       "automerge": false
     },
     {
-      "matchDepNames": ["@electron-forge/plugin-vite"],
+      "matchDepNames": [],
       "enabled": false
     },
     {
