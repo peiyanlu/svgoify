@@ -12,9 +12,10 @@
   "labels": ["dependencies"],
   "ignorePaths": [
     "**/test/**",
-    "**/*-lock.yaml",
-    "**/*-lock.json"
+    "**/*-lock.*"
   ],
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
   "rangeStrategy": "bump",
   "packageRules": [
     {
@@ -23,16 +24,29 @@
     },
     {
       "matchDepTypes": ["peerDependencies"],
-      "labels": ["peerDeps"],
       "enabled": false
     },
     {
       "matchUpdateTypes": ["major"],
       "labels": ["major"],
       "automerge": false
+    },
+    {
+      "matchDepNames": [],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "github-actions-minor-patch",
+      "labels": ["github-actions", "minor-patch"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "github-actions-major",
+      "labels": ["github-actions", "major"]
     }
   ],
-  "ignoreDeps": [
-    "@electron-forge/plugin-vite"
-  ]
+  "ignoreDeps": []
 }
