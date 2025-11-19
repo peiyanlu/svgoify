@@ -33,6 +33,10 @@ const selectedSvgPath = ref<SVGPathElement[]>([])
 const svgRef = useTemplateRef<HTMLDivElement>('svgRef')
 const vLineRef = useTemplateRef<SVGLineElement>('vLineRef')
 const hLineRef = useTemplateRef<SVGLineElement>('hLineRef')
+const lvLineRef = useTemplateRef<SVGLineElement>('lvLineRef')
+const rvLineRef = useTemplateRef<SVGLineElement>('rvLineRef')
+const thLineRef = useTemplateRef<SVGLineElement>('thLineRef')
+const bhLineRef = useTemplateRef<SVGLineElement>('bhLineRef')
 
 const resetCanvasSize = () => {
   canvasSize.value = CANVAS_SIZE
@@ -335,8 +339,16 @@ const handleKeyup = (e: KeyboardEvent) => {
   }
 }
 const clearGuides = () => {
-  vLineRef.value && vLineRef.value.setAttribute('opacity', '0')
-  hLineRef.value && hLineRef.value.setAttribute('opacity', '0')
+  [
+    vLineRef,
+    hLineRef,
+    lvLineRef,
+    rvLineRef,
+    thLineRef,
+    bhLineRef,
+  ].forEach(dRef => {
+    dRef.value && dRef.value.setAttribute('opacity', '0')
+  })
 }
 useEventListener('mouseup', clearGuides)
 const updateGuidesOnDrag = (dx: number, dy: number) => {
@@ -386,16 +398,14 @@ const updateGuidesOnDrag = (dx: number, dy: number) => {
   let nxc = elemCX + tx
   let nyc = elemCY + ty
   
-  const drawVLine = (x1x2: number) => {
-    const line = vLineRef.value
+  const drawVLine = (line: SVGLineElement, x1x2: number) => {
     if (line) {
       line.setAttribute('x1', `${ x1x2 }%`)
       line.setAttribute('x2', `${ x1x2 }%`)
       line.setAttribute('opacity', '1')
     }
   }
-  const drawHLine = (y1y2: number) => {
-    const line = hLineRef.value
+  const drawHLine = (line: SVGLineElement, y1y2: number) => {
     if (line) {
       line.setAttribute('y1', `${ y1y2 }%`)
       line.setAttribute('y2', `${ y1y2 }%`)
@@ -408,13 +418,13 @@ const updateGuidesOnDrag = (dx: number, dy: number) => {
   // -------------------------
   // 垂直居中
   if (Math.abs(nyc - canvasCY) <= thresholdY) {
-    drawHLine(canvasCY / vbHeight * 100)
+    drawHLine(hLineRef.value, canvasCY / vbHeight * 100)
     ny += (canvasCY - nyc)
   }
   
   // 水平居中
   if (Math.abs(nxc - canvasCX) <= thresholdX) {
-    drawVLine(canvasCX / vbWidth * 100)
+    drawVLine(vLineRef.value, canvasCX / vbWidth * 100)
     nx += (canvasCX - nxc)
   }
   
@@ -423,27 +433,27 @@ const updateGuidesOnDrag = (dx: number, dy: number) => {
   // -------------------------
   // 左
   if (Math.abs(nx) <= thresholdX) {
-    drawVLine(0)
+    drawVLine(lvLineRef.value, 0)
     nx = 0
   }
   
   // 右
   const rightGap = (nx + union.width) - vbWidth
   if (Math.abs(rightGap) <= thresholdX) {
-    drawVLine(vbWidth / vbWidth * 100)
+    drawVLine(rvLineRef.value, vbWidth / vbWidth * 100)
     nx = vbWidth - union.width
   }
   
   // 上
   if (Math.abs(ny) <= thresholdY) {
-    drawHLine(0)
+    drawHLine(thLineRef.value, 0)
     ny = 0
   }
   
   // 下
   const bottomGap = (ny + union.height) - vbHeight
   if (Math.abs(bottomGap) <= thresholdY) {
-    drawHLine(vbHeight / vbHeight * 100)
+    drawHLine(bhLineRef.value, vbHeight / vbHeight * 100)
     ny = vbHeight - union.height
   }
   // --------------------------------------------------------------
@@ -655,9 +665,15 @@ defineExpose({
               xmlns="http://www.w3.org/2000/svg"
               pointer-events="none"
             >
-              <g stroke="#F00" stroke-width="1" stroke-dasharray="4 2">
+              <g stroke="#BCCE8A" stroke-width="1" stroke-dasharray="4 2">
                 <line ref="vLineRef" opacity="0" y1="0%" y2="100%" />
                 <line ref="hLineRef" opacity="0" x1="0%" x2="100%" />
+                
+                <line ref="lvLineRef" opacity="0" y1="0%" y2="100%" />
+                <line ref="rvLineRef" opacity="0" y1="0%" y2="100%" />
+                
+                <line ref="thLineRef" opacity="0" x1="0%" x2="100%" />
+                <line ref="bhLineRef" opacity="0" x1="0%" x2="100%" />
               </g>
             </svg>
           </div>
@@ -847,7 +863,8 @@ defineExpose({
       background: var(--dialog-background);
       place-content: center;
       place-items: center;
-      transition: gap .25s ease;
+      transition: gap .25s ease-in, opacity 2s ease-in, width .25s ease, height .25s ease;
+      will-change: width, height, gap, opacity;
       
       .edit-container {
         position: relative;
@@ -931,18 +948,8 @@ defineExpose({
         }
       }
       
-      @keyframes show {
-        0% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
-      }
-      
       &.fullscreen-ready {
         gap: 48px;
-        animation: show .5s ease forwards;
         
         .flex-row {
           gap: 32px;
