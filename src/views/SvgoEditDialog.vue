@@ -972,7 +972,7 @@ defineExpose({
                 <div
                   style="
                     color: rgba(var(--primary-color), 1);
-                    max-width: 480px;
+                    max-width: 450px;
                     word-break: break-all;
                     text-align: left;
                     display: flex;
@@ -981,7 +981,7 @@ defineExpose({
                  "
                 >
                   <div>
-                    缩放：按住 Ctrl 更改缩放中心为鼠标位置；按住 Shift 按网格大小缩放；
+                    缩放：按住 Ctrl 更改缩放中心为鼠标位置；按住 Shift 按网格大小缩放；点击
                     <svg-icon name="FullScreen" inline />
                     将 SVG 缩放到固定比例，提升 Shift 操作准确性；
                   </div>
