@@ -26,7 +26,7 @@ jobs:
           ref: ${{ github.ref }}
       
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org/'
@@ -53,6 +53,6 @@ jobs:
         run: pnpm install
       
       - name: Publish Electron App
-        run: pnpm publish
+        run: pnpm publish --no-git-checks
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
