@@ -3,7 +3,7 @@ import SvgIcon from '@/components/SvgIcon.vue'
 import { HoldExecutor } from '@/utils/HoldExecutor'
 import { MouseUtils } from '@/utils/MouseUtils'
 import { Snackbar } from '@varlet/ui'
-import { useEventListener } from '@vueuse/core'
+import { useEventListener, useMagicKeys } from '@vueuse/core'
 import svgpath from 'svgpath'
 import { ComponentPublicInstance, computed, Ref, ref, useTemplateRef, watchEffect } from 'vue'
 
@@ -11,13 +11,14 @@ import { ComponentPublicInstance, computed, Ref, ref, useTemplateRef, watchEffec
 const props = defineProps<{ code: string, name: string }>()
 
 const CANVAS_SIZE = 480
+const SCALE_BASE = 1
 const SCALE_FACTOR = 1.6
 const STROKE_DASHARRAY = 10
 const STROKE_WIDTH = 2.6
-const PRECISION = 4
+const PRECISION = 8
 
 const canvasSize = ref(CANVAS_SIZE)
-const scaleFactor = ref(1)
+const scaleFactor = ref(SCALE_BASE)
 const strokeDasharray = ref(STROKE_DASHARRAY)
 const strokeWidth = ref(STROKE_WIDTH)
 
@@ -30,7 +31,7 @@ const color = ref('')
 
 const showDialog = ref<boolean>(false)
 const selectedSvgPath = ref<SVGPathElement[]>([])
-const svgRef = useTemplateRef<HTMLDivElement>('svgRef')
+
 const vLineRef = useTemplateRef<SVGLineElement>('vLineRef')
 const hLineRef = useTemplateRef<SVGLineElement>('hLineRef')
 const lvLineRef = useTemplateRef<SVGLineElement>('lvLineRef')
@@ -38,29 +39,66 @@ const rvLineRef = useTemplateRef<SVGLineElement>('rvLineRef')
 const thLineRef = useTemplateRef<SVGLineElement>('thLineRef')
 const bhLineRef = useTemplateRef<SVGLineElement>('bhLineRef')
 
+const mainRef = useTemplateRef<HTMLDivElement>('mainRef')
+const svgRef = useTemplateRef<HTMLDivElement>('svgRef')
+
+
 const resetCanvasSize = () => {
   canvasSize.value = CANVAS_SIZE
-  scaleFactor.value = SCALE_FACTOR
+  scaleFactor.value = SCALE_BASE
 }
 
-const getViewBox = (code: string) => {
-  const viewBox = code.match(/(?<=viewBox=")([^>+].*?)(?=")/g)?.at(0)?.split(' ')
-  return viewBox?.map(Number) ?? [ 0, 0, 1024, 1024 ]
+const getViewBox = (code: string | SVGSVGElement) => {
+  if (typeof code === 'string') {
+    const viewBox = code.match(/(?<=viewBox=")([^>+].*?)(?=")/g)?.at(0)?.split(' ')
+    return viewBox?.map(Number) ?? [ 0, 0, 1024, 1024 ]
+  } else {
+    const { x, y, width, height } = code.viewBox.baseVal
+    return [ x, y, width, height ]
+  }
 }
-const getBboxCenter = (code: string) => {
+const getVboxCenter = (code: string | SVGSVGElement) => {
   const [ _x, _y, width, height ] = getViewBox(code)
   return [ width * .5, height * .5 ]
 }
+const getUnionBBox = (targets: SVGGraphicsElement[]) => {
+  let u = null as null | { x: number; y: number; width: number; height: number }
+  targets.forEach(t => {
+    const b = t.getBBox()
+    if (!u) {
+      u = { x: b.x, y: b.y, width: b.width, height: b.height }
+    } else {
+      const minX = Math.min(u.x, b.x)
+      const minY = Math.min(u.y, b.y)
+      const maxX = Math.max(u.x + u.width, b.x + b.width)
+      const maxY = Math.max(u.y + u.height, b.y + b.height)
+      u = { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+    }
+  })
+  return u
+}
+const pxToViewBox = (px: number, canvasLen: number, boxLen: number) => (px / canvasLen) * boxLen
+const getMouseSVGPoint = (svg: SVGSVGElement, evt: MouseEvent | WheelEvent) => {
+  const pt = svg.createSVGPoint()
+  Object.assign(pt, { x: evt.clientX, y: evt.clientY })
+  const { x, y } = pt.matrixTransform(svg.getScreenCTM().inverse())
+  return { x, y }
+}
+const getSvgMousePoint = (svg: SVGSVGElement, evt: MouseEvent | WheelEvent) => {
+  const { left, top, width, height } = svg.getBoundingClientRect()
+  const { x: vx, y: vy, width: vw, height: vh } = svg.viewBox.baseVal
+  const [ offsetX, offsetY ] = [ evt.clientX - left, evt.clientY - top ]
+  const x = offsetX / width * vw + vx
+  const y = offsetY / height * vh + vy
+  return { x, y }
+}
+
+
 const getCode = (div: HTMLDivElement | null) => {
   if (!div) return ''
   const svg = div.querySelector('svg')!
-  svg.hasAttribute('class')
-  Array.from(svg.children).forEach(child => {
-    if (child.hasAttribute('class')) {
-      child.removeAttribute('class')
-    }
-  })
-  return div.innerHTML.replace(/><\/(path|rect|circle|ellipse|line)>/, '/>')
+  Array.from(svg.children).forEach(child => child.removeAttribute('class'))
+  return div.innerHTML.replaceAll(/><\/(path|rect|circle|ellipse|line)>/g, '/>')
 }
 const getTargetList = () => {
   const [ _a, _b, width ] = getViewBox(props.code)
@@ -108,12 +146,47 @@ const handleClick = (evt: MouseEvent) => {
 }
 
 /* 放大 缩小 */
-const handlePlus = () => {
-  getTargetList().forEach(target => {
-    target.classList.add('selected')
+const handlePlus = (evt?: MouseEvent | WheelEvent) => {
+  const svg: SVGSVGElement = svgRef.value.querySelector('svg')
+  
+  const targets = getTargetList()
+  if (!targets.length) return
+  
+  const step = 1 / sliderVal.value
+  let factor = 1 + step
+  
+  if (evt.shiftKey) {
+    const union = getUnionBBox(targets)
+    if (!union) return
     
-    const [ centerX, centerY ] = getBboxCenter(props.code)
-    const factor = 1 + 1 / sliderVal.value
+    const { x, y, width, height } = union
+    const [ , , vw, vh ] = getViewBox(svg)
+    
+    const stepX = vw / sliderVal.value
+    const stepY = vh / sliderVal.value
+    
+    const fn = (d: number, s: number) => Math.max(1, (d + s * 2) / d)
+    
+    const factorX = fn(Math.min(width, vw), stepX)
+    const factorY = fn(Math.min(height, vh), stepY)
+    factor = Math.min(factorX, factorY)
+    
+    const EPS = 1e-2
+    const maxW = vw + stepX + EPS
+    const maxH = vh + stepY + EPS
+    
+    const nextWidth = width * factor
+    const nextHeight = height * factor
+    
+    if (nextWidth > maxW || nextHeight > maxH) {
+      return  // 放大到极限
+    }
+  }
+  
+  const [ centerX, centerY ] = evt.ctrlKey ? Object.values(getMouseSVGPoint(svg, evt)) : getVboxCenter(props.code)
+  
+  targets.forEach(target => {
+    target.classList.add('selected')
     
     const d = target.getAttribute('d')
     if (d) {
@@ -122,7 +195,7 @@ const handlePlus = () => {
         svgpath(d)
           .abs()
           .translate(-centerX, -centerY)
-          .scale(factor)
+          .scale(factor, factor)
           .translate(centerX, centerY)
           .round(PRECISION)
           .toString(),
@@ -130,12 +203,51 @@ const handlePlus = () => {
     }
   })
 }
-const handleMinus = () => {
-  getTargetList().forEach(target => {
-    target.classList.add('selected')
+const handleMinus = (evt?: MouseEvent | WheelEvent) => {
+  const svg: SVGSVGElement = svgRef.value.querySelector('svg')
+  
+  const targets = getTargetList()
+  if (!targets.length) return
+  
+  const step = 1 / sliderVal.value
+  let factor = 1 / (1 + step)
+  
+  if (evt.shiftKey) {
+    const union = getUnionBBox(targets)
+    if (!union) return
     
-    const [ centerX, centerY ] = getBboxCenter(props.code)
-    const factor = 1 - 1 / sliderVal.value
+    const { x, y, width, height } = union
+    const [ , , vw, vh ] = getViewBox(svg)
+    
+    const stepX = vw / sliderVal.value
+    const stepY = vh / sliderVal.value
+    
+    const fn = (d: number, s: number) => Math.min(1, (d - s * 2) / d)
+    
+    const factorX = fn(Math.max(width, stepX * 2), stepX)
+    const factorY = fn(Math.max(height, stepY * 2), stepY)
+    factor = Math.max(factorX, factorY, 0)
+    
+    if (factor === 0) {
+      return
+    }
+    
+    const EPS = 1e-2
+    const minW = stepX + EPS
+    const minH = stepY + EPS
+    
+    const nextWidth = width * factor
+    const nextHeight = height * factor
+    
+    if (nextWidth < minW || nextHeight < minH) {
+      return // 缩小到极限
+    }
+  }
+  
+  const [ centerX, centerY ] = evt.ctrlKey ? Object.values(getMouseSVGPoint(svg, evt)) : getVboxCenter(props.code)
+  
+  targets.forEach(target => {
+    target.classList.add('selected')
     
     const d = target.getAttribute('d')
     if (d) {
@@ -144,8 +256,49 @@ const handleMinus = () => {
         svgpath(d)
           .abs()
           .translate(-centerX, -centerY)
-          .scale(factor)
+          .scale(factor, factor)
           .translate(centerX, centerY)
+          .round(PRECISION)
+          .toString(),
+      )
+    }
+  })
+}
+const handleFitView = () => {
+  const targets = getTargetList()
+  if (!targets.length) return
+  
+  const union = getUnionBBox(targets)
+  if (!union) return
+  
+  const { x, y, width, height } = union
+  const [ , , vw, vh ] = getViewBox(props.code)
+  targets.forEach(target => {
+    target.classList.add('selected')
+    
+    // |<-- padding -->|<---   availW   --->|<-- padding -->|
+    const pad = gridSize.value / scaleFactor.value
+    const padding = pxToViewBox(pad, CANVAS_SIZE, vw)
+    const availW = vw - padding * 2
+    const availH = vh - padding * 2
+    // 剩余空间内最大可放大比例
+    const scale = Math.min(availW / width, availH / height)
+    
+    // 计算平移（确保居中）
+    // 1) padding：基础偏移（避免贴边）
+    // 2) -x * scale：将图标 BBox 左上角归一化到原点
+    // 3) (availW - width * scale) / 2：计算居中所需的额外偏移
+    const tx = padding - x * scale + (availW - width * scale) / 2
+    const ty = padding - y * scale + (availH - height * scale) / 2
+    
+    const d = target.getAttribute('d')
+    if (d) {
+      target.setAttribute(
+        'd',
+        svgpath(d)
+          .abs()
+          .scale(scale)
+          .translate(tx, ty)
           .round(PRECISION)
           .toString(),
       )
@@ -155,11 +308,10 @@ const handleMinus = () => {
 
 /* 移动 */
 const handleTop = () => {
+  const [ _a, _b, _c, vh ] = getViewBox(props.code)
+  const step = vh / sliderVal.value
   getTargetList().forEach(target => {
     target.classList.add('selected')
-    
-    const [ _a, _b, _c, height ] = getViewBox(props.code)
-    const s = (height ?? 1024) / sliderVal.value
     
     const d = target.getAttribute('d')
     if (d) {
@@ -167,7 +319,7 @@ const handleTop = () => {
         'd',
         svgpath(d)
           .abs()
-          .translate(0, -s)
+          .translate(0, -step)
           .round(PRECISION)
           .toString(),
       )
@@ -175,11 +327,10 @@ const handleTop = () => {
   })
 }
 const handleBottom = () => {
+  const [ _a, _b, _c, vh ] = getViewBox(props.code)
+  const step = vh / sliderVal.value
   getTargetList().forEach(target => {
     target.classList.add('selected')
-    
-    const [ _a, _b, _c, height ] = getViewBox(props.code)
-    const s = (height ?? 1024) / sliderVal.value
     
     const d = target.getAttribute('d')
     if (d) {
@@ -187,7 +338,7 @@ const handleBottom = () => {
         'd',
         svgpath(d)
           .abs()
-          .translate(0, s)
+          .translate(0, step)
           .round(PRECISION)
           .toString(),
       )
@@ -195,11 +346,10 @@ const handleBottom = () => {
   })
 }
 const handleLeft = () => {
+  const [ _a, _b, vw ] = getViewBox(props.code)
+  const step = vw / sliderVal.value
   getTargetList().forEach(target => {
     target.classList.add('selected')
-    
-    const [ _a, _b, width ] = getViewBox(props.code)
-    const s = (width ?? 1024) / sliderVal.value
     
     const d = target.getAttribute('d')
     if (d) {
@@ -207,7 +357,7 @@ const handleLeft = () => {
         'd',
         svgpath(d)
           .abs()
-          .translate(-s, 0)
+          .translate(-step, 0)
           .round(PRECISION)
           .toString(),
       )
@@ -215,11 +365,10 @@ const handleLeft = () => {
   })
 }
 const handleRight = () => {
+  const [ _a, _b, vw ] = getViewBox(props.code)
+  const step = vw / sliderVal.value
   getTargetList().forEach(target => {
     target.classList.add('selected')
-    
-    const [ _a, _b, width ] = getViewBox(props.code)
-    const s = (width ?? 1024) / sliderVal.value
     
     const d = target.getAttribute('d')
     if (d) {
@@ -227,7 +376,7 @@ const handleRight = () => {
         'd',
         svgpath(d)
           .abs()
-          .translate(s, 0)
+          .translate(step, 0)
           .round(PRECISION)
           .toString(),
       )
@@ -237,17 +386,16 @@ const handleRight = () => {
 
 /* 旋转 */
 const handleRoteLeft = () => {
+  const [ centerX, centerY ] = getVboxCenter(props.code)
   getTargetList().forEach(target => {
     target.classList.add('selected')
-    
-    const [ centerX, centerY ] = getBboxCenter(props.code)
     
     const d = target.getAttribute('d')
     if (d) {
       target.setAttribute('d', svgpath(d)
         .abs()
         .translate(-centerX, -centerY)
-        .rotate(-45)
+        .rotate(-45 / 2)
         .translate(centerX, centerY)
         .round(PRECISION)
         .toString(),
@@ -257,16 +405,15 @@ const handleRoteLeft = () => {
 }
 const handleRoteRight = () => {
   getTargetList().forEach(target => {
+    const [ centerX, centerY ] = getVboxCenter(props.code)
     target.classList.add('selected')
-    
-    const [ centerX, centerY ] = getBboxCenter(props.code)
     
     const d = target.getAttribute('d')
     if (d) {
       target.setAttribute('d', svgpath(d)
         .abs()
         .translate(-centerX, -centerY)
-        .rotate(45)
+        .rotate(45 / 2)
         .translate(centerX, centerY)
         .round(PRECISION)
         .toString(),
@@ -301,43 +448,6 @@ const handleDelete = () => {
 }
 
 /* 键鼠操作 */
-const handleWheel = (e: WheelEvent) => {
-  if (!useMouseKeyboard.value) {
-    return
-  }
-  
-  e.deltaY > 0 ? handleMinus() : handlePlus()
-}
-const handleKeyup = (e: KeyboardEvent) => {
-  if (!useMouseKeyboard.value) {
-    return
-  }
-  
-  switch (e.code) {
-    case 'ArrowUp':
-    case 'KeyW':
-      handleTop()
-      break
-    case 'ArrowDown':
-    case 'KeyS':
-      handleBottom()
-      break
-    case 'ArrowLeft':
-    case 'KeyA':
-      handleLeft()
-      break
-    case 'ArrowRight':
-    case 'KeyD':
-      handleRight()
-      break
-    case 'KeyQ':
-      handleRoteLeft()
-      break
-    case 'KeyE':
-      handleRoteRight()
-      break
-  }
-}
 const clearGuides = () => {
   [
     vLineRef,
@@ -355,31 +465,15 @@ const updateGuidesOnDrag = (dx: number, dy: number) => {
   const targets = getTargetList()
   if (!targets.length) return
   
-  clearGuides()
-  
-  const getUnionBBox = (targets: SVGGraphicsElement[]) => {
-    let u = null as null | { x: number; y: number; width: number; height: number }
-    targets.forEach(t => {
-      const b = t.getBBox()
-      if (!u) {
-        u = { x: b.x, y: b.y, width: b.width, height: b.height }
-      } else {
-        const minX = Math.min(u.x, b.x)
-        const minY = Math.min(u.y, b.y)
-        const maxX = Math.max(u.x + u.width, b.x + b.width)
-        const maxY = Math.max(u.y + u.height, b.y + b.height)
-        u = { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
-      }
-    })
-    return u
-  }
   const union = getUnionBBox(targets)
   if (!union) return
   
-  const [ , , vbWidth, vbHeight ] = getViewBox(props.code)
-  const pxToViewBox = (px: number, vbLen: number) => ((px * scaleFactor.value) / canvasSize.value) * vbLen
+  clearGuides()
   
-  const [ thresholdX, thresholdY ] = Array(2).fill(pxToViewBox(1, vbHeight))
+  const [ , , vbWidth, vbHeight ] = getViewBox(props.code)
+  
+  const thresholdX = pxToViewBox(1, CANVAS_SIZE, vbWidth)
+  const thresholdY = pxToViewBox(1, CANVAS_SIZE, vbHeight)
   // 画布中心
   const canvasCX = vbWidth * 0.5
   const canvasCY = vbHeight * 0.5
@@ -389,8 +483,8 @@ const updateGuidesOnDrag = (dx: number, dy: number) => {
   const elemCY = union.y + union.height * 0.5
   
   // 拖拽后的临时位置
-  const tx = pxToViewBox(dx, vbWidth)
-  const ty = pxToViewBox(dy, vbHeight)
+  const tx = pxToViewBox(dx, CANVAS_SIZE, vbWidth)
+  const ty = pxToViewBox(dy, CANVAS_SIZE, vbHeight)
   // 拖动后的目标位置（未吸附前）
   let nx = union.x + tx
   let ny = union.y + ty
@@ -508,11 +602,48 @@ const handleDrag = (dx: number, dy: number) => {
     }
   })
 }
+const handleWheel = (e: WheelEvent) => {
+  if (!useMouseKeyboard.value) {
+    return
+  }
+  
+  e.deltaY > 0 ? handleMinus(e) : handlePlus(e)
+}
+const handleKeyup = (e: KeyboardEvent) => {
+  if (!useMouseKeyboard.value) {
+    return
+  }
+  
+  switch (e.code) {
+    case 'ArrowUp':
+    case 'KeyW':
+      handleTop()
+      break
+    case 'ArrowDown':
+    case 'KeyS':
+      handleBottom()
+      break
+    case 'ArrowLeft':
+    case 'KeyA':
+      handleLeft()
+      break
+    case 'ArrowRight':
+    case 'KeyD':
+      handleRight()
+      break
+    case 'KeyQ':
+      handleRoteLeft()
+      break
+    case 'KeyE':
+      handleRoteRight()
+      break
+  }
+}
 const executor = new HoldExecutor(handleKeyup)
 watchEffect(() => {
   if (svgRef.value) {
-    executor.unbindKeyboardEvents(svgRef.value)
-    executor.bindKeyboardEvents(svgRef.value)
+    executor.unbindKeyboardEvents(mainRef.value)
+    executor.bindKeyboardEvents(mainRef.value)
     MouseUtils.dragDelta(svgRef.value, handleDrag)
   }
 })
@@ -541,6 +672,7 @@ const handleColorClear = () => {
 
 const plusRef = useTemplateRef<ComponentPublicInstance>('plusRef')
 const minusRef = useTemplateRef<ComponentPublicInstance>('minusRef')
+const fitRef = useTemplateRef<ComponentPublicInstance>('fitRef')
 const topRef = useTemplateRef<ComponentPublicInstance>('topRef')
 const bottomRef = useTemplateRef<ComponentPublicInstance>('bottomRef')
 const leftRef = useTemplateRef<ComponentPublicInstance>('leftRef')
@@ -549,6 +681,7 @@ const roteLeftRef = useTemplateRef<ComponentPublicInstance>('roteLeftRef')
 const roteRightRef = useTemplateRef<ComponentPublicInstance>('roteRightRef')
 const plusExecutor = new HoldExecutor(handlePlus)
 const minusExecutor = new HoldExecutor(handleMinus)
+const fitExecutor = new HoldExecutor(handleFitView)
 const topExecutor = new HoldExecutor(handleTop)
 const bottomExecutor = new HoldExecutor(handleBottom)
 const leftExecutor = new HoldExecutor(handleLeft)
@@ -564,6 +697,7 @@ watchEffect(() => {
   }
   extract(plusRef, plusExecutor)
   extract(minusRef, minusExecutor)
+  extract(fitRef, fitExecutor)
   extract(topRef, topExecutor)
   extract(bottomRef, bottomExecutor)
   extract(leftRef, leftExecutor)
@@ -573,7 +707,6 @@ watchEffect(() => {
 })
 
 /* 编辑区全屏 */
-const mainRef = useTemplateRef<HTMLDivElement>('mainRef')
 const handleFullScreen = async () => {
   const el = mainRef.value
   
@@ -590,13 +723,17 @@ const handleFullScreen = async () => {
   await el.requestFullscreen()
   
   scaleFactor.value = SCALE_FACTOR
-  canvasSize.value = canvasSize.value * scaleFactor.value
+  canvasSize.value *= SCALE_FACTOR
 }
 useEventListener(document, 'fullscreenchange', () => {
   if (document.fullscreenElement !== mainRef.value) {
     resetCanvasSize()
   }
 })
+
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+const { current } = useMagicKeys({ target: mainRef })
+const keys = computed(() => Array.from(current))
 
 defineExpose({
   handleShowDialog,
@@ -631,8 +768,14 @@ defineExpose({
         <span>{{ name }}</span>
       </template>
       
-      <div ref="mainRef" class="main">
-        <div :style="{width: sizeWithPx, height: sizeWithPx}" class="edit-container">
+      <div
+        ref="mainRef"
+        class="main"
+        tabindex="0"
+        @mouseenter="()=>mainRef.focus()"
+        @mouseleave="()=>mainRef.blur()"
+      >
+        <div class="edit-container">
           <div :style="{width: sizeWithPx, height: sizeWithPx}" class="grid-background">
             <svg
               height="100%"
@@ -664,16 +807,17 @@ defineExpose({
               width="100%"
               xmlns="http://www.w3.org/2000/svg"
               pointer-events="none"
+              viewBox="0 0 1024 1024"
             >
-              <g stroke="#BCCE8A" stroke-width="1" stroke-dasharray="4 2">
+              <g stroke="#00FF00" stroke-width="1" stroke-dasharray="12 4">
                 <line ref="vLineRef" opacity="0" y1="0%" y2="100%" />
                 <line ref="hLineRef" opacity="0" x1="0%" x2="100%" />
                 
-                <line ref="lvLineRef" opacity="0" y1="0%" y2="100%" />
-                <line ref="rvLineRef" opacity="0" y1="0%" y2="100%" />
+                <line ref="lvLineRef" stroke-width="2" opacity="0" y1="0%" y2="100%" />
+                <line ref="rvLineRef" stroke-width="2" opacity="0" y1="0%" y2="100%" />
                 
-                <line ref="thLineRef" opacity="0" x1="0%" x2="100%" />
-                <line ref="bhLineRef" opacity="0" x1="0%" x2="100%" />
+                <line ref="thLineRef" stroke-width="2" opacity="0" x1="0%" x2="100%" />
+                <line ref="bhLineRef" stroke-width="2" opacity="0" x1="0%" x2="100%" />
               </g>
             </svg>
           </div>
@@ -689,9 +833,6 @@ defineExpose({
             @click="handleClick"
             v-html="code"
             @wheel="handleWheel($event)"
-            tabindex="0"
-            @mouseenter="()=>svgRef.focus()"
-            @mouseleave="()=>svgRef.blur()"
             @dblclick="handleFullScreen"
           />
         </div>
@@ -713,13 +854,16 @@ defineExpose({
           </div>
           
           <div class="flex-row">
-            <div class="title">大小</div>
+            <div class="title">缩放</div>
             <div class="flex-row">
               <var-button ref="plusRef" round type="info">
-                <svg-icon name="ResPlus" size="20px" />
+                <svg-icon name="ResPlus" size="18px" />
               </var-button>
               <var-button ref="minusRef" round type="info">
-                <svg-icon name="ResMinus" size="20px" />
+                <svg-icon name="ResMinus" size="18px" />
+              </var-button>
+              <var-button ref="fitRef" round type="success">
+                <svg-icon name="FullScreen" size="18px" />
               </var-button>
             </div>
           </div>
@@ -728,16 +872,16 @@ defineExpose({
             <div class="title">移动</div>
             <div class="flex-row">
               <var-button ref="topRef" round type="info">
-                <svg-icon name="MoveTop" size="20px" />
+                <svg-icon name="MoveTop" size="18px" />
               </var-button>
               <var-button ref="bottomRef" round type="info">
-                <svg-icon name="MoveBottom" size="20px" />
+                <svg-icon name="MoveBottom" size="18px" />
               </var-button>
               <var-button ref="leftRef" round type="info">
-                <svg-icon name="MoveLeft" size="20px" />
+                <svg-icon name="MoveLeft" size="18px" />
               </var-button>
               <var-button ref="rightRef" round type="info">
-                <svg-icon name="MoveRight" size="20px" />
+                <svg-icon name="MoveRight" size="18px" />
               </var-button>
             </div>
           </div>
@@ -746,10 +890,10 @@ defineExpose({
             <div class="title">旋转</div>
             <div class="flex-row">
               <var-button ref="roteLeftRef" round type="info">
-                <svg-icon name="RotateLeft" size="20px" />
+                <svg-icon name="RotateLeft" size="18px" />
               </var-button>
               <var-button ref="roteRightRef" round type="info">
-                <svg-icon name="RotateRight" size="20px" />
+                <svg-icon name="RotateRight" size="18px" />
               </var-button>
             </div>
           </div>
@@ -758,16 +902,16 @@ defineExpose({
             <div class="title">操作</div>
             <div class="flex-row">
               <var-button round type="info" @click="handleDownload(getCode(svgRef), name)">
-                <svg-icon name="download" size="20px" />
+                <svg-icon name="download" size="18px" />
               </var-button>
               <var-button round type="info" @click="handleCopy(getCode(svgRef))">
-                <svg-icon name="copy" size="20px" />
+                <svg-icon name="copy" size="18px" />
               </var-button>
               <var-button round type="warning" @click="handleReset">
-                <svg-icon name="ResReset" size="20px" />
+                <svg-icon name="ResReset" size="18px" />
               </var-button>
               <var-button round type="danger" @click="handleDelete">
-                <svg-icon name="delete" size="20px" />
+                <svg-icon name="delete" size="18px" />
               </var-button>
             </div>
           </div>
@@ -798,20 +942,91 @@ defineExpose({
                   type="success"
                   @click="handleColor"
                 >
-                  <svg-icon name="check" size="20px" />
+                  <svg-icon name="check" size="18px" />
                 </var-button>
                 <var-button
                   type="warning"
                   round
                   @click="handleColorClear"
                 >
-                  <var-icon name="close-circle" size="20px" />
+                  <var-icon name="close-circle" size="18px" />
                 </var-button>
               </var-button-group>
             </div>
           </div>
         </div>
       </div>
+      
+      <template #actions="{slotClass, confirm, cancel}">
+        <div :class="slotClass" style="gap: 12px">
+          <div style="display: flex;align-items: center;gap: 4px;">
+            <var-tooltip
+              trigger="hover"
+              color="rgba(var(--primary-background-color), 1)"
+              placement="top-start"
+            >
+              <var-button round type="info" text>
+                <svg-icon name="doc" size="20px" pointer />
+              </var-button>
+              <template #content>
+                <div
+                  style="
+                    color: rgba(var(--primary-color), 1);
+                    max-width: 480px;
+                    word-break: break-all;
+                    text-align: left;
+                    display: flex;
+                    flex-flow: column nowrap;
+                    gap: 8px;
+                 "
+                >
+                  <div>
+                    缩放：按住 Ctrl 更改缩放中心为鼠标位置；按住 Shift 按网格大小缩放；
+                    <svg-icon name="FullScreen" inline />
+                    将 SVG 缩放到固定比例，提升 Shift 操作准确性；
+                  </div>
+                  <div>移动：W 上移，A 左移，S 下移，D 右移；</div>
+                  <div>旋转：Q 左旋转，E 右旋转；</div>
+                  <div>全屏：双击画布全屏，再次操作退出；</div>
+                </div>
+              </template>
+            </var-tooltip>
+          </div>
+          
+          <div style="display: flex;flex: 1;align-items: center;gap: 4px;">
+            <div style="display: flex;align-items: center;gap: 4px;">
+              <var-chip
+                v-for="key in keys"
+                :key="key"
+                size="small"
+              >
+                {{ cap(key) }}
+              </var-chip>
+            </div>
+          </div>
+          
+          <div style="display: flex;gap: 8px">
+            <var-button
+              class="var-dialog__cancel-button"
+              @click="cancel"
+              type="primary"
+              text
+              :elevation="false"
+            >
+              关闭
+            </var-button>
+            <var-button
+              class="var-dialog__confirm-button"
+              text-color="var(--button-danger-color)"
+              @click="confirm"
+              text
+              :elevation="false"
+            >
+              关闭并重置
+            </var-button>
+          </div>
+        </div>
+      </template>
     </var-dialog>
   </div>
 </template>
@@ -875,6 +1090,31 @@ defineExpose({
             top: 0;
             left: 0;
             z-index: 2;
+          }
+          
+          
+          &::after {
+            position: absolute;
+            top: 0;
+            left: calc(50% - 5px / 2);
+            width: 5px;
+            height: 100%;
+            content: "";
+            transform: scaleX(0.2);
+            transform-origin: center;
+            background: rgba(209, 71, 72, .3);
+          }
+          
+          &::before {
+            position: absolute;
+            top: calc(50% - 5px / 2);
+            left: 0;
+            width: 100%;
+            height: 5px;
+            content: "";
+            transform: scaleY(0.2);
+            transform-origin: center;
+            background: rgba(209, 71, 72, .3);
           }
         }
         
