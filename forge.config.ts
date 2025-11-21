@@ -35,6 +35,9 @@ const config: ForgeConfig = {
       if (!file) return false
       return ![ '/.vite', '/node_modules' ].some(prefix => file.startsWith(prefix))
     },
+    extraResource: [
+      'public/icons'
+    ]
   },
   rebuildConfig: {},
   makers: [
