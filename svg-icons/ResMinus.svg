@@ -1,3 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 1024 1024" fill="currentColor">
-  <path d="M96 512a32 32 0 0 1 32-32h768a32 32 0 0 1 0 64H128a32 32 0 0 1-32-32" />
+<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 1024 1024">
+  <path d="M64 512A34.46153846 34.46153846 0 0 1 98.46153846 477.53846154H925.53846154A34.46153846 34.46153846 0 0 1 925.53846154 546.46153846H98.46153846A34.46153846 34.46153846 0 0 1 64 512" />
 </svg>

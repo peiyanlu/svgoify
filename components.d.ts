@@ -17,6 +17,7 @@ declare module 'vue' {
     VarBackTop: typeof import('@varlet/ui')['_BackTopComponent']
     VarButton: typeof import('@varlet/ui')['_ButtonComponent']
     VarButtonGroup: typeof import('@varlet/ui')['_ButtonGroupComponent']
+    VarChip: typeof import('@varlet/ui')['_ChipComponent']
     VarCollapse: typeof import('@varlet/ui')['_CollapseComponent']
     VarCollapseItem: typeof import('@varlet/ui')['_CollapseItemComponent']
     VarDialog: typeof import('@varlet/ui')['_DialogComponent']
