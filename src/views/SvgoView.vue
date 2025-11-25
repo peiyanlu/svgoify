@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import { SvgoOptimizeResult } from '@/electron/IpcInterface'
 import SvgoResult from '@/views/SvgoResult.vue'
 import SvgoUpload from '@/views/SvgoUpload.vue'
-import { SvgoOptimizeResult } from '@/electron/common'
 import { ref } from 'vue'
 
 
@@ -15,13 +15,13 @@ const formats = ref<SvgoOptimizeResult[]>([])
       type="wave"
       description="LOADING"
       :loading="loading"
-      class="aaa"
     >
       <div class="svgo-container">
         <SvgoUpload
           v-model:loading="loading"
           v-model:formats="formats"
         />
+        
         <SvgoResult
           v-model:result="formats"
         />

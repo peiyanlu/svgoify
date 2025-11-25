@@ -3,58 +3,55 @@ import { MakerDMG } from '@electron-forge/maker-dmg'
 import { MakerRpm } from '@electron-forge/maker-rpm'
 import { MakerSquirrel } from '@electron-forge/maker-squirrel'
 import { MakerZIP } from '@electron-forge/maker-zip'
+import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives'
+import { ElectronegativityPlugin } from '@electron-forge/plugin-electronegativity'
 import { FusesPlugin } from '@electron-forge/plugin-fuses'
 import { VitePlugin } from '@electron-forge/plugin-vite'
 import type { ForgeConfig } from '@electron-forge/shared-types'
 import { FuseV1Options, FuseVersion } from '@electron/fuses'
-import { isPlatform } from '@peiyanlu/electron-ipc'
 import { join } from 'path'
-import pkg from './package.json'
 
 
-const APP_NAME = pkg.productName ?? 'SVGoify'
-const RENDERER_DIR_NAME: string = 'main_window'
-const iconDir: string = `.vite/renderer/${ RENDERER_DIR_NAME }/icons`
+const iconResDir = 'resources/icons'
+
+const joinPath = (...paths: string[]) => {
+  // const iconDir: string = `.vite/build/icons`
+  return join(__dirname, iconResDir, ...paths)
+}
 
 
-const config: ForgeConfig = {
+export default {
   packagerConfig: {
-    name: APP_NAME,
-    // Linux 只能小写
-    executableName: isPlatform('linux') ? APP_NAME.toLowerCase() : undefined,
     asar: true,
-    overwrite: true,
-    // 任务栏 & 快捷方式 不带后缀
-    icon: join(__dirname, iconDir, 'icon'),
-    win32metadata: {
-      // 应用安装之后显示的名称
-      ProductName: APP_NAME,
-      FileDescription: pkg.description,
-    },
+    icon: joinPath('icon'),
+    extraResource: [
+      iconResDir,
+    ],
     ignore: (file: string) => {
       if (!file) return false
       return ![ '/.vite', '/node_modules' ].some(prefix => file.startsWith(prefix))
     },
-    extraResource: [
-      'public/icons'
-    ]
   },
-  rebuildConfig: {},
   makers: [
     // Windows
-    new MakerSquirrel({
-      // 用于控制面板->应用程序中显示
-      iconUrl: 'https://krseoul.imgtbl.com/i/2024/08/16/66bee9aacb3b9.ico',
-    }),
+    new MakerSquirrel({}),
     // new MakerMSIX({}),
     // 全平台都可用
     new MakerZIP({}),
     // Mac 标准格式
     new MakerDMG({}),
     // Linux redhat，centos，Fedora
-    new MakerRpm({}),
+    new MakerRpm({
+      options: {
+        icon: joinPath('icon.png'),
+      },
+    }),
     // Linux debian，ubuntu
-    new MakerDeb({}),
+    new MakerDeb({
+      options: {
+        icon: joinPath('icon.png'),
+      },
+    }),
   ],
   plugins: [
     new VitePlugin({
@@ -72,11 +69,15 @@ const config: ForgeConfig = {
       ],
       renderer: [
         {
-          name: RENDERER_DIR_NAME,
+          name: 'main_window',
           config: 'vite.renderer.config.mts',
         },
       ],
     }),
+    new ElectronegativityPlugin({
+      isSarif: true,
+    }),
+    new AutoUnpackNativesPlugin({}),
     new FusesPlugin({
       version: FuseVersion.V1,
       [FuseV1Options.RunAsNode]: false,
@@ -96,12 +97,10 @@ const config: ForgeConfig = {
           owner: 'peiyanlu',
           name: 'svgoify',
         },
-        draft: true,
-        prerelease: false,
+        draft: false,
+        prerelease: true,
         generateReleaseNotes: true,
       },
     },
   ],
-}
-
-export default config
+} satisfies ForgeConfig

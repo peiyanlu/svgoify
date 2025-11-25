@@ -28,7 +28,6 @@ const html = computed(() => {
   
   if (props.type === 'clipPath') {
     const codeFormat = domparser.parseFromString(props.code, 'image/svg+xml')
-    console.log(codeFormat)
     return Array
       .from(codeFormat.querySelectorAll('clipPath'))
       .map(node => {

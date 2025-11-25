@@ -3,25 +3,17 @@ import SvgIcon from '@/components/SvgIcon.vue'
 import { Snackbar } from '@varlet/ui'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark-dimmed.min.css'
-
-// import 'highlight.js/lib/common'
 import javascript from 'highlight.js/lib/languages/javascript'
 import html from 'highlight.js/lib/languages/vbscript-html'
 import xml from 'highlight.js/lib/languages/xml'
 import { computed, ref, watch } from 'vue'
 
 
-// Then register the languages you need
-hljs.registerLanguage('javascript', javascript)
-hljs.registerLanguage('xml', xml)
-hljs.registerLanguage('html', html)
-
-const escapeHtml = (value: string): string => value
-  .replace(/&/g, '&amp;')
-  .replace(/</g, '&lt;')
-  .replace(/>/g, '&gt;')
-  .replace(/"/g, '&quot;')
-  .replace(/'/g, '&#x27;')
+Object
+  .entries({ javascript, xml, html })
+  .forEach(([ k, v ]) => {
+    hljs.registerLanguage(k, v)
+  })
 
 
 const props = withDefaults(defineProps<{
@@ -37,11 +29,19 @@ const props = withDefaults(defineProps<{
   code: '',
   language: 'html',
   autodetect: true,
-  ignoreIllegals: true,
+  ignoreIllegals: false,
   pretty: true,
   copy: true,
   downloadName: 'download.txt',
 })
+
+
+const escapeHtml = (value: string): string => value
+  .replaceAll(/&/g, '&amp;')
+  .replaceAll(/</g, '&lt;')
+  .replaceAll(/>/g, '&gt;')
+  .replaceAll(/"/g, '&quot;')
+  .replaceAll(/'/g, '&#x27;')
 
 const language = ref(props.language)
 watch(() => props.language, (newLanguage) => {
@@ -106,7 +106,11 @@ const handleCopy = (str: string) => {
 </script>
 
 <template>
-  <div class="highlight" ref="highlightRef" :class="isFullScreen ? 'full-screen' : ''">
+  <div
+    class="highlight"
+    ref="highlightRef"
+    :class="isFullScreen ? 'full-screen' : ''"
+  >
     <div class="action">
       <svg-icon
         class="icon"
@@ -131,7 +135,12 @@ const handleCopy = (str: string) => {
     </div>
     
     <!-- pre code 莫要换行 -->
-    <pre v-if="pretty || isFullScreen" class="code"><code :class="className" class="code" v-html="highlightedCode" /></pre>
+    <pre v-if="pretty || isFullScreen" class="code"><code
+      :class="className"
+      class="code"
+      v-html="highlightedCode"
+    /></pre>
+    
     <div v-else class="code" v-text="code" />
   </div>
 </template>

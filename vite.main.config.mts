@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { defineConfig, UserConfig } from 'vite'
+import { defineConfig } from 'vite'
 import { createPatchRequireJsonPlugin } from './vite.plugin.patch.mjs'
 
 
@@ -10,18 +10,17 @@ declare global {
   const APP_VERSION: string
 }
 
-export default defineConfig(({ mode }) => {
-  return {
-    define: {
-      APP_NAME: JSON.stringify(pkg.productName),
-      APP_VERSION: JSON.stringify(`v${ pkg.version }`),
-    },
-    build: {
-      license: true,
-      copyPublicDir: mode === 'development',
-    },
-    plugins: [
-      createPatchRequireJsonPlugin(),
-    ],
-  } satisfies UserConfig
+export default defineConfig({
+  publicDir: 'resources',
+  define: {
+    APP_NAME: JSON.stringify(pkg.productName),
+    APP_VERSION: JSON.stringify(`v${ pkg.version }`),
+  },
+  build: {
+    license: true,
+    copyPublicDir: true,
+  },
+  plugins: [
+    createPatchRequireJsonPlugin(),
+  ],
 })

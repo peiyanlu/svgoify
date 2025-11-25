@@ -279,7 +279,7 @@ export const svgoPlugins: SvgoPluginsDataList[] =  [
   {
     id: 'convertStyleToAttrs',
     name: '转换样式为属性',
-    active: true,
+    active: false,
     isDefault: false,
     description: '将 <style> 中的表示属性转换为等效的 XML 属性',
   },
@@ -329,9 +329,9 @@ export const svgoPlugins: SvgoPluginsDataList[] =  [
   {
     id: 'resetViewBox',
     name: '重置 viewBox',
-    active: false,
+    active: true,
     isCustom: true,
-    description: '重置 viewBox 属性为 [0 0 1024 1024], 仅当存在 <path> 时生效且 stroke 会导致结果异常；影响压缩体积',
+    description: '重置 viewBox 属性为 [0 0 1024 1024]',
   },
   {
     id: 'removeGroup',
@@ -339,5 +339,12 @@ export const svgoPlugins: SvgoPluginsDataList[] =  [
     active: true,
     isCustom: true,
     description: '移除 <g> 元素',
+  },
+  {
+    id: 'removeRootStyle',
+    name: '移除<svg>的属性',
+    active: true,
+    isCustom: true,
+    description: '移除 <svg> 上的不必要属性',
   },
 ]

@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { isBrowserProcess, isElectronAppFrontend } from '@peiyanlu/electron-ipc'
+import { isBrowser, isFrontend } from '@peiyanlu/electron-ipc'
 import { ref } from 'vue'
 
 
-const isElectron = isElectronAppFrontend()
-
+const isElectron = isFrontend()
 
 const title = ref('')
-if (isBrowserProcess()) {
+if (isBrowser()) {
   title.value = window.document.title
 }
 </script>

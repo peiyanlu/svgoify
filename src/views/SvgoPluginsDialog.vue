@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { nextTick, ref } from 'vue'
+import SvgIcon from '@/components/SvgIcon.vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { svgoPlugins, SvgoPluginsDataList } from './SvgoPlugins'
 
 
@@ -36,7 +37,7 @@ const handleConfirm = () => {
         type="default"
         @click="showDialog = true"
       >
-        <var-icon name="cog" size="24px" />
+        <svg-icon name="setting" size="24px" />
       </var-button>
     </div>
     
@@ -44,12 +45,9 @@ const handleConfirm = () => {
     <var-dialog
       v-model:show="showDialog"
       dialog-class="params-dialog"
-      :cancel-button="true"
-      cancel-button-text="关闭"
-      :confirm-button="false"
     >
       <template #title>
-        <var-icon name="cog" />
+        <svg-icon name="setting" size="21px" />
         <div>插件设置</div>
       </template>
       
@@ -87,6 +85,10 @@ const handleConfirm = () => {
           />
         </var-tooltip>
       </div>
+      
+      <template #actions>
+        <div />
+      </template>
     </var-dialog>
   </div>
 </template>
@@ -121,7 +123,7 @@ const handleConfirm = () => {
   .var-dialog__message {
     display: grid;
     overflow: auto;
-    height: calc(100% - 60px - 45px);
+    height: calc(100% - 45px - 45px);
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 16px;
     grid-auto-flow: row dense;

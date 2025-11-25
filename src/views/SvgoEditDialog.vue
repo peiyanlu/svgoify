@@ -5,7 +5,7 @@ import { MouseUtils } from '@/utils/MouseUtils'
 import { Snackbar } from '@varlet/ui'
 import { useEventListener, useMagicKeys } from '@vueuse/core'
 import svgpath from 'svgpath'
-import { ComponentPublicInstance, computed, Ref, ref, useTemplateRef, watchEffect } from 'vue'
+import { ComponentPublicInstance, computed, onUpdated, Ref, ref, useTemplateRef, watchEffect } from 'vue'
 
 
 const props = defineProps<{ code: string, name: string }>()
@@ -93,13 +93,26 @@ const getSvgMousePoint = (svg: SVGSVGElement, evt: MouseEvent | WheelEvent) => {
   return { x, y }
 }
 
+onUpdated(()=> {
+  selectedSvgPath.value.forEach(child => child.removeAttribute('class'))
+  selectedSvgPath.value = []
+})
+
+const handleShowDialog = (reset?: boolean) => {
+  showDialog.value = !showDialog.value
+  if (reset && typeof reset === 'boolean') {
+    handleReset()
+  }
+}
+
 
 const getCode = (div: HTMLDivElement | null) => {
   if (!div) return ''
   const svg = div.querySelector('svg')!
   Array.from(svg.children).forEach(child => child.removeAttribute('class'))
-  return div.innerHTML.replaceAll(/><\/(path|rect|circle|ellipse|line)>/g, '/>')
+  return div.innerHTML
 }
+
 const getTargetList = () => {
   const [ _a, _b, width ] = getViewBox(props.code)
   strokeDasharray.value = width / 1024 * STROKE_DASHARRAY
@@ -114,14 +127,7 @@ const getTargetList = () => {
   return selectedSvgPath.value
 }
 
-const handleShowDialog = (reset?: boolean) => {
-  showDialog.value = !showDialog.value
-  if (reset && typeof reset === 'boolean') {
-    handleReset()
-  }
-}
-
-const handleClick = (evt: MouseEvent) => {
+const handleSelect = (evt: MouseEvent) => {
   const target = evt.target as SVGPathElement
   
   const [ _a, _b, width ] = getViewBox(props.code)
@@ -735,6 +741,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 const { current } = useMagicKeys({ target: mainRef })
 const keys = computed(() => Array.from(current))
 
+
 defineExpose({
   handleShowDialog,
 })
@@ -830,7 +837,7 @@ defineExpose({
               '--strokeWidth': strokeWidth,
             }"
             class="content"
-            @click="handleClick"
+            @click="handleSelect"
             v-html="code"
             @wheel="handleWheel($event)"
             @dblclick="handleFullScreen"
@@ -949,7 +956,7 @@ defineExpose({
                   round
                   @click="handleColorClear"
                 >
-                  <var-icon name="close-circle" size="18px" />
+                  <svg-icon name="close" size="18px" />
                 </var-button>
               </var-button-group>
             </div>
@@ -983,7 +990,7 @@ defineExpose({
                   <div>
                     缩放：按住 Ctrl 更改缩放中心为鼠标位置；按住 Shift 按网格大小缩放；点击
                     <svg-icon name="FullScreen" inline />
-                    将 SVG 缩放到固定比例，提升 Shift 操作准确性；
+                    将 SVG 缩放到固定比例、提升 Shift 操作的精确度；
                   </div>
                   <div>移动：W 上移，A 左移，S 下移，D 右移；</div>
                   <div>旋转：Q 左旋转，E 右旋转；</div>

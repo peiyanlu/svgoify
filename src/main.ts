@@ -1,31 +1,31 @@
-import { isPlatform } from '@peiyanlu/electron-ipc'
-import { checkSquirrel, createTray, ElectronHost, IpcHost, onChildWindowOpenUrl } from '@peiyanlu/electron-ipc/backend'
+import {
+  checkSquirrel,
+  createTray,
+  ElectronHost,
+  getIconExt,
+  isDev,
+  onChildWindowOpenUrl,
+  showAndFocus,
+} from '@peiyanlu/electron-ipc/backend'
 import { app, BrowserWindow, globalShortcut, Menu } from 'electron'
 import { join } from 'path'
 import { updateElectronApp } from 'update-electron-app'
 import { ElectronSvgHandler } from './electron/IpcHandler'
 
 
-const url = MAIN_WINDOW_VITE_DEV_SERVER_URL
 const file = join(__dirname, '..', `renderer/${ MAIN_WINDOW_VITE_NAME }/index.html`)
-const frontendURL = url ?? file
+const frontendURL = MAIN_WINDOW_VITE_DEV_SERVER_URL ?? file
 
-const resources = app.isPackaged ? process.resourcesPath : __dirname
 
-const getIcon = (root: string) => {
-  return join(root, 'icons', `icon.${ isPlatform('linux') ? 'png' : 'ico' }`)
+const getIcon = (root: string, tray?: boolean) => {
+  return join(root, 'icons', `icon.${ getIconExt(tray) }`)
 }
-
-const icon = getIcon(__dirname)
-const trayIcon = join(resources)
+const appIcon = getIcon(__dirname)
+const trayIcon = getIcon(isDev ? __dirname : process.resourcesPath, true)
 
 
 if (checkSquirrel()) {
   ElectronHost.shutdown()
-}
-
-if (app.isPackaged) {
-  updateElectronApp()
 }
 
 ElectronHost.startup({
@@ -35,14 +35,15 @@ ElectronHost.startup({
 ElectronHost.openMainWindow({
     webPreferences: {
       preload: require.resolve('./preload.js'),
-      sandbox: false,
+      sandbox: true,
     },
     width: 1200,
     height: 750,
-    icon,
+    icon: appIcon,
     frontendURL,
     hideAppMenu: true,
     singleInstance: true,
+    devTools: true,
     beforeReady: () => {
       app.commandLine.appendSwitch('log-level', '3')
       app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal')
@@ -52,11 +53,6 @@ ElectronHost.openMainWindow({
   })
   .then((window) => {
     if (!window) return
-    
-    window.flashFrame(true)
-    window.once('focus', () => {
-      setTimeout(() => window.flashFrame(false), 1000)
-    })
     
     globalShortcut.register('CmdOrCtrl+Shift+I', () => {
       BrowserWindow.getFocusedWindow()?.webContents.toggleDevTools()
@@ -69,8 +65,7 @@ ElectronHost.openMainWindow({
         {
           label: '打开',
           click: () => {
-            window.show()
-            window.focus()
+            showAndFocus(window)
           },
         },
         {
@@ -82,9 +77,9 @@ ElectronHost.openMainWindow({
       ]),
       title: `${ APP_NAME } ${ APP_VERSION }`,
     })
-    
   })
 
-IpcHost.addListener('changeTheme', (_e, data: string) => {
-  console.log('changeTheme:receiver', data)
-})
+
+if (!isDev) {
+  updateElectronApp()
+}

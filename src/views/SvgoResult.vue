@@ -1,22 +1,24 @@
 <script lang="ts" setup>
-import { SvgoOptimizeResult } from '@/electron/common'
 import SvgIcon from '@/components/SvgIcon.vue'
+import { SvgoOptimizeResult } from '@/electron/IpcInterface'
 import { Svg2ClipPath } from '@/utils/Svg2ClipPath'
 import { Svg2CSSVar } from '@/utils/Svg2CSSVar'
 import { Svg2Symbol } from '@/utils/Svg2Symbol'
+import HighlightJs from '@/views/HighlightCode.vue'
 import StatisticInfo from '@/views/StatisticInfo.vue'
 import SvgoEditDialog from '@/views/SvgoEditDialog.vue'
 import SvgoResultItem from '@/views/SvgoResultItem.vue'
 import SvgScriptsPreview from '@/views/SvgoSpritesPreview.vue'
-import HighlightJs from '@/views/HighlightCode.vue'
-import { computed, ref } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 
+
+type CompType = InstanceType<typeof SvgoEditDialog>
 
 const value = ref([ '1' ])
 
-let result = defineModel<SvgoOptimizeResult[]>('result', {default: []})
-const editRef = ref<HTMLHtmlElement | null>(null)
+const result = defineModel<SvgoOptimizeResult[]>('result', { default: [] })
 
+const editRef = useTemplateRef<CompType[]>('editRef')
 const handleEdit = (index: number) => {
   editRef.value[index].handleShowDialog()
 }
@@ -223,6 +225,7 @@ const cssVarVal = computed(() => {
         padding: 3px;
         cursor: pointer;
         border-radius: 4px;
+        transition: background 0.15s;
         
         &:hover {
           background: rgba(255, 255, 255, 0.1);
@@ -271,6 +274,7 @@ const cssVarVal = computed(() => {
     }
   }
 }
+
 .flex-column {
   display: flex;
   flex-flow: column nowrap;

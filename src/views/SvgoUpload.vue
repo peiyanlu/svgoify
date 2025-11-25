@@ -5,13 +5,12 @@ import SvgoPluginsDialog from '@/views/SvgoPluginsDialog.vue'
 import { useDropZone, useEventListener } from '@vueuse/core'
 import { ElectronApp, IpcApp } from '@peiyanlu/electron-ipc/frontend'
 import JSZip from 'jszip'
-import { ref, useTemplateRef, watch } from 'vue'
+import { onMounted, ref, useTemplateRef, watch } from 'vue'
 
 
 ElectronApp.startup()
 const svgoIpc = IpcApp.makeIpcFunctionProxy<SvgoIpcInterface>(svgoChannel, 'callMethod')
 
-IpcApp.send('changeTheme', 'light')
 
 const loading = defineModel('loading', { default: false })
 const formats = defineModel<SvgoOptimizeResult[]>('formats', { default: [] })
@@ -96,17 +95,25 @@ useEventListener('paste', async (evt: ClipboardEvent) => {
 })
 
 // 重新转换
+const reload = async (plugins: string[]) => {
+  formats.value = await Promise.all(formats.value.map(async item => {
+    const { input, parse } = item
+    const { parse: _a, ...others } = await svgoIpc.compressStr(
+      input,
+      { plugins: [ ...plugins ] },
+    )
+    return { parse, ...others }
+  }))
+}
 watch(plugins, async (val) => {
   await loadingHelper(async () => {
-    formats.value = await Promise.all(formats.value.map(async item => {
-      const { input, parse } = item
-      const { parse: _a, ...others } = await svgoIpc.compressStr(
-        input,
-        { plugins: [ ...val ] },
-      )
-      return { parse, ...others }
-    }))
+    await reload(val)
   })
+})
+onMounted(async () => {
+  if (formats.value.length > 0) {
+    await reload(plugins.value)
+  }
 })
 
 // 下载全部
@@ -154,6 +161,7 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
         <span>Ctrl + V 粘贴 SVG 代码</span>
         <div class="flex-center">
           <SvgoPluginsDialog @getPlugins="(data)=> plugins = data" />
+          
           <var-button
             v-if="formats.length"
             round
