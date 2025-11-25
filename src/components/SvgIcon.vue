@@ -59,6 +59,7 @@ watchEffect(() => {
   width: 1em;
   height: 1em;
   vertical-align: middle;
+  overflow: hidden;
   
   & > :deep(svg) {
     display: block;

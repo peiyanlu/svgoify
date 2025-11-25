@@ -67,12 +67,6 @@ const resetViewBox: CustomPlugin = {
       return { percent, tranX, tranY }
     }
     
-    const parseOrigin = (origin: string | undefined) => {
-      if (!origin) return { ox: 0, oy: 0 }
-      const parts = origin.replace('px', '').split(/[\s,]+/).map(Number)
-      return { ox: parts[0] || 0, oy: parts[1] || 0 }
-    }
-    
     return {
       element: {
         enter: (node, _parentNode) => {
@@ -96,9 +90,16 @@ const resetViewBox: CustomPlugin = {
                 .round(4)
                 .toString()
               
-              if (node.attributes['stroke-width']) {
-                const width = parseFloat(node.attributes['stroke-width'])
+              if (node.attributes['stroke']) {
+                const width = parseFloat(node.attributes['stroke-width'] ?? '1')
                 node.attributes['stroke-width'] = (width * percent).toFixed(4)
+                
+                if (node.attributes['stroke-dasharray']) {
+                  node.attributes['stroke-dasharray'] = node.attributes['stroke-dasharray']
+                    .split(' ')
+                    .map(x => parseFloat(x) * percent)
+                    .join(' ')
+                }
               }
             }
           }
