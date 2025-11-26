@@ -1,8 +1,8 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { frontendApiKey, getFrontendApi } from '@peiyanlu/electron-ipc/preload'
 
 
-contextBridge.exposeInMainWorld(frontendApiKey, getFrontendApi())
+contextBridge.exposeInMainWorld(frontendApiKey, getFrontendApi(ipcRenderer))
 
 window.addEventListener('DOMContentLoaded', () => {
   const replaceText = (selector: string, text: string) => {

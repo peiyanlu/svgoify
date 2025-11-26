@@ -3,6 +3,8 @@ import {
   createTray,
   ElectronHost,
   getIconExt,
+  inspectElement,
+  IpcHost,
   isDev,
   onChildWindowOpenUrl,
   showAndFocus,
@@ -53,10 +55,13 @@ ElectronHost.openMainWindow({
   })
   .then((window) => {
     if (!window) return
+    window.setBackgroundColor('#141218')
     
-    globalShortcut.register('CmdOrCtrl+Shift+I', () => {
-      BrowserWindow.getFocusedWindow()?.webContents.toggleDevTools()
-    })
+    if (isDev) {
+      globalShortcut.register('CmdOrCtrl+Shift+I', () => {
+        BrowserWindow.getFocusedWindow()?.webContents.toggleDevTools()
+      })
+    }
     
     createTray({
       window: window,
@@ -76,6 +81,10 @@ ElectronHost.openMainWindow({
         },
       ]),
       title: `${ APP_NAME } ${ APP_VERSION }`,
+    })
+    
+    IpcHost.addListener('element:focus', async (_evt, data) => {
+      await inspectElement(window, data, [ 1, 1 ])
     })
   })
 

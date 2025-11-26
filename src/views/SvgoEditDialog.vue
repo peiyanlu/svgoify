@@ -2,6 +2,7 @@
 import SvgIcon from '@/components/SvgIcon.vue'
 import { HoldExecutor } from '@/utils/HoldExecutor'
 import { MouseUtils } from '@/utils/MouseUtils'
+import { IpcApp } from '@peiyanlu/electron-ipc/frontend'
 import { Snackbar } from '@varlet/ui'
 import { useEventListener, useMagicKeys } from '@vueuse/core'
 import svgpath from 'svgpath'
@@ -105,6 +106,9 @@ const handleShowDialog = (reset?: boolean) => {
   }
 }
 
+const handleFocus = () => {
+  IpcApp.send('element:focus', '.edit-container')
+}
 
 const getCode = (div: HTMLDivElement | null) => {
   if (!div) return ''
@@ -998,6 +1002,10 @@ defineExpose({
                 </div>
               </template>
             </var-tooltip>
+            
+            <var-button @click="handleFocus" round type="info" text>
+              <svg-icon name="focus" size="20px" />
+            </var-button>
           </div>
           
           <div style="display: flex;flex: 1;align-items: center;gap: 4px;">

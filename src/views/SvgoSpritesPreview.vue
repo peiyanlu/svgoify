@@ -190,7 +190,7 @@ const style = computed(() => {
   .var-dialog__message {
     display: grid;
     overflow: auto;
-    height: calc(100% - 60px - 54px);
+    height: calc(100% - 60px - 45px);
     grid-template-columns: 5fr minmax(240px, 2fr);
     gap: 12px;
     grid-auto-flow: row dense;

@@ -1,9 +1,7 @@
-import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
+import pkg from './package.json'
 import { createPatchRequireJsonPlugin } from './vite.plugin.patch.mjs'
 
-
-const pkg = JSON.parse(readFileSync('./package.json', 'utf8'))
 
 declare global {
   const APP_NAME: string
@@ -13,7 +11,7 @@ declare global {
 export default defineConfig({
   publicDir: 'resources',
   define: {
-    APP_NAME: JSON.stringify(pkg.productName),
+    APP_NAME: JSON.stringify(pkg.productName ?? pkg.name),
     APP_VERSION: JSON.stringify(`v${ pkg.version }`),
   },
   build: {

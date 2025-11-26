@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="font-src 'self' data:; img-src 'self' data:; default-src 'self' 'unsafe-inline';"
+      content="default-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;"
     >
-    <title>SVGoify <%= version %></title>
+    <title><%= name %> <%= version %></title>
     <style>
       :root {
         color-scheme: light dark;
@@ -40,8 +40,8 @@
   <body>
     <div id="app">
       <div class="placeholder">
-        <h1>💖 Hello SVGoify!</h1>
-        <div>Welcome to your SVG optimize application.</div>
+        <h1>💖 Hello <%= name %>!</h1>
+        <div>Welcome to your Electron application.</div>
         <div>
           We are using Node.js <span id="node-version"></span>,
           Chromium <span id="chrome-version"></span>,
