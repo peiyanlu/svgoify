@@ -1,7 +1,7 @@
 {
   "name": "svgoify",
   "productName": "SVGoify",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "SVG Optimize Application",
   "main": ".vite/build/main.js",
   "scripts": {
