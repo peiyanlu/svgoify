@@ -83,10 +83,12 @@ const cssVarVal = computed(() => {
               <SvgoEditDialog ref="editRef" :code="item.output" :name="item.parse.base" />
               <StatisticInfo :end="item.outputSize" :start="item.inputSize" />
             </div>
+            
             <HighlightJs :code="item.output" :download-name="item.parse.base" download />
             <HighlightJs :code="item.base64" />
             <HighlightJs :code="item.enc" />
             <HighlightJs :code="item.unenc" />
+            
             <div class="action">
               <svg-icon name="ResEdit" size="28px" @click="handleEdit(index)" />
               <svg-icon name="download" size="28px" @click="handleDownload(item.output, item.parse.base)" />

@@ -58,6 +58,7 @@ export namespace MouseUtils {
     
     element.addEventListener('mousedown', mousedown)
     element.addEventListener('click', clickHandler, true)
+    window.addEventListener('blur', mouseup)
   }
 }
 

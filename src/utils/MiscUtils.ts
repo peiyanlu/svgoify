@@ -1,33 +1,30 @@
 export namespace Utils {
-  export const fadeText = (x: number, y: number, text: string, color?: string) => {
-    const span = document.createElement('span')
-    span.innerHTML = text
-    const style: CSSStyleDeclaration = span.style
-    style.zIndex = '9999'
-    style.userSelect = 'none'
-    style.pointerEvents = 'none'
-    style.animation = 'fade-out .2s'
-    style.opacity = '0'
-    style.fontSize = '14px'
-    style.color = color ?? 'white'
-    document.body.appendChild(span)
+  export const toSelfClosing = (html: string) => {
+    const div = document.createElement('div')
+    div.innerHTML = html
     
-    const { width, height } = span.getBoundingClientRect()
-    const top = y - height
-    style.position = 'absolute'
-    style.top = `${ top }px`
-    style.left = `${ x - width / 2 }px`
-    
-    let i = 0
-    const timer = setInterval(() => {
-      if (i < 40) {
-        i++
-        style.top = `${ top - i }px`
-        style.opacity = String(1 - i / 40)
-      } else {
-        span.remove()
-        clearInterval(timer)
+    function serialize(node: SVGSVGElement) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.textContent
       }
-    }, 50 / 3)
+      
+      if (node.nodeType !== Node.ELEMENT_NODE) return ''
+      
+      const tag = node.tagName.toLowerCase()
+      const attrs = [ ...node.attributes ].map(a => `${ a.name }="${ a.value }"`).join(' ')
+      
+      // ✔ 空标签 → 自闭合
+      const targets = [ 'path', 'rect', 'circle', 'ellipse', 'line' ]
+      const hasChildren = [ ...node.childNodes ].some(n => n.nodeType !== Node.TEXT_NODE)
+      if (targets.includes(tag) && !hasChildren) {
+        return `<${ tag }${ attrs ? ' ' + attrs : '' } />`
+      }
+      
+      // ✔ 有子节点 → 保留正常结构
+      const children: string = [ ...node.childNodes ].map(serialize).join('')
+      return `<${ tag }${ attrs ? ' ' + attrs : '' }>${ children }</${ tag }>`
+    }
+    
+    return [ ...div.childNodes ].map(serialize).join('')
   }
 }

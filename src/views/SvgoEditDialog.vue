@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import SvgIcon from '@/components/SvgIcon.vue'
 import { HoldExecutor } from '@/utils/HoldExecutor'
+import { Utils } from '@/utils/MiscUtils'
 import { MouseUtils } from '@/utils/MouseUtils'
 import { IpcApp } from '@peiyanlu/electron-ipc/frontend'
 import { Snackbar } from '@varlet/ui'
@@ -114,7 +115,7 @@ const getCode = (div: HTMLDivElement | null) => {
   if (!div) return ''
   const svg = div.querySelector('svg')!
   Array.from(svg.children).forEach(child => child.removeAttribute('class'))
-  return div.innerHTML
+  return Utils.toSelfClosing(div.innerHTML)
 }
 
 const getTargetList = () => {

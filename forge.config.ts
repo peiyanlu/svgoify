@@ -15,7 +15,6 @@ import { join } from 'path'
 const iconResDir = 'resources/icons'
 
 const joinPath = (...paths: string[]) => {
-  // const iconDir: string = `.vite/build/icons`
   return join(__dirname, iconResDir, ...paths)
 }
 
