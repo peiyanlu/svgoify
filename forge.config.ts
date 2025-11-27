@@ -9,20 +9,23 @@ import { FusesPlugin } from '@electron-forge/plugin-fuses'
 import { VitePlugin } from '@electron-forge/plugin-vite'
 import type { ForgeConfig } from '@electron-forge/shared-types'
 import { FuseV1Options, FuseVersion } from '@electron/fuses'
+import { isLinux } from '@peiyanlu/electron-ipc'
 import { join } from 'path'
+import pkg from './package.json'
 
 
 const iconResDir = 'resources/icons'
 
-const joinPath = (...paths: string[]) => {
-  return join(__dirname, iconResDir, ...paths)
-}
+const joinPath = (...paths: string[]) => join(__dirname, iconResDir, ...paths)
+
+const executableName = isLinux ? pkg.name : undefined
 
 
 export default {
   packagerConfig: {
     asar: true,
     icon: joinPath('icon'),
+    executableName,
     extraResource: [
       iconResDir,
     ],
