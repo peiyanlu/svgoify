@@ -8,8 +8,9 @@ import {
   isDev,
   onChildWindowOpenUrl,
   showAndFocus,
+  writeLog,
 } from '@peiyanlu/electron-ipc/backend'
-import { app, BrowserWindow, globalShortcut, Menu } from 'electron'
+import { app, autoUpdater, BrowserWindow, dialog, globalShortcut, Menu } from 'electron'
 import { join } from 'path'
 import { updateElectronApp } from 'update-electron-app'
 import { ElectronSvgHandler } from './electron/IpcHandler'
@@ -53,7 +54,7 @@ ElectronHost.openMainWindow({
       onChildWindowOpenUrl()
     },
   })
-  .then((window) => {
+  .then(async (window) => {
     if (!window) return
     window.setBackgroundColor('#141218')
     
@@ -63,7 +64,7 @@ ElectronHost.openMainWindow({
       })
     }
     
-    createTray({
+    const tray = createTray({
       window: window,
       icon: trayIcon,
       menu: Menu.buildFromTemplate([
@@ -86,9 +87,24 @@ ElectronHost.openMainWindow({
     IpcHost.addListener('element:focus', async (_evt, data) => {
       await inspectElement(window, data, [ 1, 1 ])
     })
+    
+    
+    if (!isDev) {
+      updateElectronApp({
+        onNotifyUser: async ({ event, ...info }) => {
+          writeLog(`UPDATE: ${ Object.values(info).join(' ') }`)
+          
+          const { response } = await dialog.showMessageBox({
+            icon: trayIcon,
+            title: APP_NAME,
+            message: `${ APP_VERSION } 版本已下载，重启应用后生效`,
+            detail: '取消后，更新仍会在下一次应用启动时生效',
+          })
+          if (0 === response) {
+            tray.enableQuit()
+            autoUpdater.quitAndInstall()
+          }
+        },
+      })
+    }
   })
-
-
-if (!isDev) {
-  updateElectronApp()
-}

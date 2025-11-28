@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@peiyanlu/electron-ipc':
-        specifier: ^1.0.7
-        version: 1.0.7(electron@39.2.3)
+        specifier: ^1.0.8
+        version: 1.0.8(electron@39.2.3)
       '@peiyanlu/ts-utils':
         specifier: ^0.0.1
         version: 0.0.1
@@ -695,8 +695,8 @@ packages:
   '@octokit/types@6.41.0':
     resolution: {integrity: sha512-eJ2jbzjdijiL3B4PrSQaSjuF2sPEQPVCPzBvTHJD9Nz+9dw2SGH4K4xeQJ77YfTq5bRQ+bD8wT11JbeDPmxmGg==}
 
-  '@peiyanlu/electron-ipc@1.0.7':
-    resolution: {integrity: sha512-sTZhmTfZ3vTVx5cZ+jhB5RLn4CYiESUeyrqeJe/zdptu9INHA0FatmB6mBalSgwntv1fXrLO+UeWYZP45jjrTw==}
+  '@peiyanlu/electron-ipc@1.0.8':
+    resolution: {integrity: sha512-hyHtY9mTLbE7xAn5mBHERDoy3h43GCbDITR4UDaUgPtu4VX4Dl232lJRx0tPSNHXwu+iwG0kQw7U602tNUqOYg==}
     peerDependencies:
       electron: ^39
 
@@ -4812,7 +4812,7 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 12.11.0
 
-  '@peiyanlu/electron-ipc@1.0.7(electron@39.2.3)':
+  '@peiyanlu/electron-ipc@1.0.8(electron@39.2.3)':
     dependencies:
       electron: 39.2.3
 
