@@ -18,7 +18,7 @@ const iconResDir = 'resources/icons'
 
 const joinPath = (...paths: string[]) => join(__dirname, iconResDir, ...paths)
 
-const executableName = isLinux ? pkg.name : undefined
+const executableName = isLinux ? pkg.productName.toLowerCase() : undefined
 
 
 export default {
@@ -100,7 +100,7 @@ export default {
           name: 'svgoify',
         },
         draft: false,
-        prerelease: true,
+        prerelease: false,
         generateReleaseNotes: true,
       },
     },
