@@ -17,7 +17,7 @@ const SCALE_BASE = 1
 const SCALE_FACTOR = 1.6
 const STROKE_DASHARRAY = 10
 const STROKE_WIDTH = 2.6
-const PRECISION = 8
+const PRECISION = 4
 
 const canvasSize = ref(CANVAS_SIZE)
 const scaleFactor = ref(SCALE_BASE)
@@ -27,9 +27,12 @@ const strokeWidth = ref(STROKE_WIDTH)
 const sizeWithPx = computed(() => canvasSize.value + 'px')
 const sliderVal = ref(16)
 const gridSize = computed(() => canvasSize.value / sliderVal.value)
-const id = Math.random().toString(36).slice(2, 8)
 const useMouseKeyboard = ref(true)
 const color = ref('')
+
+const random = () => Math.random().toString(36).slice(2, 8)
+const id0 = random()
+const id1 = random()
 
 const showDialog = ref<boolean>(false)
 const selectedSvgPath = ref<SVGPathElement[]>([])
@@ -95,7 +98,7 @@ const getSvgMousePoint = (svg: SVGSVGElement, evt: MouseEvent | WheelEvent) => {
   return { x, y }
 }
 
-onUpdated(()=> {
+onUpdated(() => {
   selectedSvgPath.value.forEach(child => child.removeAttribute('class'))
   selectedSvgPath.value = []
 })
@@ -220,19 +223,23 @@ const handleMinus = (evt?: MouseEvent | WheelEvent) => {
   const targets = getTargetList()
   if (!targets.length) return
   
+  const union = getUnionBBox(targets)
+  if (!union) return
+  
+  const { x, y, width, height } = union
+  const [ , , vw, vh ] = getViewBox(svg)
+  
+  const stepX = vw / sliderVal.value
+  const stepY = vh / sliderVal.value
+  
+  if (Math.min(width, height) < 16) {
+    return
+  }
+  
   const step = 1 / sliderVal.value
   let factor = 1 / (1 + step)
   
   if (evt.shiftKey) {
-    const union = getUnionBBox(targets)
-    if (!union) return
-    
-    const { x, y, width, height } = union
-    const [ , , vw, vh ] = getViewBox(svg)
-    
-    const stepX = vw / sliderVal.value
-    const stepY = vh / sliderVal.value
-    
     const fn = (d: number, s: number) => Math.min(1, (d - s * 2) / d)
     
     const factorX = fn(Math.max(width, stepX * 2), stepX)
@@ -790,28 +797,43 @@ defineExpose({
         <div class="edit-container">
           <div :style="{width: sizeWithPx, height: sizeWithPx}" class="grid-background">
             <svg
-              height="100%"
               width="100%"
+              height="100%"
               xmlns="http://www.w3.org/2000/svg"
               pointer-events="none"
             >
               <defs>
                 <pattern
-                  :id="id"
-                  :height="gridSize"
+                  :id="id0"
                   :width="gridSize"
+                  :height="gridSize"
                   patternUnits="userSpaceOnUse"
-                  x="-0.25"
-                  y="-0.25"
+                  :x="-.25"
+                  :y="-.25"
                 >
                   <path
                     :d="`M ${gridSize} 0 H0 M0 0 V0 ${gridSize} z`"
-                    stroke="rgba(var(--primary-color), .4)"
+                    stroke="rgba(var(--primary-color), .5)"
+                    stroke-width="1"
+                  />
+                </pattern>
+                <pattern
+                  :id="id1"
+                  :width="gridSize * 2"
+                  :height="gridSize * 2"
+                  patternUnits="userSpaceOnUse"
+                  :x="-.25"
+                  :y="-.25"
+                >
+                  <path
+                    :d="`M ${gridSize * 2} 0 H0 M0 0 V0 ${gridSize * 2} z`"
+                    stroke="rgba(255, 0, 0, .45)"
                     stroke-width="1"
                   />
                 </pattern>
               </defs>
-              <rect :fill="`url(#${id})`" height="100%" width="100%" />
+              <rect :fill="`url(#${id0})`" width="100%" height="100%" />
+              <rect :fill="`url(#${id1})`" width="100%" height="100%" />
             </svg>
             <svg
               class="guides"
@@ -854,10 +876,9 @@ defineExpose({
             <div class="title">网格</div>
             <var-slider
               v-model="sliderVal"
-              :max="128"
-              :min="8"
-              :step="8"
-              style="padding-right: 10px;"
+              :max="64"
+              :min="4"
+              :step="4"
             >
               <template #button="{ currentValue }">
                 <div class="slider-example__block">{{ currentValue }}</div>
@@ -1106,31 +1127,6 @@ defineExpose({
             top: 0;
             left: 0;
             z-index: 2;
-          }
-          
-          
-          &::after {
-            position: absolute;
-            top: 0;
-            left: calc(50% - 5px / 2);
-            width: 5px;
-            height: 100%;
-            content: "";
-            transform: scaleX(0.2);
-            transform-origin: center;
-            background: rgba(209, 71, 72, .3);
-          }
-          
-          &::before {
-            position: absolute;
-            top: calc(50% - 5px / 2);
-            left: 0;
-            width: 100%;
-            height: 5px;
-            content: "";
-            transform: scaleY(0.2);
-            transform-origin: center;
-            background: rgba(209, 71, 72, .3);
           }
         }
         

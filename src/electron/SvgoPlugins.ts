@@ -51,20 +51,11 @@ const resetViewBox: CustomPlugin = {
     let viewBox = ''
     let hasPath = false
     
-    const getTranslate = (width: number, height: number) => {
-      const xScale = size / width
-      const yScale = size / height
-      
-      const percent = Math.min(xScale, yScale)
-      
-      const translateX = xScale > yScale
-      
-      const translate = Math.abs(width - height) / 2
-      
-      const tranX = translateX ? translate : 0
-      const tranY = translateX ? 0 : translate
-      
-      return { percent, tranX, tranY }
+    const getTrans = (vw: number, vh: number) => {
+      const scale = size / Math.max(vw, vh)
+      const tranX = vw > vh ? 0 : (size - vw * scale) / 2
+      const tranY = vh > vw ? 0 : (size - vh * scale) / 2
+      return { scale, tranX, tranY }
     }
     
     return {
@@ -77,27 +68,28 @@ const resetViewBox: CustomPlugin = {
           if (node.name === 'path' && viewBox) {
             hasPath = true
             
-            const [ _x, _y, width, height ] = viewBox.split(' ').map(Number)
-            const { tranX, tranY, percent } = getTranslate(width, height)
+            const [ vx, vy, vw, vh ] = viewBox.split(/[\s,]+/).map(Number)
+            const { tranX, tranY, scale } = getTrans(vw, vh)
             
-            if (percent !== 1) {
+            if (scale !== 1) {
               const d = node.attributes.d
               node.attributes.d = svgpath(d)
                 .abs()
-                .translate(-tranX, -tranY)
-                .scale(percent)
+                .translate(-vx, -vy)
+                .scale(scale)
+                .translate(tranX, tranY)
                 .rel()
                 .round(4)
                 .toString()
               
               if (node.attributes['stroke']) {
                 const width = parseFloat(node.attributes['stroke-width'] ?? '1')
-                node.attributes['stroke-width'] = (width * percent).toFixed(4)
+                node.attributes['stroke-width'] = (width * scale).toFixed(4)
                 
                 if (node.attributes['stroke-dasharray']) {
                   node.attributes['stroke-dasharray'] = node.attributes['stroke-dasharray']
                     .split(' ')
-                    .map(x => parseFloat(x) * percent)
+                    .map(x => parseFloat(x) * scale)
                     .join(' ')
                 }
               }
