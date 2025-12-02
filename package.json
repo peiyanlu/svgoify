@@ -36,7 +36,7 @@
     "vite-plugin-html": "^3.2.2"
   },
   "dependencies": {
-    "@peiyanlu/electron-ipc": "^1.0.8",
+    "@peiyanlu/electron-ipc": "^1.0.10",
     "@peiyanlu/ts-utils": "^0.0.1",
     "@varlet/ui": "^3.12.3",
     "@vueuse/components": "^14.0.0",
@@ -46,7 +46,6 @@
     "svgo": "^4.0.0",
     "svgpath": "^2.6.0",
     "tinyglobby": "^0.2.15",
-    "update-electron-app": "^3.1.1",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
   },
