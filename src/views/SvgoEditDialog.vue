@@ -24,7 +24,7 @@ const scaleFactor = ref(SCALE_BASE)
 const strokeDasharray = ref(STROKE_DASHARRAY)
 const strokeWidth = ref(STROKE_WIDTH)
 
-const sizeWithPx = computed(() => canvasSize.value + 'px')
+const sizeWithPx = computed(() => `${ canvasSize.value }px`)
 const sliderVal = ref(16)
 const gridSize = computed(() => canvasSize.value / sliderVal.value)
 const useMouseKeyboard = ref(true)
@@ -32,7 +32,6 @@ const color = ref('')
 
 const random = () => Math.random().toString(36).slice(2, 8)
 const id0 = random()
-const id1 = random()
 
 const showDialog = ref<boolean>(false)
 const selectedSvgPath = ref<SVGPathElement[]>([])
@@ -813,27 +812,22 @@ defineExpose({
                 >
                   <path
                     :d="`M ${gridSize} 0 H0 M0 0 V0 ${gridSize} z`"
-                    stroke="rgba(var(--primary-color), .5)"
-                    stroke-width="1"
-                  />
-                </pattern>
-                <pattern
-                  :id="id1"
-                  :width="gridSize * 2"
-                  :height="gridSize * 2"
-                  patternUnits="userSpaceOnUse"
-                  :x="-.25"
-                  :y="-.25"
-                >
-                  <path
-                    :d="`M ${gridSize * 2} 0 H0 M0 0 V0 ${gridSize * 2} z`"
-                    stroke="rgba(255, 0, 0, .45)"
+                    stroke="rgba(var(--primary-color), .4)"
                     stroke-width="1"
                   />
                 </pattern>
               </defs>
               <rect :fill="`url(#${id0})`" width="100%" height="100%" />
-              <rect :fill="`url(#${id1})`" width="100%" height="100%" />
+              <g stroke="rgba(255, 0, 0, .3)" stroke-width="1">
+                <g v-if="sliderVal > 32">
+                  <line x1="25%" x2="25%" y1="0%" y2="100%" />
+                  <line x1="75%" x2="75%" y1="0%" y2="100%" />
+                  <line x1="0%" x2="100%" y1="25%" y2="25%" />
+                  <line x1="0%" x2="100%" y1="75%" y2="75%" />
+                </g>
+                <line x1="50%" x2="50%" y1="0%" y2="100%" />
+                <line x1="0%" x2="100%" y1="50%" y2="50%" />
+              </g>
             </svg>
             <svg
               class="guides"
