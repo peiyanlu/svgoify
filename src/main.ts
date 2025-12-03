@@ -23,6 +23,8 @@ const getIcon = (root: string, tray?: boolean) => join(root, 'icons', `icon.${ g
 const appIcon = getIcon(__dirname)
 const trayIcon = getIcon(isDev ? __dirname : process.resourcesPath, true)
 
+const guidDev = '60a9adb4-5835-4e72-9b46-b5f14c6cf632'
+const guidProd = 'e4b4a36b-3a27-4ffa-96ad-b9f9df98dfc6'
 
 if (checkSquirrel()) {
   ElectronHost.shutdown()
@@ -68,6 +70,7 @@ ElectronHost.openMainWindow({
         },
       ]),
       title: `${ APP_NAME } ${ APP_VERSION }`,
+      guid: isDev ? guidDev : guidProd,
     },
   })
   .then(async (window) => {
