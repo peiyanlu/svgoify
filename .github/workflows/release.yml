@@ -1,61 +1,46 @@
-name: Build/release
+name: Release
 
-# https://docs.github.com/zh/actions/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow#example-including-branches-and-tags
 on:
   push:
-    branches:
-      - pre-release
-      - draft
     tags:
       - v*.*.*
+  workflow_dispatch:
 
 permissions:
   contents: write
-  
+
 jobs:
   release:
-    runs-on: ${{ matrix.os }}
-    
     strategy:
       fail-fast: false
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
     
+    runs-on: ${{ matrix.os }}
+    
     steps:
-      - name: Check out Git repository
+      - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          registry-url: 'https://registry.npmjs.org/'
-      
-      - name: Setup pnpm
+      - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
       
-      # https://github.com/electron/forge/issues/3371
-      - name: Install Python For Mac
-        if: matrix.os == 'macos-latest'
-        uses: actions/setup-python@v6
+      - name: Install Node.js
+        uses: actions/setup-node@v6
         with:
-          python-version: 3.14.0
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
       
-      - name: Install appdmg For Mac
-        if: matrix.os == 'macos-latest'
-        run: |
-          python3 -m pip install setuptools
-          npm install -g appdmg@0.6.6
-      
-      - name: Install Dependencies
+      - name: Install Deps
         run: pnpm install
       
-      - name: Publish Electron App
+      - name: Publish App
         run: pnpm run publish --no-git-checks
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
