@@ -3,12 +3,11 @@
   "productName": "SVGoify",
   "version": "1.0.5",
   "description": "SVG Optimize Application",
+  "license": "MIT",
   "main": ".vite/build/main.js",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish"
+    "dev": "electron-forge start",
+    "build": "electron-forge make"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.10.2",
@@ -62,12 +61,11 @@
     "type": "git",
     "url": "git+https://github.com/peiyanlu/svgoify.git"
   },
-  "homepage": "",
+  "homepage": "https://github.com/peiyanlu/svgoify#readme",
   "bugs": {
     "url": "https://github.com/peiyanlu/svgoify/issues",
     "email": "peiyanlu@vip.qq.com"
   },
-  "license": "MIT",
   "os": [
     "win32",
     "darwin",
@@ -76,8 +74,5 @@
   "cpu": [
     "x64",
     "arm64"
-  ],
-  "pnpm": {
-    "neverBuiltDependencies": []
-  }
+  ]
 }
