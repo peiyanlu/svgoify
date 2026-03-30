@@ -28,7 +28,7 @@
     "@varlet/touch-emulator": "^3.14.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "electron": "^39.8.5",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.2",
     "unplugin-auto-import": "^21.0.0",
     "unplugin-vue-components": "^30.0.0",
     "vite": "7.3.1",
