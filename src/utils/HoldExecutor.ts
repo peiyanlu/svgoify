@@ -26,30 +26,36 @@ export class HoldExecutor {
   
   // 绑定鼠标事件
   public bindMouseEvents(target: HTMLElement | Document) {
-    target.addEventListener('mousedown', (event: MouseEvent) => this.handleMousePress(event))
-    target.addEventListener('mouseup', (event: MouseEvent) => this.handleRelease(event))
+    target.addEventListener('mousedown', (event: Event) => this.handleMousePress(event))
+    target.addEventListener('mouseup', (event: Event) => this.handleRelease(event))
     target.addEventListener('mouseleave', () => this.stopLongPress()) // 鼠标移出目标时也停止
   }
   
   // 解绑鼠标事件
   public unbindMouseEvents(target: HTMLElement | Document) {
-    target.removeEventListener('mousedown', (event: MouseEvent) => this.handleMousePress(event))
-    target.removeEventListener('mouseup', (event: MouseEvent) => this.handleRelease(event))
+    target.removeEventListener('mousedown', (event: Event) => this.handleMousePress(event))
+    target.removeEventListener('mouseup', (event: Event) => this.handleRelease(event))
     target.removeEventListener('mouseleave', () => this.stopLongPress())
+  }
+  
+  private allowKeyboard(event: KeyboardEvent): boolean {
+    return this.keys === null || this.keys.has(event.key)
   }
   
   // 绑定键盘事件
   public bindKeyboardEvents(target: HTMLElement | Document) {
     // 监听 keydown 事件
-    target.addEventListener('keydown', (event: KeyboardEvent) => {
-      if ((this.keys === null || this.keys.has(event.key)) && this.timeoutId === null) {
+    target.addEventListener('keydown', (e: Event) => {
+      const event = e as KeyboardEvent
+      if (this.allowKeyboard(event) && this.timeoutId === null) {
         this.handleKeyPress(event)
       }
     })
     
     // 监听 keyup 事件
-    target.addEventListener('keyup', (event: KeyboardEvent) => {
-      if (this.keys === null || this.keys.has(event.key)) {
+    target.addEventListener('keyup', (e: Event) => {
+      const event = e as KeyboardEvent
+      if (this.allowKeyboard(event)) {
         this.handleRelease(event)
       }
     })
@@ -62,13 +68,15 @@ export class HoldExecutor {
   
   // 解绑键盘事件
   public unbindKeyboardEvents(target: HTMLElement | Document) {
-    target.removeEventListener('keydown', (event: KeyboardEvent) => {
-      if (this.keys === null || this.keys.has(event.key)) {
+    target.removeEventListener('keydown', (e: Event) => {
+      const event = e as KeyboardEvent
+      if (this.allowKeyboard(event)) {
         this.handleKeyPress(event)
       }
     })
-    target.removeEventListener('keyup', (event: KeyboardEvent) => {
-      if (this.keys === null || this.keys.has(event.key)) {
+    target.removeEventListener('keyup', (e: Event) => {
+      const event = e as KeyboardEvent
+      if (this.allowKeyboard(event)) {
         this.handleRelease(event)
       }
     })
@@ -110,19 +118,37 @@ export class HoldExecutor {
     this.startLongPress(event) // 开始长按检测
   }
   
-  private handleMousePress(event: MouseEvent) {
+  private handleMousePress(e: Event) {
+    const event = e as MouseEvent
     this.mousePressTime = Date.now() // 记录鼠标按下的时间
     this.startLongPress(event) // 开始长按检测
   }
   
-  private handleRelease(event: MouseEvent | KeyboardEvent) {
+  private handleRelease(event: Event) {
     const pressDuration = Date.now() - (event instanceof KeyboardEvent ? this.keyPressTime : this.mousePressTime) // 计算按键或鼠标按下的时间
     
     this.stopLongPress() // 停止长按检测
     
     // 如果按键或鼠标按下的时间小于单击超时时间，则认为是单击
     if (pressDuration < this.clickTimeout) {
-      this.clickCallback(event) // 执行单击回调
+      this.clickCallback(event as (MouseEvent | KeyboardEvent)) // 执行单击回调
+    }
+  }
+}
+
+
+export const keyboardOnly = (handler: (e: KeyboardEvent) => void) => {
+  return (e: MouseEvent | KeyboardEvent) => {
+    if (e instanceof KeyboardEvent) {
+      handler(e)
+    }
+  }
+}
+
+export const mouseOnly = (handler: (e: MouseEvent) => void) => {
+  return (e: MouseEvent | KeyboardEvent) => {
+    if (e instanceof MouseEvent) {
+      handler(e)
     }
   }
 }

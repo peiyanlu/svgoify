@@ -109,7 +109,7 @@ importers:
         specifier: ^32.0.0
         version: 32.0.0(vue@3.5.31(typescript@6.0.2))
       vite:
-        specifier: 7.3.1
+        specifier: ^7.3.1
         version: 7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(yaml@2.8.3)
       vite-plugin-html:
         specifier: ^3.2.2

@@ -11,7 +11,7 @@ export class SvgoIpcImpl implements SvgoIpcInterface {
   static readonly instance = new SvgoIpcImpl()
   
   private static optimize(input: string, config?: OverrideConfig): Omit<SvgoOptimizeResult, 'parse'> {
-    const { plugins: temp, ...others } = config ?? {}
+    const { plugins: temp = [], ...others } = config ?? {}
     const defaults: PluginConfig[] = []
     const plugins = ([ ...temp, ...defaults ])
       .map((plugin) => (customPlugins[plugin as string] ?? plugin) as PluginConfig)

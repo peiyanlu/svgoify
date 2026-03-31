@@ -20,7 +20,7 @@ const result = defineModel<SvgoOptimizeResult[]>('result', { default: [] })
 
 const editRef = useTemplateRef<CompType[]>('editRef')
 const handleEdit = (index: number) => {
-  editRef.value[index].handleShowDialog()
+  editRef.value?.[index].handleShowDialog()
 }
 
 const handleDownload = (str: string, name: string) => {

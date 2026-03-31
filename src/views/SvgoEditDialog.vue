@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import SvgIcon from '@/components/SvgIcon.vue'
-import { HoldExecutor } from '@/utils/HoldExecutor'
+import { HoldExecutor, keyboardOnly, mouseOnly } from '@/utils/HoldExecutor'
 import { Utils } from '@/utils/MiscUtils'
 import { MouseUtils } from '@/utils/MouseUtils'
 import { IpcApp } from '@peiyanlu/electron-ipc/frontend'
 import { Snackbar } from '@varlet/ui'
 import { useEventListener, useMagicKeys } from '@vueuse/core'
 import svgpath from 'svgpath'
-import { ComponentPublicInstance, computed, onUpdated, Ref, ref, useTemplateRef, watchEffect } from 'vue'
+import { ComponentPublicInstance, computed, onUpdated, ref, ShallowRef, useTemplateRef, watchEffect } from 'vue'
 
 
 const props = defineProps<{ code: string, name: string }>()
@@ -85,7 +85,7 @@ const pxToViewBox = (px: number, canvasLen: number, boxLen: number) => (px / can
 const getMouseSVGPoint = (svg: SVGSVGElement, evt: MouseEvent | WheelEvent) => {
   const pt = svg.createSVGPoint()
   Object.assign(pt, { x: evt.clientX, y: evt.clientY })
-  const { x, y } = pt.matrixTransform(svg.getScreenCTM().inverse())
+  const { x, y } = pt.matrixTransform(svg.getScreenCTM()?.inverse())
   return { x, y }
 }
 const getSvgMousePoint = (svg: SVGSVGElement, evt: MouseEvent | WheelEvent) => {
@@ -159,8 +159,8 @@ const handleSelect = (evt: MouseEvent) => {
 }
 
 /* 放大 缩小 */
-const handlePlus = (evt?: MouseEvent | WheelEvent) => {
-  const svg: SVGSVGElement = svgRef.value.querySelector('svg')
+const handlePlus = (evt: MouseEvent) => {
+  const svg: SVGSVGElement = svgRef.value?.querySelector('svg')!
   
   const targets = getTargetList()
   if (!targets.length) return
@@ -216,8 +216,8 @@ const handlePlus = (evt?: MouseEvent | WheelEvent) => {
     }
   })
 }
-const handleMinus = (evt?: MouseEvent | WheelEvent) => {
-  const svg: SVGSVGElement = svgRef.value.querySelector('svg')
+const handleMinus = (evt: MouseEvent) => {
+  const svg: SVGSVGElement = svgRef.value?.querySelector('svg')!
   
   const targets = getTargetList()
   if (!targets.length) return
@@ -529,13 +529,13 @@ const updateGuidesOnDrag = (dx: number, dy: number) => {
   // -------------------------
   // 垂直居中
   if (Math.abs(nyc - canvasCY) <= thresholdY) {
-    drawHLine(hLineRef.value, canvasCY / vbHeight * 100)
+    drawHLine(hLineRef.value!, canvasCY / vbHeight * 100)
     ny += (canvasCY - nyc)
   }
   
   // 水平居中
   if (Math.abs(nxc - canvasCX) <= thresholdX) {
-    drawVLine(vLineRef.value, canvasCX / vbWidth * 100)
+    drawVLine(vLineRef.value!, canvasCX / vbWidth * 100)
     nx += (canvasCX - nxc)
   }
   
@@ -544,27 +544,27 @@ const updateGuidesOnDrag = (dx: number, dy: number) => {
   // -------------------------
   // 左
   if (Math.abs(nx) <= thresholdX) {
-    drawVLine(lvLineRef.value, 0)
+    drawVLine(lvLineRef.value!, 0)
     nx = 0
   }
   
   // 右
   const rightGap = (nx + union.width) - vbWidth
   if (Math.abs(rightGap) <= thresholdX) {
-    drawVLine(rvLineRef.value, vbWidth / vbWidth * 100)
+    drawVLine(rvLineRef.value!, vbWidth / vbWidth * 100)
     nx = vbWidth - union.width
   }
   
   // 上
   if (Math.abs(ny) <= thresholdY) {
-    drawHLine(thLineRef.value, 0)
+    drawHLine(thLineRef.value!, 0)
     ny = 0
   }
   
   // 下
   const bottomGap = (ny + union.height) - vbHeight
   if (Math.abs(bottomGap) <= thresholdY) {
-    drawHLine(bhLineRef.value, vbHeight / vbHeight * 100)
+    drawHLine(bhLineRef.value!, vbHeight / vbHeight * 100)
     ny = vbHeight - union.height
   }
   // --------------------------------------------------------------
@@ -601,7 +601,7 @@ const handleDrag = (dx: number, dy: number) => {
     return
   }
   
-  const { finalDx, finalDy } = updateGuidesOnDrag(dx, dy)
+  const { finalDx, finalDy } = updateGuidesOnDrag(dx, dy)!
   
   getTargetList().forEach(target => {
     target.classList.add('selected')
@@ -656,11 +656,11 @@ const handleKeyup = (e: KeyboardEvent) => {
       break
   }
 }
-const executor = new HoldExecutor(handleKeyup)
+const executor = new HoldExecutor(keyboardOnly(handleKeyup))
 watchEffect(() => {
   if (svgRef.value) {
-    executor.unbindKeyboardEvents(mainRef.value)
-    executor.bindKeyboardEvents(mainRef.value)
+    executor.unbindKeyboardEvents(mainRef.value!)
+    executor.bindKeyboardEvents(mainRef.value!)
     MouseUtils.dragDelta(svgRef.value, handleDrag)
   }
 })
@@ -696,8 +696,8 @@ const leftRef = useTemplateRef<ComponentPublicInstance>('leftRef')
 const rightRef = useTemplateRef<ComponentPublicInstance>('rightRef')
 const roteLeftRef = useTemplateRef<ComponentPublicInstance>('roteLeftRef')
 const roteRightRef = useTemplateRef<ComponentPublicInstance>('roteRightRef')
-const plusExecutor = new HoldExecutor(handlePlus)
-const minusExecutor = new HoldExecutor(handleMinus)
+const plusExecutor = new HoldExecutor(mouseOnly(handlePlus))
+const minusExecutor = new HoldExecutor(mouseOnly(handleMinus))
 const fitExecutor = new HoldExecutor(handleFitView)
 const topExecutor = new HoldExecutor(handleTop)
 const bottomExecutor = new HoldExecutor(handleBottom)
@@ -706,7 +706,7 @@ const rightExecutor = new HoldExecutor(handleRight)
 const roteLeftExecutor = new HoldExecutor(handleRoteLeft)
 const roteRightExecutor = new HoldExecutor(handleRoteRight)
 watchEffect(() => {
-  const extract = (xxRef: Ref<ComponentPublicInstance>, executor: HoldExecutor) => {
+  const extract = (xxRef: Readonly<ShallowRef<ComponentPublicInstance | null>>, executor: HoldExecutor) => {
     if (xxRef.value) {
       executor.unbindMouseEvents(xxRef.value.$el)
       executor.bindMouseEvents(xxRef.value.$el)
@@ -725,7 +725,7 @@ watchEffect(() => {
 
 /* 编辑区全屏 */
 const handleFullScreen = async () => {
-  const el = mainRef.value
+  const el = mainRef.value!
   
   if (document.fullscreenElement === el) {
     resetCanvasSize()
@@ -749,7 +749,7 @@ useEventListener(document, 'fullscreenchange', () => {
 })
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-const { current } = useMagicKeys({ target: mainRef })
+const { current } = useMagicKeys({ target: mainRef.value! })
 const keys = computed(() => Array.from(current))
 
 
@@ -790,8 +790,8 @@ defineExpose({
         ref="mainRef"
         class="main"
         tabindex="0"
-        @mouseenter="()=>mainRef.focus()"
-        @mouseleave="()=>mainRef.blur()"
+        @mouseenter="()=>mainRef?.focus()"
+        @mouseleave="()=>mainRef?.blur()"
       >
         <div class="edit-container">
           <div :style="{width: sizeWithPx, height: sizeWithPx}" class="grid-background">

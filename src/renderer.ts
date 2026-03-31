@@ -5,7 +5,7 @@ import SvgIcon from './components/SvgIcon.vue'
 import router from './router'
 import 'virtual:svg-icons-register'
 import '@varlet/touch-emulator'
-import '@varlet/ui/es/style'
+import '@varlet/ui/es/style.mjs'
 import './theme/index'
 
 

@@ -64,7 +64,7 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
       const readContent = (file: File) => {
         return new Promise<string>((resolve) => {
           const reader = new FileReader()
-          reader.onloadend = (evt) => resolve(evt.target.result as string)
+          reader.onloadend = (evt) => resolve(evt.target?.result as string)
           reader.readAsText(file)
         })
       }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, defineComponent, h } from 'vue'
+import { computed, h } from 'vue'
 
 
 const fileSize = (size: number) => {

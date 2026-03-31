@@ -16,24 +16,27 @@ Object
   })
 
 
-const props = withDefaults(defineProps<{
-  code: string;
-  language?: string;
-  autodetect?: boolean;
-  ignoreIllegals?: boolean;
-  pretty?: boolean
-  download?: boolean
-  copy?: boolean
-  downloadName?: string
-}>(), {
-  code: '',
-  language: 'html',
-  autodetect: true,
-  ignoreIllegals: false,
-  pretty: true,
-  copy: true,
-  downloadName: 'download.txt',
-})
+const props = withDefaults(
+  defineProps<{
+    code: string;
+    language?: string;
+    autodetect?: boolean;
+    ignoreIllegals?: boolean;
+    pretty?: boolean
+    download?: boolean
+    copy?: boolean
+    downloadName?: string
+  }>(),
+  {
+    code: '',
+    language: 'html',
+    autodetect: true,
+    ignoreIllegals: false,
+    pretty: true,
+    copy: true,
+    downloadName: 'download.txt',
+  },
+)
 
 
 const escapeHtml = (value: string): string => value
@@ -123,7 +126,7 @@ const handleCopy = (str: string) => {
         class="icon"
         name="download"
         size="22px"
-        @click="handleDownload(code, downloadName)"
+        @click="handleDownload(code, downloadName!)"
       />
       <svg-icon
         v-if="copy"
