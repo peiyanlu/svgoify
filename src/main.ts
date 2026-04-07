@@ -8,7 +8,7 @@ import {
   isDev,
   onChildWindowOpenUrl,
   showAndFocus,
-} from '@peiyanlu/electron-ipc/backend'
+} from '@peiyanlu/electron/backend'
 import { app, BrowserWindow, dialog, globalShortcut, Menu } from 'electron'
 import { join } from 'path'
 import { ElectronSvgHandler } from './electron/IpcHandler'

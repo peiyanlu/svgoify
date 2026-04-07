@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isBrowser, isFrontend } from '@peiyanlu/electron-ipc'
+import { isBrowser, isFrontend } from '@peiyanlu/electron'
 import { ref } from 'vue'
 
 

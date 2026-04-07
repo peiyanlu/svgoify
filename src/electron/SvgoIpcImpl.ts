@@ -1,4 +1,4 @@
-import { normalizePath } from '@peiyanlu/electron-ipc/backend'
+import { normalizePath } from '@peiyanlu/electron/backend'
 import { readFileSync } from 'node:fs'
 import { parse } from 'path'
 import { optimize, PluginConfig } from 'svgo'

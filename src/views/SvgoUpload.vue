@@ -3,7 +3,7 @@ import { svgoChannel, SvgoIpcInterface, SvgoOptimizeResult } from '@/electron/Ip
 import { svgoPlugins } from '@/views/SvgoPlugins'
 import SvgoPluginsDialog from '@/views/SvgoPluginsDialog.vue'
 import { useDropZone, useEventListener } from '@vueuse/core'
-import { ElectronApp, IpcApp } from '@peiyanlu/electron-ipc/frontend'
+import { ElectronApp, IpcApp } from '@peiyanlu/electron/frontend'
 import JSZip from 'jszip'
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
 
