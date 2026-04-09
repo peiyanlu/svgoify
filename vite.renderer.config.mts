@@ -5,7 +5,7 @@ import autoImport from 'unplugin-auto-import/vite'
 import components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
-import pkg from './package.json'
+import pkg from './package.json' with { type: 'json' }
 import { createSvgIconsPlugin } from './vite.plugin.icon.mjs'
 
 

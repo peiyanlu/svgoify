@@ -4,7 +4,6 @@ import { MakerRpm } from '@electron-forge/maker-rpm'
 import { MakerSquirrel } from '@electron-forge/maker-squirrel'
 import { MakerZIP } from '@electron-forge/maker-zip'
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives'
-import { ElectronegativityPlugin } from '@electron-forge/plugin-electronegativity'
 import { FusesPlugin } from '@electron-forge/plugin-fuses'
 import { VitePlugin } from '@electron-forge/plugin-vite'
 import type { ForgeConfig } from '@electron-forge/shared-types'
@@ -75,9 +74,6 @@ export default {
           config: 'vite.renderer.config.mts',
         },
       ],
-    }),
-    new ElectronegativityPlugin({
-      isSarif: true,
     }),
     new AutoUnpackNativesPlugin({}),
     new FusesPlugin({
