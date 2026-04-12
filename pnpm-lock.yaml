@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@peiyanlu/electron':
         specifier: ^1.0.11
-        version: 1.0.11(electron@41.1.1)
+        version: 1.0.11(electron@41.2.0)
       '@peiyanlu/ts-utils':
         specifier: ^0.0.5
         version: 0.0.5
@@ -36,8 +36,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0
       tinyglobby:
-        specifier: ^0.2.15
-        version: 0.2.15
+        specifier: ^0.2.16
+        version: 0.2.16
       vue:
         specifier: ^3.5.32
         version: 3.5.32(typescript@6.0.2)
@@ -97,8 +97,8 @@ importers:
         specifier: ^6.0.5
         version: 6.0.5(vite@7.3.2(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(yaml@2.8.3))(vue@3.5.32(typescript@6.0.2))
       electron:
-        specifier: ^41.1.1
-        version: 41.1.1
+        specifier: ^41.2.0
+        version: 41.2.0
       typescript:
         specifier: ^6.0.2
         version: 6.0.2
@@ -109,7 +109,7 @@ importers:
         specifier: ^32.0.0
         version: 32.0.0(vue@3.5.32(typescript@6.0.2))
       vite:
-        specifier: 7.3.2
+        specifier: ^7.3.2
         version: 7.3.2(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(yaml@2.8.3)
       vite-plugin-html:
         specifier: ^3.2.2
@@ -1753,8 +1753,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@41.1.1:
-    resolution: {integrity: sha512-8bgvDhBjli+3Z2YCKgzzoBPh6391pr7Xv2h/tTJG4ETgvPvUxZomObbZLs31mUzYb6VrlcDDd9cyWyNKtPm3tA==}
+  electron@41.2.0:
+    resolution: {integrity: sha512-0OKLiymqfV0WK68RBXqAm3Myad2TpI5wwxLCBEUcH5Nugo3YfSk7p1Js/AL9266qTz5xZioUnxt9hG8FFwax0g==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
 
@@ -3696,8 +3696,8 @@ packages:
   tiny-each-async@2.0.3:
     resolution: {integrity: sha512-5ROII7nElnAirvFn8g7H7MtpfV1daMcyfTGQwsn/x2VtyV+VPiO5CjReCJtWLvoKTDEDmZocf3cNPraiMnBXLA==}
 
-  tinyglobby@0.2.15:
-    resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
+  tinyglobby@0.2.16:
+    resolution: {integrity: sha512-pn99VhoACYR8nFHhxqix+uvsbXineAasWm5ojXoN8xEwK5Kd3/TrhNn1wByuD52UxWRLy8pu+kRMniEi6Eq9Zg==}
     engines: {node: '>=12.0.0'}
 
   tmp-promise@3.0.3:
@@ -5060,9 +5060,9 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 12.11.0
 
-  '@peiyanlu/electron@1.0.11(electron@41.1.1)':
+  '@peiyanlu/electron@1.0.11(electron@41.2.0)':
     dependencies:
-      electron: 41.1.1
+      electron: 41.2.0
 
   '@peiyanlu/ts-utils@0.0.5': {}
 
@@ -6212,7 +6212,7 @@ snapshots:
       - supports-color
     optional: true
 
-  electron@41.1.1:
+  electron@41.2.0:
     dependencies:
       '@electron/get': 2.0.3
       '@types/node': 24.12.0
@@ -6606,10 +6606,6 @@ snapshots:
   fd-slicer@1.1.0:
     dependencies:
       pend: 1.2.0
-
-  fdir@6.5.0(picomatch@4.0.3):
-    optionalDependencies:
-      picomatch: 4.0.3
 
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
@@ -8393,10 +8389,10 @@ snapshots:
   tiny-each-async@2.0.3:
     optional: true
 
-  tinyglobby@0.2.15:
+  tinyglobby@0.2.16:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
 
   tmp-promise@3.0.3:
     dependencies:
@@ -8521,7 +8517,7 @@ snapshots:
       pkg-types: 2.3.0
       scule: 1.3.0
       strip-literal: 3.1.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
 
@@ -8566,7 +8562,7 @@ snapshots:
       mlly: 1.8.2
       obug: 2.1.1
       picomatch: 4.0.4
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       unplugin: 3.0.0
       unplugin-utils: 0.3.1
       vue: 3.5.32(typescript@6.0.2)
@@ -8635,7 +8631,7 @@ snapshots:
       picomatch: 4.0.4
       postcss: 8.5.8
       rollup: 4.60.1
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
     optionalDependencies:
       '@types/node': 24.12.0
       fsevents: 2.3.3
@@ -8659,7 +8655,7 @@ snapshots:
       pathe: 2.0.3
       picomatch: 4.0.3
       scule: 1.3.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       unplugin: 3.0.0
       unplugin-utils: 0.3.1
       vue: 3.5.32(typescript@6.0.2)
