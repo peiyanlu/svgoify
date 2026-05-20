@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import pkg from './package.json'
+import pkg from './package.json' with { type: 'json' }
 import { createPatchRequireJsonPlugin } from './vite.plugin.patch.mjs'
 
 

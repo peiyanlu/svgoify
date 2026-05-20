@@ -1,5 +1,12 @@
-neverBuiltDependencies: []
+allowBuilds:
+  electron-winstaller: true
+  esbuild: true
 
-#nodeLinker=hoisted
+nodeLinker: hoisted
 
-#dlxCacheMaxAge = 60
+dlxCacheMaxAge: 60
+blockExoticSubdeps: false
+minimumReleaseAgeExclude:
+  - electron@42.2.0
+  - local-pkg@1.2.0
+  - unplugin-vue-components@32.1.0
