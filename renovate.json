@@ -13,6 +13,7 @@
   "commitMessageAction": "升级",
   "commitMessageTopic": "{{depName}}",
   "commitMessageExtra": "至 {{newVersion}}",
+  "groupSingleUpdates": false,
   "packageRules": [
     {
       "matchManagers": ["npm"],
