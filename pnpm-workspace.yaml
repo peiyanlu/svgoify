@@ -1,6 +1,6 @@
 allowBuilds:
   electron-winstaller: true
-  esbuild: false
+  esbuild: true
 
 nodeLinker: hoisted
 

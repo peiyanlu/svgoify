@@ -1,7 +1,7 @@
-import { VarletImportResolver } from '@varlet/import-resolver'
 import vue from '@vitejs/plugin-vue'
 import { join, resolve } from 'path'
 import autoImport from 'unplugin-auto-import/vite'
+import { VarletUIResolver } from 'unplugin-vue-components/resolvers'
 import components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
@@ -22,10 +22,10 @@ export default defineConfig({
   plugins: [
     vue(),
     components({
-      resolvers: [ VarletImportResolver() ],
+      resolvers: [ VarletUIResolver() ],
     }),
     autoImport({
-      resolvers: [ VarletImportResolver({ autoImport: true }) ],
+      resolvers: [ VarletUIResolver() ],
     }),
     createSvgIconsPlugin({
       iconDirs: [ join(process.cwd(), 'svg-icons') ],
