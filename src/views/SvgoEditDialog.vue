@@ -689,7 +689,6 @@ const handleColorClear = () => {
 
 const plusRef = useTemplateRef<ComponentPublicInstance>('plusRef')
 const minusRef = useTemplateRef<ComponentPublicInstance>('minusRef')
-const fitRef = useTemplateRef<ComponentPublicInstance>('fitRef')
 const topRef = useTemplateRef<ComponentPublicInstance>('topRef')
 const bottomRef = useTemplateRef<ComponentPublicInstance>('bottomRef')
 const leftRef = useTemplateRef<ComponentPublicInstance>('leftRef')
@@ -698,7 +697,6 @@ const roteLeftRef = useTemplateRef<ComponentPublicInstance>('roteLeftRef')
 const roteRightRef = useTemplateRef<ComponentPublicInstance>('roteRightRef')
 const plusExecutor = new HoldExecutor(mouseOnly(handlePlus))
 const minusExecutor = new HoldExecutor(mouseOnly(handleMinus))
-const fitExecutor = new HoldExecutor(handleFitView)
 const topExecutor = new HoldExecutor(handleTop)
 const bottomExecutor = new HoldExecutor(handleBottom)
 const leftExecutor = new HoldExecutor(handleLeft)
@@ -714,7 +712,6 @@ watchEffect(() => {
   }
   extract(plusRef, plusExecutor)
   extract(minusRef, minusExecutor)
-  extract(fitRef, fitExecutor)
   extract(topRef, topExecutor)
   extract(bottomRef, bottomExecutor)
   extract(leftRef, leftExecutor)
@@ -889,7 +886,7 @@ defineExpose({
               <var-button ref="minusRef" round type="info">
                 <svg-icon name="ResMinus" size="18px" />
               </var-button>
-              <var-button ref="fitRef" round type="success">
+              <var-button @click="handleFitView" round type="success">
                 <svg-icon name="FullScreen" size="18px" />
               </var-button>
             </div>

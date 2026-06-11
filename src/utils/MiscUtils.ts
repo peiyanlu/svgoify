@@ -3,9 +3,13 @@ export namespace Utils {
     const div = document.createElement('div')
     div.innerHTML = html
     
-    function serialize(node: SVGSVGElement) {
+    function serialize(node: Node) {
       if (node.nodeType === Node.TEXT_NODE) {
         return node.textContent
+      }
+      
+      if (!(node instanceof Element)) {
+        return ''
       }
       
       if (node.nodeType !== Node.ELEMENT_NODE) return ''

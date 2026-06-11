@@ -26,22 +26,29 @@ jobs:
           fetch-tags: true
           ref: ${{ github.ref }}
       
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
           version: 11
       
-      - name: Install Node
+      - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 24.15.0
           registry-url: https://registry.npmjs.org/
-          cache: pnpm
+          package-manager-cache: false
       
       - name: Install Deps
-        run: pnpm install
+        run: |
+          pnpm config list
+          pnpm install --frozen-lockfile
       
       - name: Publish App
         run: pnpm exec electron-forge publish --no-git-checks
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Verify Output
+        shell: bash
+        run: |
+          ls -R out
