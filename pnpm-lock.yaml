@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@peiyanlu/electron':
         specifier: ^1.0.12
-        version: 1.0.12(electron@42.5.1)
+        version: 1.0.12(electron@42.6.1)
       '@peiyanlu/ts-utils':
-        specifier: ^0.0.7
-        version: 0.0.7
+        specifier: ^0.0.9
+        version: 0.0.9
       '@varlet/ui':
-        specifier: ^3.18.2
-        version: 3.19.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
+        specifier: ^3.19.3
+        version: 3.19.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
       '@vueuse/components':
         specifier: ^14.3.0
         version: 14.3.0(vue@3.5.39(typescript@6.0.3))
@@ -30,8 +30,8 @@ importers:
         specifier: ^3.10.1
         version: 3.10.1
       svgo:
-        specifier: ^4.0.1
-        version: 4.0.1
+        specifier: ^4.0.2
+        version: 4.0.2
       svgpath:
         specifier: ^2.6.0
         version: 2.6.0
@@ -79,20 +79,20 @@ importers:
         specifier: ^7.11.2
         version: 7.11.2
       '@electron/fuses':
-        specifier: ^2.1.2
+        specifier: ^2.1.3
         version: 2.1.3
       '@types/node':
         specifier: ^24.12.4
         version: 24.12.4
       '@varlet/touch-emulator':
-        specifier: ^3.18.2
-        version: 3.19.0
+        specifier: ^3.19.3
+        version: 3.19.3
       '@vitejs/plugin-vue':
         specifier: ^6.0.7
         version: 6.0.7(vite@7.3.5(@types/node@24.12.4)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(vue@3.5.39(typescript@6.0.3))
       electron:
-        specifier: ^42.5.0
-        version: 42.5.1
+        specifier: ^42.6.1
+        version: 42.6.1
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -1003,8 +1003,8 @@ packages:
     peerDependencies:
       electron: '>=42.0.0'
 
-  '@peiyanlu/ts-utils@0.0.7':
-    resolution: {integrity: sha512-+Mk3+otwr2Dl2Ux1HdtJcU8KeE7sbztU/dYUtdhbKzE1jfyHWQkx5mKTu0cj1geh5DnTYSMjFaXW17520HNh5w==}
+  '@peiyanlu/ts-utils@0.0.9':
+    resolution: {integrity: sha512-05Ea15l/YYF99OkbnL8efac3u3UiQGeZc1Tf0AvCufRueIqwU8Y/JW7bL7hYa2MBHQrvOPxrhNUsEMj0rjXlbw==}
     engines: {node: '>=20.0.0'}
 
   '@popperjs/core@2.11.8':
@@ -1248,27 +1248,27 @@ packages:
     peerDependencies:
       vue: ^3.2.0
 
-  '@varlet/icons@3.19.0':
-    resolution: {integrity: sha512-Gsk4uXpwDJY5Z6amYU4aCk2eCw6wcB0TLIhK4JB5xRJzgS93hpFznddsxdFLolTbpPV+f6aRNgQtDmrjMBzqzQ==}
+  '@varlet/icons@3.19.3':
+    resolution: {integrity: sha512-EBkLNRxcpIGtuIko8pUgTHhq56Fjq/2YMc+Va84T416+8HMcckxMIVGxAxUS6DYqziqsqnJpjrFJGP1bc69ORw==}
 
   '@varlet/release@2.2.3':
     resolution: {integrity: sha512-numVRStraPYA8PCmemeJUJXH1AiGUaBedOaZNDv+mCMzhlxa24o3GytHm6XkHduKruRgqtVZWoSySELmTDCcZw==}
     engines: {node: ^20.19.0 || >=22.12.0, pnpm: '>=10.0'}
     hasBin: true
 
-  '@varlet/shared@3.19.0':
-    resolution: {integrity: sha512-40Jp3vvFsoQl1k1QBrMowo/O0Pds55H3oZWLQ9zxWi4Z4WrkzBWlL31sIZQrGC1VHHsune1A39Zpif2hflNirg==}
+  '@varlet/shared@3.19.3':
+    resolution: {integrity: sha512-kR01hysq5e+kVMomttDXQSD3pzAUPiJlSRW2SX5egAHVrJfsGf26qf3qn3Jkjuc5HVRGFnxC1tJfsNenaHbruw==}
 
-  '@varlet/touch-emulator@3.19.0':
-    resolution: {integrity: sha512-U0q7idtAdNs/K6SLfO1FWKltFqtL6Zs7A4UKMkq/xKbPbkfBlX7Xkq5YjwJBZesa6eN1effiHc8MsNGYmy+IGA==}
+  '@varlet/touch-emulator@3.19.3':
+    resolution: {integrity: sha512-nrSRO4k+u/X/GzF3wuqdThKKvvxFTsAWWyjtG1wvH4pKQ9iPUKe3GvMOWJW0dPeiZgjXR5YqiJ3jVBrRSZ3oFA==}
 
-  '@varlet/ui@3.19.0':
-    resolution: {integrity: sha512-O+vyb/+CFM4w9wLClZyTSvqtgOubLaws3Yxlt70tbeKkWbLHq00jxwdxzRgS21ln/yopJhWRTZ1ffnHHki1xgQ==}
+  '@varlet/ui@3.19.3':
+    resolution: {integrity: sha512-6FRC91s4MaRx9/Y+IA9pFqzUEqrfHvbawynzOwI2SbIN60kygH/Uj8XVAFoLv23WXawOqFSWal2a+YvFc9AqUw==}
     peerDependencies:
       vue: ^3.2.0
 
-  '@varlet/use@3.19.0':
-    resolution: {integrity: sha512-7ACSDwGTGe9LeDeFnKm8DPPrFEW7+K1zGvj1x7TFTZ4M5eI8d72gbbG1HAIt/KnYlJhR4JwUnrxhVlzU5g9bsQ==}
+  '@varlet/use@3.19.3':
+    resolution: {integrity: sha512-+r61SFmOHO9xWlJ0rz8FX4nZ5WOdPqX2o/fVUjDljk5wav1+OWyHWlQMvk4POqP38b/pbfcbydaYzAeMXBHjYA==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -2005,8 +2005,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@42.5.1:
-    resolution: {integrity: sha512-2VFNJcHHbrhIpGsJHdkLoi/nWPZPxN3GHVPe+9At3Oz3/TJRwpr+7JL97ddBDbKyLmHGx3GfI2jvzcEQL28uFw==}
+  electron@42.6.1:
+    resolution: {integrity: sha512-HR9yiOyl+kZpSAugjOpBNvKpoh1wNpTK4wl6geD9W9Xmo6L6IgEzVB/JKlbEUDdXYeqRaaEhTUSSfyQ/g9iXvQ==}
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
@@ -3560,8 +3560,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  svgo@4.0.1:
-    resolution: {integrity: sha512-XDpWUOPC6FEibaLzjfe0ucaV0YrOjYotGJO1WpF0Zd+n6ZGEQUsSugaoLq9QkEZtAfQIxT42UChcssDVPP3+/w==}
+  svgo@4.0.2:
+    resolution: {integrity: sha512-ekx94z1rRc5LDi6oSUaeRnYhd0UOJxdtQCL2rF8xpWxD3TPAsISWOrxezqGovqS38GRZOdpDfvQe3ts6F7nsng==}
     engines: {node: '>=16'}
     hasBin: true
 
@@ -5010,11 +5010,11 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 12.11.0
 
-  '@peiyanlu/electron@1.0.12(electron@42.5.1)':
+  '@peiyanlu/electron@1.0.12(electron@42.6.1)':
     dependencies:
-      electron: 42.5.1
+      electron: 42.6.1
 
-  '@peiyanlu/ts-utils@0.0.7': {}
+  '@peiyanlu/ts-utils@0.0.9': {}
 
   '@popperjs/core@2.11.8': {}
 
@@ -5212,7 +5212,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@varlet/icons@3.19.0': {}
+  '@varlet/icons@3.19.3': {}
 
   '@varlet/release@2.2.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)':
     dependencies:
@@ -5226,7 +5226,7 @@ snapshots:
       - conventional-commits-filter
       - conventional-commits-parser
 
-  '@varlet/shared@3.19.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))':
+  '@varlet/shared@3.19.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))':
     dependencies:
       rattail: 2.0.9(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
     transitivePeerDependencies:
@@ -5242,14 +5242,14 @@ snapshots:
       - vite-plus
       - vue
 
-  '@varlet/touch-emulator@3.19.0': {}
+  '@varlet/touch-emulator@3.19.3': {}
 
-  '@varlet/ui@3.19.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))':
+  '@varlet/ui@3.19.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))':
     dependencies:
       '@popperjs/core': 2.11.8
-      '@varlet/icons': 3.19.0
-      '@varlet/shared': 3.19.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
-      '@varlet/use': 3.19.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
+      '@varlet/icons': 3.19.3
+      '@varlet/shared': 3.19.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
+      '@varlet/use': 3.19.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
       dayjs: 1.11.21
       decimal.js: 10.6.0
       vue: 3.5.39(typescript@6.0.3)
@@ -5265,9 +5265,9 @@ snapshots:
       - typescript
       - vite-plus
 
-  '@varlet/use@3.19.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))':
+  '@varlet/use@3.19.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))':
     dependencies:
-      '@varlet/shared': 3.19.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
+      '@varlet/shared': 3.19.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(encoding@0.1.13)(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
       vue: 3.5.39(typescript@6.0.3)
     transitivePeerDependencies:
       - '@voidzero-dev/vite-plus-core'
@@ -6169,7 +6169,7 @@ snapshots:
       - supports-color
     optional: true
 
-  electron@42.5.1:
+  electron@42.6.1:
     dependencies:
       '@electron-internal/extract-zip': 1.0.4
       '@electron/get': 5.0.0
@@ -7878,7 +7878,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  svgo@4.0.1:
+  svgo@4.0.2:
     dependencies:
       commander: 11.1.0
       css-select: 5.2.2
