@@ -16,7 +16,7 @@ type CompType = InstanceType<typeof SvgoEditDialog>
 
 const value = ref([ '1' ])
 
-const result = defineModel<SvgoOptimizeResult[]>('result', { default: [] })
+const result = defineModel<SvgoOptimizeResult[]>('result', { default: () => [] })
 
 const editRef = useTemplateRef<CompType[]>('editRef')
 const handleEdit = (index: number) => {
@@ -203,7 +203,7 @@ const cssVarVal = computed(() => {
   }
   
   .result-list {
-    max-height: 140px;
+    max-height: 110px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.1);
     
@@ -221,13 +221,14 @@ const cssVarVal = computed(() => {
       align-items: center;
       flex-flow: column nowrap;
       justify-content: center;
-      gap: 12px;
+      gap: 4px;
       
       .svg-icon {
         padding: 3px;
         cursor: pointer;
         border-radius: 4px;
         transition: background 0.15s;
+        will-change: background;
         
         &:hover {
           background: rgba(255, 255, 255, 0.1);

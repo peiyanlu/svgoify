@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { SvgoOptimizeResult } from '@/electron/IpcInterface'
+import type { SvgoOptimizeResult } from '@/electron/IpcInterface'
 import SvgoResult from '@/views/SvgoResult.vue'
 import SvgoUpload from '@/views/SvgoUpload.vue'
 import { ref } from 'vue'
@@ -48,7 +48,7 @@ const formats = ref<SvgoOptimizeResult[]>([])
 
 .svgo-container {
   width: 100%;
-  min-width: 640px;
+  min-width: 1020px;
   height: 100%;
   margin-right: 8px;
   overflow-y: scroll;

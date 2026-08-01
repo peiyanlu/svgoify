@@ -18,7 +18,8 @@ const file = join(__dirname, '..', `renderer/${ MAIN_WINDOW_VITE_NAME }/index.ht
 const frontendURL = MAIN_WINDOW_VITE_DEV_SERVER_URL ?? file
 
 
-const getIcon = (root: string, tray?: boolean) => join(root, 'icons', `icon.${ getIconExt(tray) }`)
+const getIcon = (root: string, tray?: boolean) =>
+  join(root, 'icons', isDev ? 'dev' : 'prod', `icon.${ getIconExt(tray) }`)
 
 const appIcon = getIcon(__dirname)
 const trayIcon = getIcon(isDev ? __dirname : process.resourcesPath, true)
@@ -39,8 +40,8 @@ ElectronHost.openMainWindow({
       preload: require.resolve('./preload.js'),
       sandbox: true,
     },
-    width: 1200,
-    height: 750,
+    width: 1266 ,
+    height: 850,
     icon: appIcon,
     frontendURL,
     hideAppMenu: true,

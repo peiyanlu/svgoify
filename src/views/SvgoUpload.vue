@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { svgoChannel, SvgoIpcInterface, SvgoOptimizeResult } from '@/electron/IpcInterface'
+import { svgoChannel, type SvgoIpcInterface, type SvgoOptimizeResult } from '@/electron/IpcInterface'
 import { svgoPlugins } from '@/views/SvgoPlugins'
 import SvgoPluginsDialog from '@/views/SvgoPluginsDialog.vue'
-import { useDropZone, useEventListener } from '@vueuse/core'
 import { ElectronApp, IpcApp } from '@peiyanlu/electron/frontend'
+import { isEmptyArray } from '@peiyanlu/ts-utils'
+import { downloadBlob, getPasteFiles, getPasteText, isSVGCode } from '@peiyanlu/web-utils'
+import { useDropZone, useEventListener } from '@vueuse/core'
 import JSZip from 'jszip'
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
 
@@ -12,8 +14,8 @@ ElectronApp.startup()
 const svgoIpc = IpcApp.makeIpcFunctionProxy<SvgoIpcInterface>(svgoChannel, 'callMethod')
 
 
-const loading = defineModel('loading', { default: false })
-const formats = defineModel<SvgoOptimizeResult[]>('formats', { default: [] })
+const loading = defineModel<boolean>('loading', { default: false })
+const formats = defineModel<SvgoOptimizeResult[]>('formats', { default: () => [] })
 
 const plugins = ref(svgoPlugins.slice().filter(k => k.active).map(s => s.id))
 
@@ -23,7 +25,6 @@ const loadingHelper = async (fn: () => Promise<void>) => {
   loading.value = false
 }
 
-// 选择文件
 const handleOpenFile = async () => {
   const { filePaths } = await ElectronApp.dialogIpc.showOpenDialog({
     properties: [ 'openFile', 'multiSelections' ],
@@ -39,7 +40,6 @@ const handleOpenFile = async () => {
   })
 }
 
-// 选择文件夹
 const handleOpenDir = async () => {
   const { filePaths: [ dir ] } = await ElectronApp.dialogIpc.showOpenDialog({
     properties: [ 'openDirectory' ],
@@ -54,27 +54,23 @@ const handleOpenDir = async () => {
   })
 }
 
+const handleSourceFiles = async (files: File[]) => {
+  await loadingHelper(async () => {
+    const codes = await Promise.all(files.map(async file => [ await file.text(), file.name ]))
+    
+    const res = await svgoIpc.compressCodes(codes, { plugins: [ ...plugins.value ] })
+    
+    formats.value = formats.value.concat(res)
+  })
+}
+
 // 拖拽上传
 const dropZoneRef = useTemplateRef<HTMLElement>('dropZoneRef')
 const { isOverDropZone } = useDropZone(dropZoneRef, {
   onDrop: async (files: File[] | null) => {
     if (!files) return
     
-    await loadingHelper(async () => {
-      const readContent = (file: File) => {
-        return new Promise<string>((resolve) => {
-          const reader = new FileReader()
-          reader.onloadend = (evt) => resolve(evt.target?.result as string)
-          reader.readAsText(file)
-        })
-      }
-      
-      const codes = await Promise.all(files.map(file => readContent(file)))
-      const res = await Promise.all(codes.map(code => {
-        return svgoIpc.compressStr(code, { plugins: [ ...plugins.value ] })
-      }))
-      formats.value = formats.value.concat(res)
-    })
+    await handleSourceFiles(files)
   },
   dataTypes: [ 'image/svg+xml' ],
   multiple: true,
@@ -84,13 +80,19 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
 
 // 粘贴上传
 useEventListener('paste', async (evt: ClipboardEvent) => {
-  let code = evt.clipboardData?.getData('text') ?? ''
-  code = code.replace(/[^\x20-\xFF]/gi, '')
-  if (/<svg[\w\W]*?>[\w\W]+<\/svg>/gi.test(code)) {
-    const res = [ await svgoIpc.compressStr(code, { plugins: [ ...plugins.value ] }) ]
+  const files = (await getPasteFiles(evt))
+    .filter(async (e) => {
+      const { ext } = await ElectronApp.pathIpc.parse(e.name)
+      return [ '.svg' ].includes(ext)
+    })
+  if (!isEmptyArray(files)) {
+    await handleSourceFiles(files)
+  }
+  
+  const code = getPasteText(evt)
+  if (isSVGCode(code)) {
+    const res = await svgoIpc.compressCodes([ [ code, 'code-svg.svg' ] ], { plugins: [ ...plugins.value ] })
     formats.value = formats.value.concat(res)
-  } else {
-    console.log('粘贴文本并未包含 SVG 信息')
   }
 })
 
@@ -98,8 +100,8 @@ useEventListener('paste', async (evt: ClipboardEvent) => {
 const reload = async (plugins: string[]) => {
   formats.value = await Promise.all(formats.value.map(async item => {
     const { input, parse } = item
-    const { parse: _a, ...others } = await svgoIpc.compressStr(
-      input,
+    const [ { parse: _a, ...others } ] = await svgoIpc.compressCodes(
+      [ [ input, parse.base ] ],
       { plugins: [ ...plugins ] },
     )
     return { parse, ...others }
@@ -125,11 +127,7 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
   
   const content = await zip.generateAsync({ type: 'blob' })
   
-  const eleLink = document.createElement('a')
-  eleLink.download = `icons-all-min.zip`
-  eleLink.href = URL.createObjectURL(content)
-  eleLink.click()
-  URL.revokeObjectURL(eleLink.href)
+  downloadBlob(content, `icons-all-min.zip`)
 }
 
 </script>

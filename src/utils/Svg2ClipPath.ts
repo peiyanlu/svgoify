@@ -22,7 +22,7 @@ interface DataInfo {
 
 const formatId = (id: string) => {
   return [ prefix, id ].join('-')
-    .replace(/\s|'|‘|’/g, '')
+    .replace(/[\s'‘’]/g, '')
     .replace(/[(){}（）【】\[\]]/g, '_')
 }
 
@@ -74,7 +74,7 @@ export const Svg2ClipPath = (data: DataInfo[], iconWidth: number, iconHeight: nu
         return `<clipPath id="${ formatId(id) }" ${ n ? 'fill="none"' : '' }>`
       })
       .replace(nodeTitle, `<$1 transform="scale(${ scaleX }, ${ scaleY })" `)
-      .replace(/fill="(?:#?\w+|url\(#(?:\w|-)+\))"/g, '')
+      .replace(/fill="(?:#?[\w-]+|url\(#[\w-]+\))"/g, '')
       .replace('</svg>', '</clipPath>')
   })
   

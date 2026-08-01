@@ -3,14 +3,17 @@ name: No-Op CI
 on:
   pull_request:
     branches:
-      - "**"
+      - master
 
 jobs:
   noop:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        os:
+          - windows-latest
+          - macos-latest
+          - ubuntu-latest
     
     runs-on: ${{ matrix.os }}
     

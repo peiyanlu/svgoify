@@ -347,4 +347,11 @@ export const svgoPlugins: SvgoPluginsDataList[] =  [
     isCustom: true,
     description: '移除 <svg> 上的不必要属性',
   },
+  {
+    id: 'fitView',
+    name: '适应画布',
+    active: true,
+    isCustom: true,
+    description: '将 SVG 内容等比缩放并居中到画布内，保留边距（12.5%）',
+  },
 ]

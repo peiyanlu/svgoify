@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import SvgIcon from '@/components/SvgIcon.vue'
 import { nextTick, ref } from 'vue'
-import { svgoPlugins, SvgoPluginsDataList } from './SvgoPlugins'
+import { svgoPlugins, type SvgoPluginsDataList } from './SvgoPlugins'
 
 
 const emits = defineEmits([ 'getPlugins' ])

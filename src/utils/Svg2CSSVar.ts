@@ -5,7 +5,7 @@ interface DataInfo {
 
 const formatId = (id: string) => {
   return id
-    .replace(/\s|'|‘|’/g, '')
+    .replace(/[\s'‘’]/g, '')
     .replace(/[(){}（）【】\[\]]/g, '_')
 }
 

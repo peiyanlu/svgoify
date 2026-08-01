@@ -1,5 +1,5 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-weight: 400;
   font-size: 12px;
   
@@ -13,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   
-  --scrollbar-width: 8px;
+  --scrollbar-width: 6px;
 }
 
 * {
@@ -30,7 +30,7 @@
   
   &::-webkit-scrollbar-track {
     border-radius: calc(var(--scrollbar-width) / 2);
-    background-color: rgba(var(--primary-background-color), 1);
+    background-color: rgba(var(--primary-background-color), .35);
   }
   
   &::-webkit-scrollbar-thumb {

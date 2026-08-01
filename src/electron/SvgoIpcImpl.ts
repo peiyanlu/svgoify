@@ -1,9 +1,9 @@
 import { normalizePath } from '@peiyanlu/electron/backend'
 import { readFileSync } from 'node:fs'
 import { parse } from 'path'
-import { optimize, PluginConfig } from 'svgo'
+import { optimize, type PluginConfig } from 'svgo'
 import { globSync } from 'tinyglobby'
-import { OverrideConfig, SvgoIpcInterface, SvgoOptimizeResult } from './IpcInterface'
+import type { OverrideConfig, SvgoIpcInterface, SvgoOptimizeResult } from './IpcInterface'
 import { customPlugins } from './SvgoPlugins'
 
 
@@ -34,15 +34,10 @@ export class SvgoIpcImpl implements SvgoIpcInterface {
     })
   }
   
-  public async compressStr(input: string, config?: OverrideConfig): Promise<SvgoOptimizeResult> {
-    const parse = {
-      root: '/',
-      dir: '/',
-      base: 'un-named.svg',
-      ext: '.svg',
-      name: 'un-named',
-    }
-    return { ...SvgoIpcImpl.optimize(input, config), parse }
+  public async compressCodes(codes: string[][], config?: OverrideConfig): Promise<SvgoOptimizeResult[]> {
+    return codes.map(([ code, name ]) => {
+      return { ...SvgoIpcImpl.optimize(code, config), parse: parse(name) }
+    })
   }
   
   public async compressDir(dir: string, config?: OverrideConfig): Promise<SvgoOptimizeResult[]> {

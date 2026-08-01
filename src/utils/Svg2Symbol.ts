@@ -19,7 +19,7 @@ interface DataInfo {
 
 const formatId = (id: string) => {
   return [ prefix, id ].join('-')
-    .replace(/\s|'|‘|’/g, '')
+    .replace(/[\s'‘’]/g, '')
     .replace(/[(){}（）【】\[\]]/g, '_')
 }
 

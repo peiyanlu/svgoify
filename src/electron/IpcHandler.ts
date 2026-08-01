@@ -1,5 +1,5 @@
 import { IpcHandler } from '@peiyanlu/electron/backend'
-import { svgoChannel, SvgoModuleMethod } from './IpcInterface'
+import { svgoChannel, type SvgoModuleMethod } from './IpcInterface'
 import { SvgoIpcImpl } from './SvgoIpcImpl'
 
 

@@ -1,5 +1,5 @@
 import type { AsyncMethodsOf } from '@peiyanlu/ts-utils'
-import path from 'path'
+import type { ParsedPath } from 'node:path'
 import type { DataUri, StringifyOptions } from 'svgo'
 
 
@@ -13,7 +13,7 @@ export interface SvgoOptimizeResult {
   unenc: string
   inputSize: number
   outputSize: number
-  parse: path.ParsedPath
+  parse: ParsedPath
 }
 
 export interface OverrideConfig {
@@ -27,10 +27,9 @@ export interface OverrideConfig {
 
 
 export interface SvgoIpcInterface {
-  /** 压缩 SVG */
   compressPaths(paths: string[], config?: OverrideConfig): Promise<SvgoOptimizeResult[]>;
   
-  compressStr(str: string, config?: OverrideConfig): Promise<SvgoOptimizeResult>;
+  compressCodes(codes: string[][], config?: OverrideConfig): Promise<SvgoOptimizeResult[]>;
   
   compressDir(dir: string, config?: OverrideConfig): Promise<SvgoOptimizeResult[]>;
 }

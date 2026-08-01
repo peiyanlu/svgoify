@@ -2,22 +2,25 @@
 import { computed, ref, watchEffect } from 'vue'
 
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   size?: string
   name: string
   html?: boolean
   pointer?: boolean
   inline?: boolean
-}>()
+}>(), {
+  pointer: true,
+})
 
 const symbolId = computed(() => `#symbol-${ props.name }`)
 
-const viewBox = ref('0 0 24 24')
+const viewBox = ref<string>('0 0 24 24')
 watchEffect(() => {
   if (!props.html) {
     const symbol = document.querySelector<SVGSymbolElement>(symbolId.value)
-    if (symbol && symbol.getAttribute('viewBox')) {
-      viewBox.value = symbol.getAttribute('viewBox')
+    const value = symbol?.getAttribute('viewBox')
+    if (value) {
+      viewBox.value = value
     }
   }
 })

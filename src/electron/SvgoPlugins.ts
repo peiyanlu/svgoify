@@ -1,5 +1,6 @@
-import { CustomPlugin, PluginConfig, XastElement } from 'svgo'
+import type { CustomPlugin, PluginConfig, XastElement } from 'svgo'
 import svgpath from 'svgpath'
+import { calcFitTransform, getBBox, parseViewBox } from '@/utils/utils'
 
 
 const cleanupFill: CustomPlugin = {
@@ -68,7 +69,7 @@ const resetViewBox: CustomPlugin = {
           if (node.name === 'path' && viewBox) {
             hasPath = true
             
-            const [ vx, vy, vw, vh ] = viewBox.split(/[\s,]+/).map(Number)
+            const [ vx, vy, vw, vh ] = parseViewBox(viewBox)
             const { tranX, tranY, scale } = getTrans(vw, vh)
             
             if (scale !== 1) {
@@ -79,7 +80,7 @@ const resetViewBox: CustomPlugin = {
                 .scale(scale)
                 .translate(tranX, tranY)
                 .rel()
-                .round(4)
+                .round(3)
                 .toString()
               
               if (node.attributes['stroke']) {
@@ -168,6 +169,55 @@ const removeRootStyle: CustomPlugin = {
   },
 }
 
+const fitView: CustomPlugin = {
+  name: 'fitView',
+  fn: () => {
+    let viewBox = ''
+    const paths: string[] = []
+    
+    const getTransform = () => {
+      const bbox = getBBox(paths)
+      const [ , , vw, vh ] = parseViewBox(viewBox)
+      return calcFitTransform(bbox, [ vw, vh ], .125)
+    }
+    
+    return {
+      element: {
+        enter: (node, _parentNode) => {
+          if (node.name === 'svg') {
+            viewBox = node.attributes.viewBox
+            
+            viewBox && node.children.forEach(child => {
+              if (child.type === 'element' && child.name === 'path') {
+                paths.push(child.attributes.d)
+              }
+            })
+          }
+        },
+        
+        exit: (node, _parentNode) => {
+          if (!paths.length) return
+          
+          if (node.name === 'svg') {
+            node.children.forEach(child => {
+              if (child.type === 'element' && child.name === 'path') {
+                const { scale, tx, ty } = getTransform()
+                
+                const d = child.attributes.d
+                child.attributes.d = svgpath(d)
+                  .scale(scale, scale)
+                  .translate(tx, ty)
+                  .round(3)
+                  .toString()
+              }
+            })
+          }
+        },
+      },
+    }
+  },
+}
+
 
 export const customPlugins: Record<string, PluginConfig> = {
   convertShapeToPath: {
@@ -182,5 +232,5 @@ export const customPlugins: Record<string, PluginConfig> = {
   removeGroup,
   removeRootStyle,
   resetViewBox,
+  fitView,
 }
-
