@@ -1,3 +1,4 @@
+import { vitePlugin } from '@peiyanlu/svg-icons'
 import vue from '@vitejs/plugin-vue'
 import { join, resolve } from 'path'
 import autoImport from 'unplugin-auto-import/vite'
@@ -6,7 +7,6 @@ import components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import pkg from './package.json' with { type: 'json' }
-import { createSvgIconsPlugin } from './vite.plugin.icon.mjs'
 
 
 // https://vitejs.dev/config
@@ -31,7 +31,7 @@ export default defineConfig({
     autoImport({
       resolvers: [ VarletUIResolver() ],
     }),
-    createSvgIconsPlugin({
+    vitePlugin({
       iconDirs: [ join(process.cwd(), 'svg-icons') ],
       symbolId: 'symbol-[dir]-[name]',
       domId: 'svg-icons-dom',

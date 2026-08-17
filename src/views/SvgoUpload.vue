@@ -166,10 +166,11 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
             size="mini"
             text
             type="default"
+            text-color="#53D592"
             @click="downloadAll(formats)"
           >
-            <var-tooltip style="display: block;" content="下载全部" type="success">
-              <svg-icon style="color: #53D592;" name="download" size="24px" />
+            <var-tooltip content="下载全部" type="success">
+              <svg-icon name="download" size="24px" />
             </var-tooltip>
           </var-button>
           <var-button
@@ -178,10 +179,11 @@ const downloadAll = async (data: SvgoOptimizeResult[]) => {
             size="mini"
             text
             type="default"
+            text-color="#D14748"
             @click="()=>formats.length = 0"
           >
-            <var-tooltip style="display: block;" content="删除全部" type="danger">
-              <svg-icon style="color: #D14748;" name="delete" size="24px" />
+            <var-tooltip content="删除全部" type="danger">
+              <svg-icon name="delete" size="24px" />
             </var-tooltip>
           </var-button>
         </div>

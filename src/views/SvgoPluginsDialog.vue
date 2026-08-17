@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import SvgIcon from '@/components/SvgIcon.vue'
 import { nextTick, ref } from 'vue'
 import { svgoPlugins, type SvgoPluginsDataList } from './SvgoPlugins'
 

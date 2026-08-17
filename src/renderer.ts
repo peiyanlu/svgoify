@@ -1,7 +1,7 @@
+import SvgIcon from 'virtual:svg-icons-component/vue'
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import SvgIcon from './components/SvgIcon.vue'
 import router from './router'
 import 'virtual:svg-icons-register'
 import '@varlet/touch-emulator'

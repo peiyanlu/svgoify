@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import SvgIcon from '@/components/SvgIcon.vue'
 import { SvgoOptimizeResult } from '@/electron/IpcInterface'
 import { Svg2ClipPath } from '@/utils/Svg2ClipPath'
 import { Svg2CSSVar } from '@/utils/Svg2CSSVar'
@@ -90,9 +89,35 @@ const cssVarVal = computed(() => {
             <HighlightJs :code="item.unenc" />
             
             <div class="action">
-              <svg-icon name="ResEdit" size="28px" @click="handleEdit(index)" />
-              <svg-icon name="download" size="28px" @click="handleDownload(item.output, item.parse.base)" />
-              <svg-icon name="delete" size="28px" @click="handleDelete(index)" />
+              <var-button
+                round
+                text
+                size="mini"
+                type="info"
+                @click="handleEdit(index)"
+              >
+                <svg-icon name="ResEdit" size="24px" />
+              </var-button>
+              <var-button
+                round
+                text
+                size="mini"
+                type="info"
+                text-color="#53D592"
+                @click="handleDownload(item.output, item.parse.base)"
+              >
+                <svg-icon name="download" size="24px" />
+              </var-button>
+              <var-button
+                round
+                text
+                size="mini"
+                type="info"
+                text-color="#D14748"
+                @click="handleDelete(index)"
+              >
+                <svg-icon name="delete" size="24px" />
+              </var-button>
             </div>
           </div>
         </div>
@@ -188,7 +213,7 @@ const cssVarVal = computed(() => {
     display: grid;
     width: 100%;
     padding: 8px;
-    grid-template-columns: 60px 1fr 1fr 1fr 1fr 28px;
+    grid-template-columns: 60px 1fr 1fr 1fr 1fr 36px;
     grid-template-rows: 100%;
     gap: calc(2% / 4);
   }
@@ -203,7 +228,7 @@ const cssVarVal = computed(() => {
   }
   
   .result-list {
-    max-height: 110px;
+    max-height: 140px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.1);
     
@@ -222,26 +247,6 @@ const cssVarVal = computed(() => {
       flex-flow: column nowrap;
       justify-content: center;
       gap: 4px;
-      
-      .svg-icon {
-        padding: 3px;
-        cursor: pointer;
-        border-radius: 4px;
-        transition: background 0.15s;
-        will-change: background;
-        
-        &:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
-        
-        &:nth-child(2) {
-          color: #53D592;
-        }
-        
-        &:nth-child(3) {
-          color: #D14748;
-        }
-      }
     }
   }
   

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import SvgIcon from '@/components/SvgIcon.vue'
 import { calcFitTransform, getViewBox, getViewBoxCenter, pxToViewBox } from '@/utils/utils'
 import { IpcApp } from '@peiyanlu/electron/frontend'
 import { isBoolean, upperFirst } from '@peiyanlu/ts-utils'
@@ -792,9 +791,11 @@ defineExpose({
 
 <template>
   <div class="params-container">
-    <div class="dialog-trigger" @click="handleShowDialog(false)">
-      <svg-icon :name="code" html size="60px" />
-    </div>
+    <div
+      class="dialog-trigger"
+      v-html="code"
+      @click="handleShowDialog(false)"
+    />
     
     <!---->
     <var-dialog
@@ -1109,11 +1110,9 @@ defineExpose({
   .dialog-trigger {
     width: 60px;
     height: 60px;
-    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 2px;
     cursor: pointer;
   }
 }

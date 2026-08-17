@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import SvgIcon from '@/components/SvgIcon.vue'
 import { Snackbar } from '@varlet/ui'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark-dimmed.min.css'
