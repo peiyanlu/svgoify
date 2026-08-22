@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@peiyanlu/electron':
         specifier: ^1.0.12
-        version: 1.0.12(electron@42.9.0(supports-color@10.2.2))
+        version: 1.0.12(electron@43.4.1(supports-color@10.2.2))
       '@peiyanlu/ts-utils':
         specifier: ^0.0.12
         version: 0.0.12
@@ -91,8 +91,8 @@ importers:
         specifier: ^6.0.8
         version: 6.0.8(vite@7.3.5(@types/node@24.12.4)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(vue@3.5.41(typescript@6.0.3))
       electron:
-        specifier: ^42.9.0
-        version: 42.9.0(supports-color@10.2.2)
+        specifier: ^43.4.1
+        version: 43.4.1(supports-color@10.2.2)
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -1424,11 +1424,6 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  acorn@8.17.0:
-    resolution: {integrity: sha512-xRQbDb9BnwDafYNn6Vwl839DYVjqXYb1XVGtWAZ1kcDc6iwAL4hg3B1dZlRiuENFeO2H53gFG3in621AdERVAg==}
-    engines: {node: '>=0.4.0'}
-    hasBin: true
-
   acorn@8.18.0:
     resolution: {integrity: sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ==}
     engines: {node: '>=0.4.0'}
@@ -2004,8 +1999,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@42.9.0:
-    resolution: {integrity: sha512-xyKfPbHP43Jx22Z1hItLR4KB5h3/avb5BIX4xaQZ6uPPRY4cQxuHnRVrKCGbSsMa/9zd0bBT4TAVNVuVjYcYtw==}
+  electron@43.4.1:
+    resolution: {integrity: sha512-5b+EuiwkgG5iRcsEL34rimgRpkYp15SsfZOa0pC5kXs0Tb82TH4n95rpQzTZa7yRCbA7tm0WoEbuBL6NaAhAcA==}
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
@@ -5070,9 +5065,9 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 12.11.0
 
-  '@peiyanlu/electron@1.0.12(electron@42.9.0(supports-color@10.2.2))':
+  '@peiyanlu/electron@1.0.12(electron@43.4.1(supports-color@10.2.2))':
     dependencies:
-      electron: 42.9.0(supports-color@10.2.2)
+      electron: 43.4.1(supports-color@10.2.2)
 
   '@peiyanlu/ts-utils@0.0.12': {}
 
@@ -5558,13 +5553,11 @@ snapshots:
 
   abbrev@1.1.1: {}
 
-  acorn-import-phases@1.0.4(acorn@8.17.0):
+  acorn-import-phases@1.0.4(acorn@8.18.0):
     dependencies:
-      acorn: 8.17.0
+      acorn: 8.18.0
 
   acorn@8.16.0: {}
-
-  acorn@8.17.0: {}
 
   acorn@8.18.0: {}
 
@@ -6230,7 +6223,7 @@ snapshots:
       - supports-color
     optional: true
 
-  electron@42.9.0(supports-color@10.2.2):
+  electron@43.4.1(supports-color@10.2.2):
     dependencies:
       '@electron-internal/extract-zip': 1.0.4
       '@electron/get': 5.0.0(supports-color@10.2.2)
@@ -8026,7 +8019,7 @@ snapshots:
   terser@5.48.0:
     dependencies:
       '@jridgewell/source-map': 0.3.11
-      acorn: 8.17.0
+      acorn: 8.18.0
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -8353,8 +8346,8 @@ snapshots:
       '@webassemblyjs/ast': 1.14.1
       '@webassemblyjs/wasm-edit': 1.14.1
       '@webassemblyjs/wasm-parser': 1.14.1
-      acorn: 8.17.0
-      acorn-import-phases: 1.0.4(acorn@8.17.0)
+      acorn: 8.18.0
+      acorn-import-phases: 1.0.4(acorn@8.18.0)
       browserslist: 4.28.2
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.22.1
