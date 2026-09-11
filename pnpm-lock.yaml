@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@peiyanlu/electron':
         specifier: ^1.0.12
-        version: 1.0.12(electron@42.10.1(supports-color@10.2.2))
+        version: 1.0.12(electron@44.3.0(supports-color@10.2.2))
       '@peiyanlu/ts-utils':
         specifier: ^0.0.12
         version: 0.0.12
@@ -91,8 +91,8 @@ importers:
         specifier: ^6.0.8
         version: 6.0.8(vite@7.3.5(@types/node@24.12.4)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(vue@3.5.42(typescript@6.0.3))
       electron:
-        specifier: ^42.10.1
-        version: 42.10.1(supports-color@10.2.2)
+        specifier: ^44.3.0
+        version: 44.3.0(supports-color@10.2.2)
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -1970,8 +1970,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@42.10.1:
-    resolution: {integrity: sha512-ITc1HPeoDzsxCCaH6MFsN67Nq2nUiJf5N9pBWxzhUpFfKJF0IwiAkKT3emg1lPbvC4OfFE+Cdwe4vhgdOZ1YKg==}
+  electron@44.3.0:
+    resolution: {integrity: sha512-St9EV7F2VtYaYWD2qaAjBwUgKxx39eJOUsUJ5+/1113sqbVfNqv4Dbm/W1rN7qmYSPa+mWwR6yr+b7MfgjgVfQ==}
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
@@ -4995,9 +4995,9 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 12.11.0
 
-  '@peiyanlu/electron@1.0.12(electron@42.10.1(supports-color@10.2.2))':
+  '@peiyanlu/electron@1.0.12(electron@44.3.0(supports-color@10.2.2))':
     dependencies:
-      electron: 42.10.1(supports-color@10.2.2)
+      electron: 44.3.0(supports-color@10.2.2)
 
   '@peiyanlu/ts-utils@0.0.12': {}
 
@@ -5542,7 +5542,7 @@ snapshots:
 
   ansi-styles@6.2.3: {}
 
-  api-farmer@0.1.5(debug@4.4.3(supports-color@10.2.2))(encoding@0.1.13)(supports-color@10.2.2)(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3)):
+  api-farmer@0.1.5(encoding@0.1.13)(supports-color@10.2.2)(typescript@6.0.3):
     dependencies:
       '@types/pluralize': 0.0.33
       commander: 13.1.0
@@ -5551,17 +5551,15 @@ snapshots:
       openapi-typescript: 7.13.0(typescript@6.0.3)
       pluralize: 8.0.0
       prettier: 3.8.3
-      rattail: 1.8.3(debug@4.4.3(supports-color@10.2.2))(vue@3.5.42(typescript@6.0.3))
+      rattail: 1.8.3
       rslog: 1.3.2
       swagger2openapi: 7.0.8(encoding@0.1.13)
       typescript: 6.0.3
       unconfig: 0.6.1(supports-color@10.2.2)
       yaml: 2.9.0
     transitivePeerDependencies:
-      - debug
       - encoding
       - supports-color
-      - vue
 
   appdmg@0.6.6:
     dependencies:
@@ -6153,7 +6151,7 @@ snapshots:
       - supports-color
     optional: true
 
-  electron@42.10.1(supports-color@10.2.2):
+  electron@44.3.0(supports-color@10.2.2):
     dependencies:
       '@electron-internal/extract-zip': 1.0.4
       '@electron/get': 5.0.0(supports-color@10.2.2)
@@ -7462,28 +7460,16 @@ snapshots:
       ruler-factory: 0.0.14
       uuid: 13.0.0
 
-  rattail@1.8.3(debug@4.4.3(supports-color@10.2.2))(vue@3.5.42(typescript@6.0.3)):
-    dependencies:
-      '@configurajs/vite-plus': 0.2.2
-      '@varlet/axle': 1.0.2(debug@4.4.3(supports-color@10.2.2))(vue@3.5.42(typescript@6.0.3))
-      js-cookie: 3.0.5
-      mitt: 3.0.1
-      ruler-factory: 0.0.14(debug@4.4.3(supports-color@10.2.2))(vue@3.5.42(typescript@6.0.3))
-      uuid: 13.0.0
-    transitivePeerDependencies:
-      - debug
-      - vue
-
   rattail@2.1.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(debug@4.4.3(supports-color@10.2.2))(encoding@0.1.13)(supports-color@10.2.2)(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3)):
     dependencies:
       '@varlet/axle': 1.0.2(debug@4.4.3(supports-color@10.2.2))(vue@3.5.42(typescript@6.0.3))
       '@varlet/release': 2.2.3(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
-      api-farmer: 0.1.5(debug@4.4.3(supports-color@10.2.2))(encoding@0.1.13)(supports-color@10.2.2)(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3))
+      api-farmer: 0.1.5(encoding@0.1.13)(supports-color@10.2.2)(typescript@6.0.3)
       commander: 13.1.0
       js-cookie: 3.0.5
       mitt: 3.0.1
       rimraf: 6.1.3
-      ruler-factory: 0.0.14(debug@4.4.3(supports-color@10.2.2))(vue@3.5.42(typescript@6.0.3))
+      ruler-factory: 0.0.14
       unconfig: 7.5.0
       uuid: 13.0.0
     transitivePeerDependencies:
@@ -7640,13 +7626,6 @@ snapshots:
   ruler-factory@0.0.14:
     dependencies:
       rattail: 1.8.3
-
-  ruler-factory@0.0.14(debug@4.4.3(supports-color@10.2.2))(vue@3.5.42(typescript@6.0.3)):
-    dependencies:
-      rattail: 1.8.3(debug@4.4.3(supports-color@10.2.2))(vue@3.5.42(typescript@6.0.3))
-    transitivePeerDependencies:
-      - debug
-      - vue
 
   run-parallel@1.2.0:
     dependencies:
