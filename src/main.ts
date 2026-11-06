@@ -37,10 +37,10 @@ ElectronHost.startup({
 
 ElectronHost.openMainWindow({
     webPreferences: {
-      preload: require.resolve('./preload.js'),
+      preload: require.resolve('./preload.cjs'),
       sandbox: true,
     },
-    width: 1266 ,
+    width: 1266,
     height: 850,
     icon: appIcon,
     frontendURL,

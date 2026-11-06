@@ -12,6 +12,12 @@ import { join } from 'path'
 import pkg from './package.json'
 
 
+const traceWarnings = (onlyDeprecated: boolean = false) => {
+  process[onlyDeprecated ? 'traceDeprecation' : 'traceProcessWarnings'] = true
+}
+traceWarnings()
+
+
 const iconResDir = 'resources/icons'
 
 const joinPath = (...paths: string[]) => join(__dirname, iconResDir, 'prod', ...paths)
@@ -88,7 +94,7 @@ export default {
   publishers: [
     {
       name: '@electron-forge/publisher-github',
-      platforms: [ 'all' ],
+      platforms: [ 'linux', 'win32', 'darwin' ],
       config: {
         repository: {
           owner: 'peiyanlu',

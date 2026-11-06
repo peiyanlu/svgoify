@@ -4,7 +4,7 @@
   "version": "1.0.5",
   "description": "SVG Optimize Application",
   "license": "MIT",
-  "main": ".vite/build/main.js",
+  "main": ".vite/build/main.cjs",
   "scripts": {
     "dev": "electron-forge start",
     "build": "electron-forge make",
@@ -25,18 +25,18 @@
     "@electron-forge/shared-types": "^8.0.1",
     "@electron/fuses": "^2.1.3",
     "@peiyanlu/electron": "^1.0.12",
-    "@peiyanlu/svg-icons": "^0.0.1",
-    "@peiyanlu/ts-utils": "^0.0.12",
-    "@peiyanlu/web-utils": "^0.0.4",
+    "@peiyanlu/svg-icons": "^0.1.0",
+    "@peiyanlu/ts-utils": "^1.0.0",
+    "@peiyanlu/web-utils": "^0.1.0",
     "@types/node": "^24.13.3",
-    "@varlet/touch-emulator": "^3.20.3",
-    "@varlet/ui": "^3.20.3",
-    "@vitejs/plugin-vue": "^6.0.8",
+    "@varlet/touch-emulator": "^3.20.6",
+    "@varlet/ui": "^3.20.6",
+    "@vitejs/plugin-vue": "^6.0.10",
     "@vueuse/components": "^14.4.0",
     "@vueuse/core": "^14.4.0",
     "electron": "^43.2.0",
     "highlight.js": "^11.12.0",
-    "jszip": "^3.10.1",
+    "jszip": "^3.10.2",
     "lodash": "^4.18.1",
     "svg-path-bbox": "^2.1.0",
     "svgpath": "^2.6.0",
@@ -46,11 +46,11 @@
     "unplugin-vue-components": "^32.1.0",
     "vite": "^7.3.6",
     "vite-plugin-html": "^3.2.2",
-    "vue": "^3.5.41",
-    "vue-router": "^5.2.0"
+    "vue": "^3.5.43",
+    "vue-router": "^5.4.0"
   },
   "dependencies": {
-    "svgo": "^4.0.2"
+    "svgo": "^4.1.0"
   },
   "keywords": [
     "electron",
